@@ -5,9 +5,9 @@ sections `/init-docs` customizes — page types, out of scope, project-specific 
 Everything else is inherited verbatim and abbreviated here with a pointer, so this example
 cannot drift out of sync with the real contract.*
 
-**The governance sections — layers, authority, front matter, claim types, lifecycle,
-provenance, freshness, links, citations, contradictions, human review, retrieval and context,
-answer states, security, git conflicts, dates — are as shipped. Read them in
+**Everything in Part 1 of the shipped contract — layers, authority, front matter, claim types,
+lifecycle, citations and provenance, contradictions, retrieval and context, security, git
+conflicts, naming and dates — applies here unchanged. Read it in
 [`../../../docs/DOCS.md`](../../../docs/DOCS.md).**
 
 In a real project they are copied into this file in full, so the knowledge base carries its own
