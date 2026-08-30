@@ -38,8 +38,13 @@ you can propose sensible defaults and let the user correct them.
    organizations, papers, concepts, datasets. Get their actual nouns, not the generic list.
 4. **What must never be got wrong?** Domain rules, terms with a specific local meaning, things
    previous documentation kept getting wrong. These become the project-specific rules.
-5. **What is out of scope?** Vendored code, generated files, archives, anything they do not
-   want read.
+5. **What is out of scope, and what must never be read?** Vendored code, generated files,
+   archives — and separately, anything sensitive. The security exclusions in `docs/DOCS.md`
+   cover the usual suspects (`.env*`, `*.pem`, `secrets/`); ask what this project has *beyond*
+   them. A customer export, a licensed corpus, an HR folder.
+6. **What would you be most embarrassed to get wrong?** Two or three questions the knowledge
+   base must answer correctly. These become `docs/evals/questions.yaml`, and they are worth
+   more than they look — including the ones the answer to is *"nobody knows yet."*
 
 If the user gives thin answers, propose a concrete draft from what you found in step 1 and ask
 them to correct it. A draft they edit beats an interrogation they abandon.
@@ -50,14 +55,15 @@ Create, without overwriting anything that exists:
 
 ```
 docs/
-  DOCS.md          written from the interview — see below
-  README.md        the index, empty to start
-  CHANGELOG.md     the log, empty to start
-  sources/         empty, for raw material
+  DOCS.md               written from the interview — see below
+  README.md             the index, empty to start
+  CHANGELOG.md          the log, empty to start
+  sources/              empty, for raw material
   summaries/  topics/  entities/
+  evals/questions.yaml  the questions this base must answer — empty to start
 ```
 
-Four files and four folders. Nothing else — the schema carries the rules, so there is no
+Five files and five folders. Nothing else — the schema carries the rules, so there is no
 second guidance file to drift out of sync with it.
 
 Also copy the kit's root `AGENTS.md` if the project has none. If it already has one, **append a
@@ -104,10 +110,20 @@ Start from the kit's `docs/DOCS.md` and rewrite three parts with what you learne
   exactly that.
 - **Project-specific rules** — replace the shipped defaults entirely. Write four to six rules
   from questions 4 and 5. Vague rules do nothing; each one should be checkable.
-- **Out of scope** — list the paths from question 5.
+- **Out of scope** — list the paths from question 5. Append this project's sensitive paths to
+  the security exclusion list rather than replacing what is already there.
 
-Keep everything else — layers, front matter, links, citations, contradictions, dates. Those
-are the parts that make the kit work.
+**Keep everything else exactly as shipped** — layers, authority, front matter, claim types,
+lifecycle, provenance, freshness, links, citations, contradictions, human review, retrieval and
+context, answer states, security, git conflicts, dates. Those sections are the governance
+contract, they are what make the kit work, and they are not the place for local taste. If a
+project genuinely needs one changed, change it deliberately and note it in
+`docs/CHANGELOG.md` — do not quietly trim it because the file is long.
+
+Then write `docs/evals/questions.yaml` from interview question 6 — three to five cases, in the
+format the shipped template documents. Include at least one `expect_state: unknown`. If the
+user had no answer to question 6, leave the file with `questions: []` and its comments intact,
+and say it is theirs to fill in.
 
 For a codebase, a good starting shape:
 
