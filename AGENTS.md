@@ -7,6 +7,10 @@ contract — page types, claim types, lifecycle, file naming, front matter, prov
 retrieval limits, security exclusions, and this project's own rules — and it overrides
 everything below.
 
+It is in two parts. **Part 1 is the complete rules; read it in full, every run.** Part 2 is
+worked examples and rationale — read it when you need it. The rules below are a summary of
+Part 1 for convenience, not a substitute for reading it.
+
 `docs/` is a knowledge base, not an application. There is no build and nothing to run here.
 
 ## The one idea
@@ -94,7 +98,7 @@ If you are working on `llm-starter-kit` itself rather than using it:
 
 - **`docs/DOCS.md` at the repo root is the shipped template.** Editing it changes what every
   future `/init-docs` writes. Do not put this repository's own project rules in it.
-- **Keep the schema minimal.** Front matter is six required fields and three optional ones.
+- **Keep the schema minimal.** Front matter is six required fields and four optional ones.
   Every field added is a field a future agent will forget, reorder, or corrupt. Structure
   belongs in Markdown sections, not in nested YAML.
 - **Keep the skills agent-agnostic.** No Claude-specific, OpenAI-specific, or Cursor-specific
@@ -106,6 +110,10 @@ If you are working on `llm-starter-kit` itself rather than using it:
 - **Changes to the schema go in `CHANGELOG.md` with migration guidance**, and stay backward
   compatible unless there is no alternative. Someone's knowledge base is already using the old
   shape.
+- **`docs/DOCS.md` Part 1 is the single normative source.** This file and `README.md` restate
+  parts of it for convenience. When they disagree, `DOCS.md` wins and the others are bugs — fix
+  them rather than adding a fourth interpretation. A change to a rule means editing `DOCS.md`
+  first, then every file that echoes it.
 - Keep `README.md`, `AGENTS.md`, `docs/DOCS.md`, and the skills describing the same behavior.
   Documentation that claims a capability the skills do not implement is the failure mode this
   kit is supposed to prevent.

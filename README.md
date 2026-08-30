@@ -10,7 +10,7 @@ knowledge is marked as obsolete.
 
 `init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `eval-docs`
 
-[**Quick start**](#quick-start) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval) · [Governance](#contradictions) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
+[**Quick start**](#quick-start) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-human-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
 
 </div>
 
@@ -267,18 +267,19 @@ exempt from every page rule.
 
 ## Knowledge model
 
-Three page types, and one distinction that does most of the work.
+> **`docs/DOCS.md` Part 1 is the authoritative definition of everything in this section.** What
+> follows explains the model; that file governs it. Where they differ, `DOCS.md` is right.
 
-| Type | Path | One page per | Purpose |
-|:--|:--|:--|:--|
-| **Summary** | `summaries/<source-slug>.md` | source file | Faithful condensation of one source. The only page allowed to paraphrase at length. |
-| **Topic** | `topics/<slug>.md` | idea, question, theme | Synthesis across sources. Where claims are compared and contradictions surface. |
-| **Entity** | `entities/<slug>.md` | person, org, product, dataset | Stable facts about one thing, plus links to where it appears. |
+Three page types — **summary** (one per source, the only page allowed to paraphrase at length),
+**topic** (one per idea or question, where sources are compared), and **entity** (one per person,
+service, product, or dataset).
+
+Then one distinction that does most of the work.
 
 ### Claim types
 
 **Sources say different kinds of things, and storing them identically is how a knowledge base
-starts lying.** These four sentences are not interchangeable:
+starts lying.** These are not interchangeable:
 
 | Sentence | `claim_type` | Who can establish it |
 |:--|:--|:--|
@@ -319,40 +320,30 @@ was made writes `open-question` and asks.
 `confidence: high` is not authority. Confidence describes how well evidence supports a claim; it
 never promotes an interpretation into a project decision.
 
----
-
-## Metadata
+### Metadata
 
 Front matter identifies and governs the document. **The knowledge lives in the Markdown body,
 never in YAML** — agents corrupt nested YAML far more readily than they corrupt prose, so the
-schema is kept small enough to be hard to break.
+schema is kept small enough to be hard to break. Flat scalars and flat lists only.
 
-Six required fields, three optional:
+Six required fields — `type`, `title`, `status`, `claim_type`, `updated`, `sources` — and four
+optional ones: `created`, `confidence`, `superseded_by`, `sensitivity`.
 
 ```yaml
 ---
-type: summary | topic | entity
+type: topic
 title: Session management
-status: draft | active | stale | superseded | deprecated | archived
-claim_type: fact | decision | assumption | hypothesis | open-question | contradiction | instruction
+status: active
+claim_type: contradiction
 updated: 2026-08-30
 sources: [docs/sources/260415-auth-spec.md, docs/sources/260710-ops-runbook.md]
-
-created: 2026-08-30                              # optional
-confidence: high | medium | low                  # optional. Not authority.
-superseded_by: docs/topics/authentication-v2.md  # required when status is superseded
 ---
 ```
-
-**Flat scalars and flat lists only.** No nested maps, no lists of maps, no anchors. If a
-relationship needs structure, it goes in a Markdown section.
 
 Pages written before `status` and `claim_type` existed stay valid — `lint-docs` reports them as
 WARNING with safe defaults, never as errors. **No migration is required.**
 
----
-
-## Lifecycle
+### Lifecycle
 
 Obsolete knowledge must not look identical to current knowledge.
 
@@ -364,36 +355,39 @@ draft ──→ active ──→ stale ──→ active        (re-scanned again
 ```
 
 A page goes `stale` when a source it cites changed after its `updated` date. **Stale means
-unverified, not wrong** — an agent answering from a stale page says so rather than withholding
-the answer. Re-scanning clears it.
-
-A `superseded` page keeps its content. It is not emptied and not deleted; it gains a
-`superseded_by` pointer and stays readable for the audit trail. `ask-docs` skips superseded,
-deprecated, and archived pages unless you ask about history.
+unverified, not wrong** — an agent answering from a stale page says so. Re-scanning clears it. A
+`superseded` page keeps its content and gains a `superseded_by` pointer; it is never emptied or
+deleted.
 
 ---
 
-## Provenance
+## Provenance and citations
 
-The goal is to move from *"this came from foo.md"* to *"this came from this version of foo.md,
-at this section."* Cite with the most precise anchor the source format actually supports:
+**A citation is a claim that a document was read.** An agent may cite only what it actually
+opened in that run. Citing a plausible-looking path it did not open is fabrication, and
+`eval-docs` scores it as a hard failure.
 
-| Source format | Anchor | Example |
-|:--|:--|:--|
-| PDF | page | `(260415-bench, p.4)` |
-| Spec, Markdown, doc | section | `(260415-auth-spec, §4.2)` |
-| Source code | path and line range | `(src/auth/session.php:112-140)` |
-| Transcript, video | timestamp | `(260302-standup, 14:20)` |
-| Web page | section and capture date | `(260110-redis-docs, "Expiration", captured 2026-01-10)` |
-| Anything else | the file alone | `(260415-notes)` |
+Claims carry the most precise anchor the source format supports — `p.4` for a PDF, `§4.2` for a
+spec, `src/auth/session.php:112-140` for code, `14:20` for a transcript:
+
+```markdown
+... throughput dropped 40% ([[docs/sources/260415-bench|260415-bench]], p.4).
+```
 
 **Falling back to the bare file name is always correct. Inventing an anchor never is.** A page
 number the agent did not see is worse than no page number, because it survives review. The same
 applies to line ranges and commit hashes.
 
+Every answer closes with what was consulted, so you can audit the retrieval rather than trust it:
+
+```
+Consulted: docs/topics/batching.md, docs/entities/vllm.md, docs/summaries/260415-bench.md
+Not consulted: docs/topics/throughput.md (outside scope --topic batching)
+```
+
 ---
 
-## Retrieval
+## Retrieval and context limits
 
 `ask-docs` never loads the whole knowledge base. At a thousand pages that is impossible; at a
 hundred it already buries the relevant page in noise.
@@ -405,31 +399,21 @@ question → select candidates → read → estimate budget
                            within budget           over budget
                                 │                       │
                               answer          ask for narrower scope
-                                │
-                            citations
 ```
 
 **Selection is by index and links**, not by reading everything: match the question against
-titles and descriptions in `docs/README.md`, read those entry points, follow their wikilinks one
-hop out — two if the question is broad. Then stop. If the answer is not in reach after two hops,
-that is a finding about the knowledge base, not a reason to widen the sweep.
+`docs/README.md`, read those entry points, follow their wikilinks one hop out — two if the
+question is broad. Then stop. If the answer is not in reach after two hops, that is a finding
+about the knowledge base, not a reason to widen the sweep.
 
 The selection step is deliberately isolated. **It is the retriever, and it is replaceable** — a
-project that later indexes `docs/` differently changes only that step, and nothing about the
-page format changes with it.
+project that later indexes `docs/` differently changes only that step, and nothing about the page
+format changes with it. Scale comes from the index and the link graph rather than an embedding
+store, which is what keeps the whole thing readable and greppable. The cost is that an unlinked
+page missing from the index is invisible — which is exactly why `lint-docs` reports orphans.
 
-Scale comes from the index and the link graph rather than from an embedding store, which is what
-keeps the whole thing readable and greppable. The cost is that an unlinked page missing from the
-index is invisible to retrieval — which is exactly why `lint-docs` reports orphans.
-
----
-
-## Context limits
-
-The budget is roughly **half the agent's context window**, estimated before reading at about
-4 characters per token.
-
-**Exceeding it is a graceful failure, not a truncation:**
+**The budget is roughly half the context window**, estimated before reading at ~4 characters per
+token. Exceeding it is a graceful failure, not a truncation:
 
 ```
 The evidence for this question exceeds the context budget:
@@ -437,47 +421,20 @@ The evidence for this question exceeds the context budget:
 
 Narrow the scope and I can answer precisely:
   --topic authentication      7 pages
-  --topic rate-limiting       5 pages
   --source docs/sources/260415-auth-spec.pdf
 ```
 
 Reading the largest few and answering anyway is the worst available outcome. An answer built on
 silently dropped evidence is indistinguishable from a good one, and unauditable.
 
----
-
-## Citations
-
-**A citation is a claim that a document was read.** An agent may cite only what it actually
-opened in that run. Citing a plausible-looking path it did not open is fabrication, and
-`eval-docs` scores it as a hard failure.
-
-Every answer closes with what was consulted, so you can audit the retrieval rather than trust
-it:
-
-```
-Consulted: docs/topics/batching.md, docs/entities/vllm.md, docs/summaries/260415-bench.md
-Not consulted: docs/topics/throughput.md (outside scope --topic batching)
-```
-
-Answers separate four states, always:
-
-```
-Known — sessions are stored in Redis with a 24-hour TTL
-  ([[session-management]] ← docs/sources/260710-ops-runbook.md, SESSION_TTL).
-
-Contradicted — the auth spec gives the TTL as 30 minutes
-  ([[260415-auth-spec]], §4.2). Unresolved.
-
-Unknown — nothing in the sources describes revocation on password change.
-```
-
-*"I don't know based on the available knowledge"* is a correct answer and often the most useful
-one. An unsupported inference presented as a fact is a defect regardless of whether it is right.
+Answers always separate four states — **known**, **inferred** (labelled as such, every time),
+**contradicted**, and **unknown**. *"I don't know based on the available knowledge"* is a correct
+answer and often the most useful one. An unsupported inference presented as a fact is a defect
+regardless of whether it is right.
 
 ---
 
-## Contradictions
+## Contradictions and human review
 
 **Contradictions are never silently resolved.** Two sources disagreeing is a finding, not a bug —
 and surfacing it is the main thing this kit offers over plain retrieval.
@@ -492,51 +449,25 @@ and surfacing it is the main thing this kit offers over plain retrieval.
 The agent must not close this by reasoning that one source looks newer, more official, or more
 detailed. Recency decides only when `docs/DOCS.md` says so — for example, a project rule reading
 *"the runbook supersedes the spec for operational values."* Absent such a rule, it stays open
-until a human rules.
+until a human rules. `lint-docs` reports open contradictions as **INFO, never ERROR**: an open
+contradiction is the system working.
 
-`lint-docs` reports open contradictions as **INFO, never ERROR.** An open contradiction is the
-system working.
-
----
-
-## Human review
-
-The documented path out of `contradiction` and `open-question`. **The evidence is preserved,
-never overwritten.**
-
-```markdown
----
-claim_type: decision
-status: active
----
-
-## Decision
-
-Session TTL is 24 hours. — @fenton, 2026-08-30
-
-## Rationale
-
-The spec and the runbook disagreed. The runbook reflects what production has run since the
-March migration; the spec was not updated.
-
-## Evidence
-
-- [[260415-auth-spec]] (§4.2) — 30 minutes. Superseded by the March 2026 migration.
-- [[260710-ops-runbook]] (SESSION_TTL) — 24 hours. Matches production.
-```
+**Human review is the documented path out**, and the evidence is preserved rather than
+overwritten. The page is rewritten with the ruling on top and the history intact underneath —
+`## Decision`, then `## Rationale`, then `## Evidence` listing both sources including the one
+that lost. `claim_type` becomes `decision`, `status` becomes `active`, and the commit gives the
+ruling an author and a date.
 
 What makes this auditable is that the disagreement is still on the page after it is settled.
 Deleting the losing side destroys the reason the decision exists.
-
-The ruling is committed, so it also has an author and a date in git.
 
 ### Git conflicts
 
 A merge conflict inside `docs/` is a **semantic** conflict. Git can tell you a human wrote X and
 an agent wrote Y in the same place. It cannot tell you which is true.
 
-**Agents never auto-resolve a conflict in `summaries/`, `topics/`, or `entities/`.** They
-surface both sides and stop:
+**Agents never auto-resolve a conflict in `summaries/`, `topics/`, or `entities/`.** They surface
+both sides and stop:
 
 ```
 conflict → human reads both sides → checks the sources → resolves the Markdown
@@ -552,56 +483,34 @@ the only exceptions, because neither carries meaning.
 
 `/lint-docs` runs 14 checks at three severities.
 
-**ERROR** is reserved for things that are mechanically certain and factually wrong: unparseable
-front matter, a citation to a file that does not exist, `superseded` with no `superseded_by`, an
-invalid field value, a secret in `sources/`. If you gate a merge on lint, gate on ERROR.
+| Severity | Reserved for | Examples |
+|:--|:--|:--|
+| **ERROR** | Mechanically certain and factually wrong | Unparseable front matter, a citation to a file that does not exist, `superseded` with no `superseded_by`, a secret in `sources/` |
+| **WARNING** | Certain but tolerable | Missing `status`, an orphan, a stale page, a malformed slug |
+| **INFO** | Needs a human | An open contradiction, a gap with five inbound links, a probable duplicate |
 
-**WARNING** is certain but tolerable: a missing `status`, an orphan page, a stale page, a
-malformed slug.
+If you gate a merge on lint, gate on ERROR.
 
-**INFO** needs a human: an open contradiction, a gap with five inbound links, a probable
-duplicate.
+It **fixes silently** what is mechanical and reversible — index omissions, defaulted `status` and
+`claim_type` on pages that predate those fields, miscased values, `status: stale` where a source
+outran the page, and wikilinks broken by a rename confirmable from the changelog.
 
-Fixed silently — mechanical, reversible, no judgment:
+It **reports and never fixes** anything needing judgment: contradictions, duplicates worth
+merging, gaps, uncited claims, broken citations, unparseable front matter, and anything claiming
+human authority it may not have.
 
-- Index omissions and stale index lines
-- `status: active` and a defaulted `claim_type` on pages that predate those fields
-- Miscased field values and slugs
-- `status: stale` where a source outran the page
-- Wikilinks broken by a rename confirmable from `docs/CHANGELOG.md`
-
-Reported, never fixed: contradictions, duplicates worth merging, gaps, uncited claims, broken
-citations, unparseable front matter, and anything claiming human authority it may not have.
-
-**Malformed YAML is handled as a finding, not a failure.** One unparseable file is one ERROR;
-the sweep continues over every other page. Partial metadata from a block that failed to parse is
-never ingested, and a block that could not be read is never silently rewritten:
-
-```
-ERROR  docs/topics/authentication.md
-       Front matter does not parse: no closing `---` before the body.
-       Line 4 `missing_closing_dashes_or_invalid_yaml` is not a key/value pair.
-
-       Fix — replace lines 1-4 with:
-         ---
-         type: topic
-         title: Authentication
-         status: active
-         claim_type: fact
-         updated: 2026-08-30
-         sources: [docs/sources/260415-auth-spec.pdf]
-         ---
-
-       Not checked: this page was skipped by checks 2-14.
-```
+**Malformed YAML is handled as a finding, not a failure.** One unparseable file is one ERROR; the
+sweep continues over every other page. Partial metadata from a block that failed to parse is
+never ingested, and a block that could not be read is never silently rewritten — lint reports the
+corrected block and lets you write it.
 
 ---
 
 ## Evaluation
 
 `lint-docs` checks that the knowledge base is well-formed. **`eval-docs` checks that it is still
-right.** A base can pass every schema check and quietly stop answering the questions it was
-built to answer.
+right.** A base can pass every schema check and quietly stop answering the questions it was built
+to answer.
 
 Cases live in `docs/evals/questions.yaml`. Humans write it; the agent never edits it:
 
@@ -609,8 +518,7 @@ Cases live in `docs/evals/questions.yaml`. Humans write it; the agent never edit
 questions:
   - id: session-ttl
     question: What is the absolute session TTL?
-    expect_sources:
-      - docs/sources/260710-ops-runbook.md
+    expect_sources: [docs/sources/260710-ops-runbook.md]
     require_facts: ["24 hours", "30 minutes"]
     expect_state: contradicted
 
@@ -620,17 +528,15 @@ questions:
 ```
 
 **`expect_state: unknown` is the most valuable case you can write.** It asserts that the base
-admits a gap instead of inventing an answer — the failure this kit exists to prevent, and the
-one no other check catches.
+admits a gap instead of inventing an answer — the failure this kit exists to prevent, and the one
+no other check catches.
 
-Two passes, reported separately:
+Two passes, reported separately: **structural** (citation validity, source coverage, required
+facts, forbidden claims, answer state — path and string comparison, trust these) and **semantic**
+via `--semantic` (unsupported claims, overstated certainty, evidence sufficiency — judgment,
+opt-in, and the only way to catch the interesting failures).
 
-- **Structural** — citation validity, source coverage, required facts, forbidden claims, answer
-  state, stale evidence. Path and string comparison. Trust these.
-- **Semantic** (`--semantic`) — unsupported claims, overstated certainty, evidence sufficiency,
-  contradiction awareness. Judgment, opt-in, and the only way to catch the interesting failures.
-
-`eval-docs` never edits pages to make a case pass. It reports what failed and what would fix it.
+`eval-docs` never edits pages to make a case pass.
 
 ---
 
@@ -833,7 +739,7 @@ searching, because the connection was made when the material came in.
 | Summaries are shallow | Agent skimmed a long PDF | Scan that source alone, and say *"read it in full"* |
 | Too many dangling links | Normal and healthy | That's your reading list, not a bug |
 | `ask-docs` keeps refusing on budget | Question too broad, or the index is thin | Use `--topic` / `--source`; check `docs/README.md` descriptions are specific |
-| A contradiction won't go away | It is genuinely unresolved | That's the point. Rule on it — see [Human review](#human-review) |
+| A contradiction won't go away | It is genuinely unresolved | That's the point. Rule on it — see [Human review](#contradictions-and-human-review) |
 
 </details>
 
@@ -1017,7 +923,7 @@ Remove this kit tomorrow and every page it wrote still opens in any text editor.
 
 <div align="center">
 
-[**Quick start**](#quick-start) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval) · [Governance](#contradictions) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
+[**Quick start**](#quick-start) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-human-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
 
 <sub>[Issues](https://github.com/fentonmartin/llm-starter-kit/issues) · [Repository](https://github.com/fentonmartin/llm-starter-kit) · Built on [Karpathy's LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) and [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)</sub>
 
