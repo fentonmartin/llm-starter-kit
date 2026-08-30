@@ -1,0 +1,148 @@
+---
+name: eval-docs
+description: Check the knowledge base against the questions in docs/evals/questions.yaml — whether each still retrieves the right sources, states the required facts, avoids the forbidden claims, and admits what it does not know. Use when the user says eval, evaluate the docs, test the knowledge base, or asks whether the docs still answer correctly after a change.
+---
+
+# Eval
+
+`lint-docs` checks whether the knowledge base is well-formed. **`eval-docs` checks whether it is
+still right.** A base can pass every schema check and quietly stop answering the questions it
+was built to answer — a source gets superseded, a page goes stale, a merge drops a citation.
+
+Read `docs/DOCS.md` first.
+
+## Honest scope
+
+Every check here runs by reading files and reasoning about them. There is no program, and
+nothing in this kit executes.
+
+That has a consequence worth stating plainly rather than papering over: **these results are
+not bit-reproducible, and they cannot gate CI.** Two runs may word the same finding
+differently. The structural checks below are far more stable than the semantic ones because
+they compare paths and strings rather than meaning, but "more stable" is not "deterministic."
+
+Treat eval output as a considered review, not as a test suite exit code.
+
+## Input
+
+`docs/evals/questions.yaml`. Humans write it; you never edit it. Each case:
+
+```yaml
+- id: session-ttl
+  question: What is the session TTL?
+  expect_sources:
+    - docs/sources/260710-ops-runbook.pdf
+  require_facts:
+    - "24 hours"
+  forbid_claims:
+    - "30 minutes"
+  expect_state: known        # known | contradicted | unknown
+```
+
+Every field except `id` and `question` is optional. A case with only a question still checks
+that the question is answerable at all.
+
+| Field | Checks |
+|---|---|
+| `expect_sources` | These paths appear in the answer's citations. |
+| `require_facts` | Each string appears in the answer. |
+| `forbid_claims` | None of these strings appears. Use it to pin down a known wrong answer. |
+| `expect_state` | The answer's overall state matches — `known`, `contradicted`, or `unknown`. |
+
+`expect_state: unknown` is the most valuable case in the file. It asserts that the base admits
+a gap instead of inventing an answer, which is the failure this kit exists to prevent, and it
+is the one no other check catches.
+
+## Procedure
+
+For each case, run `ask-docs` on the question **exactly as written**, under normal rules — same
+retrieval, same budget, same citation contract. Do not read ahead to the expectations and do
+not steer toward them. An eval that helps itself pass measures nothing.
+
+Then score in two passes.
+
+### Pass 1 — structural
+
+Comparisons of paths and strings. These are the ones to trust.
+
+| Check | Fails when |
+|---|---|
+| **Citation validity** | The answer cites a path that does not exist, or one it did not open. Hard failure — a fabricated citation is worse than a wrong answer, because it survives review. |
+| **Source coverage** | An `expect_sources` path is missing from the citations. |
+| **Required facts** | A `require_facts` string is absent. |
+| **Forbidden claims** | A `forbid_claims` string is present. |
+| **State match** | The answer's state differs from `expect_state`. |
+| **Retrieval health** | The question overflowed the context budget, or found nothing. |
+| **Stale evidence** | The answer rests on a page with `status: stale`. A warning, not a failure — but it explains a drift before the content does. |
+
+### Pass 2 — semantic
+
+Judgment. Slower, less stable, and the only way to catch the interesting failures. Run it when
+asked (`--semantic`), or when pass 1 is clean but the answers still look wrong.
+
+| Check | Looks for |
+|---|---|
+| **Unsupported claims** | Statements in the answer that the cited sources do not actually support. |
+| **Overstated certainty** | An inference presented as a fact, or a contradicted question answered with one confident side. |
+| **Evidence sufficiency** | Whether the cited evidence would convince a reader, or is merely present. |
+| **Contradiction awareness** | A known contradiction in the pages that the answer silently resolved. |
+| **Consistency** | Two cases that should agree, and do not. |
+
+Say which pass produced each finding. A structural failure is a fact about the base; a semantic
+one is your reading of it, and the user should be able to tell them apart at a glance.
+
+## Output
+
+```
+docs/evals/questions.yaml — 12 cases
+
+PASS  10
+FAIL   2
+
+FAIL  session-ttl                                          [structural]
+      expect_sources: docs/sources/260710-ops-runbook.pdf not cited
+      The answer cited only 260415-auth-spec.pdf (§4.2, "30 minutes"),
+      which forbid_claims rules out.
+      Likely cause: docs/topics/session-management.md is status: stale;
+      its source changed 2026-07-10, the page was updated 2026-04-20.
+      Fix: /scan-docs docs/sources/260710-ops-runbook.pdf
+
+FAIL  revocation-policy                                     [structural]
+      expect_state: unknown, got: known
+      The answer asserted a 90-day rotation policy citing
+      docs/topics/session-management.md, which carries no citation for it.
+      This is an unsupported claim reaching a user as a fact.
+      Fix: cite it or cut it — see lint check 6.
+
+WARN  auth-flow                                             [structural]
+      Answer rests on docs/topics/authentication.md (status: stale).
+```
+
+Then append to `docs/CHANGELOG.md`:
+
+```markdown
+## 2026-08-30 — eval
+- Ran: 12 cases from docs/evals/questions.yaml (structural)
+- Passed: 10
+- Failed: session-ttl (source not cited, page stale), revocation-policy (unsupported claim)
+- Warned: auth-flow rests on a stale page
+```
+
+Report failures, then stop. **Do not fix the knowledge base to make an eval pass.** Editing a
+page so its question scores green is how an eval suite becomes decoration. Say what failed and
+what would fix it — `/scan-docs` on a stale source, a human ruling on a contradiction, a
+citation added — and let the user decide.
+
+If a case fails because the *expectation* is wrong rather than the base, say so. Sources change
+and yesterday's required fact becomes today's superseded one. But `docs/evals/` is human-owned:
+propose the edit, never make it.
+
+## Rules
+
+- Never edit `docs/evals/questions.yaml`.
+- Never edit pages during an eval. Findings go in the report; fixes belong to `scan-docs`,
+  `lint-docs`, or a human.
+- Never look at a case's expectations before answering its question.
+- Never report a semantic finding as a structural one.
+- Never claim a case passed on a technicality — an answer that contains `"24 hours"` inside a
+  sentence saying the opposite has not passed.

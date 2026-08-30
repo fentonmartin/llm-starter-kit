@@ -1,7 +1,7 @@
 {
   "name": "llm-starter-kit",
-  "description": "Drop-in, agent-agnostic documentation knowledge base. init-docs to set up in any project, then scan-docs, ask-docs, lint-docs to maintain docs/.",
-  "version": "1.0.0",
+  "description": "Drop-in, agent-agnostic documentation knowledge base. init-docs to set up in any project, then scan-docs, ask-docs, lint-docs, eval-docs to maintain docs/ with provenance, lifecycle, and contradiction handling.",
+  "version": "1.1.0",
   "author": { "name": "Fenton Martin" },
   "homepage": "https://github.com/fentonmartin/llm-starter-kit",
   "license": "MIT",

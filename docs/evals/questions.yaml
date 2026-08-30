@@ -1,0 +1,53 @@
+# Questions this knowledge base must answer correctly.
+#
+# Human-owned. The agent reads this file and never edits it.
+# Run with /eval-docs. See .claude/skills/eval-docs/SKILL.md.
+#
+# Each case runs through ask-docs under normal rules, then gets scored.
+# Only `id` and `question` are required.
+#
+#   id:              stable identifier, kebab-case
+#   question:        asked verbatim
+#   expect_sources:  paths that must appear in the answer's citations
+#   require_facts:   strings the answer must contain
+#   forbid_claims:   strings the answer must not contain
+#   expect_state:    known | contradicted | unknown
+#
+# Write three kinds of case, in this order of value:
+#
+#   1. unknown  — the base must admit a gap instead of inventing an answer.
+#                 This is the failure the kit exists to prevent, and the one
+#                 no other check catches. Write these first.
+#   2. contradicted — the base must show both sides of a known disagreement
+#                 rather than quietly picking one.
+#   3. known    — the base must still retrieve the right source and state
+#                 the right fact.
+#
+# Start with three to five cases covering what you would be most embarrassed
+# to get wrong. A small suite that is actually run beats a large one that is not.
+
+questions: []
+
+# Delete `questions: []` above and replace with your own. Worked examples:
+#
+# questions:
+#   - id: session-ttl
+#     question: What is the session TTL?
+#     expect_sources:
+#       - docs/sources/260710-ops-runbook.pdf
+#     require_facts:
+#       - "24 hours"
+#     forbid_claims:
+#       - "30 minutes"
+#     expect_state: known
+#
+#   - id: session-revocation
+#     question: How are sessions revoked when a password changes?
+#     expect_state: unknown
+#
+#   - id: rate-limit-window
+#     question: What is the rate limit window?
+#     expect_state: contradicted
+#     expect_sources:
+#       - docs/sources/260415-auth-spec.pdf
+#       - docs/sources/260710-ops-runbook.pdf
