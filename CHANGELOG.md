@@ -124,29 +124,47 @@ additive. See *Breaking changes* and *Migration* below.
 
 ### Migration
 
-One required step, then everything else is optional.
+`/init-docs` detects an existing install and runs this as an upgrade rather than an interview.
+By hand, in order:
 
-**Required — rename the sources folder:**
+**1. Update the kit files.** `.claude/` and the root `AGENTS.md` are kit-owned — replace them
+wholesale, there is nothing of yours in them. A plugin update does this; a copied install means
+re-copying. **Do not touch `docs/` in this step.**
+
+**2. Rename the sources folder:**
 
 ```bash
 git mv docs/sources docs/core-sources
 ```
 
-Then run `/lint-docs`. Check 15 rewrites the `sources:` values and citations that still point at
-the old path. Do it in that order: rewriting paths *before* the folder moves breaks every
-citation in the base. If both folders somehow exist, lint stops and asks — a half-finished
-migration needs a human to say which file wins.
+**3. Upgrade `docs/DOCS.md` — start from the new file, not yours.** Your `DOCS.md` was written
+from an `init-docs` interview and holds three sections you authored: **page types**,
+**project-specific rules**, and **out of scope**. Copy the shipped 2.0 file over yours and port
+those three back verbatim, appending your out-of-scope paths to the security exclusions rather
+than replacing them. Then delete the preset sections.
 
-**Optional — everything else is additive:**
+Not the reverse. 2.0 adds roughly a dozen governance sections, and merging those into a 1.x file
+by hand is where the mistakes live; carrying three sections the other way is mechanical.
 
-- Pages without `status` or `claim_type` remain valid. `lint-docs` reports them as **WARNING**,
-  not ERROR, and offers safe defaults: `status: active`, and `claim_type: fact` on a summary or
-  `open-question` on a topic or entity it cannot classify. It never defaults to `decision`.
-- The same `/lint-docs` run applies those mechanical fixes. Or do nothing: pages are upgraded as
-  they are next touched.
-- `docs/scenarios/` is optional. Without it, `test-docs` has nothing to run and says so.
-- No command was renamed for `1.x` users, and no field was removed. `test-docs` and
-  `docs/scenarios/` are new in this release, never having shipped under another name.
+**4. Run `/lint-docs`.** Check 15 rewrites the `sources:` values and citations still pointing at
+`docs/sources/`, and check 2 adds `status: active` plus a defaulted `claim_type` to every page
+written before those fields existed — `fact` on a summary, `open-question` on a topic or entity
+it cannot classify, never `decision`.
+
+Order matters: rewriting paths *before* the folder moves breaks every citation in the base. If
+both folders somehow exist, lint stops and asks — a half-finished migration needs a human to say
+which file wins.
+
+Expect a large diff and plenty of WARNINGs on a base of any size. That is the upgrade landing,
+not breakage. **Commit before you start.**
+
+**5. Optional — `docs/scenarios/questions.yaml`.** New and empty by default. Without it,
+`test-docs` has nothing to run and says so.
+
+**Your pages need no editing.** No command was renamed for `1.x` users and no field was removed;
+`test-docs` and `docs/scenarios/` are new here, never having shipped under another name. Pages
+missing `status` or `claim_type` stay valid either way — if you skip step 4 entirely, they are
+upgraded as they are next touched.
 
 ### Known limitations
 

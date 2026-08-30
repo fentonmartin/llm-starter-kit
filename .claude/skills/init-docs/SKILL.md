@@ -164,10 +164,85 @@ For a codebase, a good starting shape:
 
 Do not run a scan yourself. Init sets up; scan is a separate decision.
 
+## 7. Upgrading an existing install
+
+If `docs/DOCS.md` already exists, the kit is installed and **this is an upgrade, not an init.**
+Do not interview, do not scaffold, and do not overwrite their `docs/`.
+
+Say which version they are on and what will change, then work through the steps below in order.
+Stop at any point they want to review.
+
+**Which version.** Read their `docs/DOCS.md`:
+
+| What you see | Version |
+|---|---|
+| No `Part 1` / `Part 2` headings, front matter without `status` and `claim_type` | `1.x` |
+| `docs/sources/` still in the layers table | `1.x` |
+| `Part 1 — The contract` present | `2.0` — already current |
+
+### Step 1 — kit files
+
+`.claude/` and the root `AGENTS.md` are kit-owned. **Replace them wholesale**; there is nothing
+of the user's in them. If they installed as a plugin, the plugin update does this. If they copied
+files, re-copy and overwrite.
+
+**Never touch `docs/` in this step.** That is their knowledge base, not kit files.
+
+### Step 2 — rename the sources folder
+
+```bash
+git mv docs/sources docs/core-sources
+```
+
+Do the paths afterwards, in step 4. Rewriting paths first breaks every citation in the base.
+
+### Step 3 — upgrade `docs/DOCS.md`
+
+**Start from the shipped 2.0 file and port their customizations into it. Do not patch their old
+file.** `2.0` adds roughly a dozen governance sections; merging those into a `1.x` file by hand
+is where the mistakes live, while carrying three sections the other way is mechanical.
+
+Copy the kit's `docs/DOCS.md` over theirs, then port back, verbatim:
+
+1. their **page types** table
+2. their **project-specific rules**
+3. their **out of scope** paths — appended to the shipped security exclusions, never replacing
+   them
+
+Then delete every preset section, as in step 5 of an init.
+
+**Show them the diff before writing it.** Their old `DOCS.md` was written from an interview, and
+those three sections are the only part of this kit they authored. Losing them silently is the
+worst outcome of an upgrade.
+
+If they customized anything *else* — a changed link style, an edited citation format — port that
+too and say you did. Do not assume the shipped text is what they want back.
+
+### Step 4 — run `/lint-docs`
+
+It rewrites the `sources:` values and citations still pointing at `docs/sources/` (check 15),
+adds `status: active` and a defaulted `claim_type` to every page that predates those fields
+(check 2), and reports what needs a human.
+
+Expect a large diff and a lot of WARNINGs on a base of any size. That is the upgrade landing, not
+breakage.
+
+### Step 5 — scenarios, optional
+
+`docs/scenarios/questions.yaml` is new and empty by default. Offer to write three to five
+scenarios from interview question 6 — including at least one `expect_state: unknown` — or leave
+the template and say it is theirs to fill in.
+
+### Finish
+
+Append one `docs/CHANGELOG.md` entry recording the upgrade, then report: the version they moved
+from, the three sections you ported, the page count lint touched, and anything left open.
+
 ## Rules
 
 - Never delete a file. Move, or leave alone.
 - Never overwrite an existing `DOCS.md`, `AGENTS.md`, or `CLAUDE.md` — merge or append.
 - Never rearrange a docs folder that a site generator builds from.
-- If the project already has a `docs/DOCS.md`, this kit is already installed. Say so, offer
-  `/lint-docs` instead, and stop.
+- If the project already has a `docs/DOCS.md`, the kit is installed. **Do not init — follow
+  step 7, Upgrading an existing install.** Never re-interview a project that already has a
+  schema, and never overwrite the three sections its owner authored.

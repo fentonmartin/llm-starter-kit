@@ -204,6 +204,36 @@ docs as sources.
 
 </details>
 
+### Already using an older version?
+
+`/init-docs` detects an existing install and switches to an upgrade instead of interviewing you
+again. Or do it by hand — it's five steps:
+
+```bash
+# 1. kit files — safe to overwrite, nothing of yours is in them
+/plugin update llm-starter-kit          # or re-copy .claude/ and AGENTS.md
+
+# 2. rename the sources folder (2.0's one breaking change)
+git mv docs/sources docs/core-sources
+
+# 3. upgrade docs/DOCS.md — see below
+# 4. then:
+/lint-docs
+```
+
+**Step 3 is the one that needs care.** Your `docs/DOCS.md` was written from your interview, so it
+holds three sections you authored: **page types**, **project-specific rules**, and **out of
+scope**. Copy the new `docs/DOCS.md` over yours and port those three back — not the reverse. 2.0
+adds about a dozen governance sections, and merging those into your old file by hand is where
+mistakes happen; carrying three sections the other way is mechanical.
+
+`/lint-docs` then does the rest: rewrites the `sources:` paths still pointing at `docs/sources/`,
+and adds `status: active` plus a defaulted `claim_type` to every page written before those fields
+existed. Expect a large diff and plenty of WARNINGs on a base of any size — that's the upgrade
+landing, not breakage. **Commit before you start**, as always.
+
+Your pages themselves need no editing. Full detail in [CHANGELOG.md](CHANGELOG.md#migration).
+
 ---
 
 ## Commands
