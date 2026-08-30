@@ -9,7 +9,8 @@ description: Check the knowledge base against the questions in docs/evals/questi
 still right.** A base can pass every schema check and quietly stop answering the questions it
 was built to answer — a source gets superseded, a page goes stale, a merge drops a citation.
 
-Read `docs/DOCS.md` first.
+Read `docs/DOCS.md` **Part 1** first — it is the complete rules. Part 2 is examples and
+rationale, read on demand.
 
 ## Honest scope
 

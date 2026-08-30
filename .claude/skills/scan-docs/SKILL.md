@@ -10,9 +10,10 @@ creates summary pages.
 
 ## Before you start
 
-1. Read `docs/DOCS.md`. It overrides anything here — page types, slugs, front matter, claim
-   types, provenance, link style, security exclusions, and any project-specific rules at the
-   bottom.
+1. Read `docs/DOCS.md` **Part 1** in full — it is the complete rules, and it overrides anything
+   here: page types, slugs, front matter, claim types, provenance, link style, security
+   exclusions, and any project-specific rules at the end. Part 2 is examples and rationale,
+   read on demand.
 2. Read `docs/README.md` to learn what already exists. Never create a page without checking
    the index for one that covers the same ground.
 3. Determine the work set:

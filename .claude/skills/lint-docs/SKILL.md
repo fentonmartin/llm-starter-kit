@@ -7,7 +7,8 @@ description: Health-check docs/ for orphans, gaps, contradictions, stale pages, 
 
 A knowledge base rots quietly. This is the sweep that catches it.
 
-Read `docs/DOCS.md` first — it defines every rule you are checking against.
+Read `docs/DOCS.md` **Part 1** first — it defines every rule you are checking against, and it is
+complete on its own. Part 2 is examples and rationale, read on demand.
 
 ## Scope
 

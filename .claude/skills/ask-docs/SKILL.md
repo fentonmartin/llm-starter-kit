@@ -15,8 +15,9 @@ evidence**. The procedure below exists to prevent both.
 
 ### 1. Read the contract
 
-Read `docs/DOCS.md` and `docs/README.md`. `DOCS.md` overrides anything here — page types, link
-style, retrieval scope, security exclusions, and the project's own rules.
+Read `docs/DOCS.md` **Part 1** in full, and `docs/README.md`. Part 2 is examples and rationale —
+read it only if you need it. `DOCS.md` overrides anything here: page types, link style,
+retrieval scope, security exclusions, and the project's own rules.
 
 ### 2. Select candidates — never load the whole base
 
