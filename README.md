@@ -140,6 +140,18 @@ It reads your README, your manifest, and your layout — then asks you six quest
 > - What's out of scope, and what must never be read?
 > - What would you be most embarrassed to get wrong? *(these become your scenarios)*
 
+The first answer picks a **preset** — the starting shape for your page types and rules:
+
+| If you're documenting… | Preset | Pages are one per… |
+|:--|:--|:--|
+| this codebase | **codebase** | module · decision or flow · service, table, endpoint, env var |
+| papers, articles, vendor docs | **outside research** | paper · question or debate · person, lab, model, dataset |
+| a running system, incidents, on-call | **operations** | incident or runbook · procedure or failure mode · service, alert, config key |
+
+Same contract for all three — same schema, same claim types, same lifecycle. They differ only in
+what a page is *about* and which project rules come pre-written. `/init-docs` starts from one,
+swaps in your actual nouns, and deletes the rest.
+
 Out comes a `docs/` folder and a `docs/DOCS.md` **written for your project**, in your
 vocabulary.
 

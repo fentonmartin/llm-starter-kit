@@ -30,7 +30,18 @@ Ask these. Batch them — do not drip one question at a time. Accept short answe
 you can propose sensible defaults and let the user correct them.
 
 1. **What is this knowledge base for?** Documenting this codebase, collecting outside research,
-   or both? This determines everything else.
+   operating a running system, or a mix? This determines everything else — it selects the preset
+   in `docs/DOCS.md` Part 2 that you will build Part 1 from:
+
+   | Answer | Preset |
+   |---|---|
+   | This codebase | *Preset: documenting a codebase* |
+   | Outside research, a reading pile | *Preset: outside research* |
+   | Running a system — incidents, runbooks, on-call | *Preset: operations and runbooks* |
+   | A mix | Take the closest and rename its page types. Do not merge two presets. |
+
+   Say which preset you are proposing and why, before asking question 2. It is the cheapest
+   correction the user will ever make, and getting it wrong means every page is shaped wrong.
 2. **Who reads it?** You alone, a team, future contributors, or mostly AI agents working in
    this repo? Answers change how much context each page must restate.
 3. **What are the recurring things worth a page each?** For code: services, modules, database
@@ -103,15 +114,21 @@ Rules while reorganizing:
 
 ## 5. Write DOCS.md
 
-Start from the kit's `docs/DOCS.md` and rewrite three parts with what you learned:
+Start from the kit's `docs/DOCS.md`. **Apply the preset chosen in question 1**, then rewrite
+three parts of Part 1 with what you learned:
 
-- **Page types** — replace the generic descriptions with this project's actual nouns from
-  interview question 3. If they said "one page per service and one per Postgres table," say
-  exactly that.
-- **Project-specific rules** — replace the shipped defaults entirely. Write four to six rules
-  from questions 4 and 5. Vague rules do nothing; each one should be checkable.
-- **Out of scope** — list the paths from question 5. Append this project's sensitive paths to
-  the security exclusion list rather than replacing what is already there.
+- **Page types** — start from the preset's table, then replace its nouns with this project's
+  actual ones from question 3. If they said "one page per service and one per Postgres table,"
+  say exactly that. The preset is a starting shape, not an answer.
+- **Project-specific rules** — take the preset's suggested rules as a base, keep the ones that
+  apply, and add rules from questions 4 and 5 until you have four to six. Replace the shipped
+  defaults entirely. Vague rules do nothing; each one should be checkable.
+- **Out of scope** — list the paths from question 5, plus the preset's. Append this project's
+  sensitive paths to the security exclusion list rather than replacing what is already there.
+
+Then **delete every preset section from Part 2**, including the one you used. They are a menu for
+`init-docs`, not documentation for the project — leaving two unused presets in a project's
+contract is three page-type tables competing to be the real one.
 
 **Keep everything else exactly as shipped** — layers, authority, front matter, claim types,
 lifecycle, provenance, freshness, links, citations, contradictions, human review, retrieval and

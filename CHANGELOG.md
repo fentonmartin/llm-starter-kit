@@ -85,6 +85,12 @@ additive. See *Breaking changes* and *Migration* below.
   **scenarios**, they live in `docs/scenarios/questions.yaml`, and they score
   on citation validity, source coverage, required facts, forbidden claims, and answer state.
   Structural checks and semantic ones are reported separately.
+- **Three domain presets** — codebase, outside research, operations and runbooks. Interview
+  question 1 already asked what the knowledge base was for and did nothing structural with the
+  answer; now it selects a starting shape for page types and project rules. The contract is
+  identical across all three: same schema, same claim types, same lifecycle. They differ only in
+  what a page is about and which rules come pre-written, and `init-docs` deletes the unused ones
+  so a project's contract carries exactly one page-type table.
 - **`examples/example-project/`.** Two sources that disagree, four generated pages, three
   scenarios, and three suggested edits that should each produce a specific finding.
 - **`CHANGELOG.md`** — this file.

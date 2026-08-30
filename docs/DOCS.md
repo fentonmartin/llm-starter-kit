@@ -418,10 +418,18 @@ Note that a summary carries its source's file name, so the two share a basename.
 source citations use the full-path form `[[docs/core-sources/foo|foo]]` — a bare `[[foo]]` would be
 ambiguous.
 
-## Preset: documenting a codebase
+## Presets
+
+Three starting shapes. `/init-docs` picks one from what you say the knowledge base is for, then
+rewrites the page types, out-of-scope paths, and project rules in Part 1 to match. They differ
+only in those three sections — the contract itself is identical for all of them.
+
+Pick the one whose nouns match yours. If none do, take the closest and rename its page types.
+
+### Preset: documenting a codebase
 
 If this knowledge base documents the project it lives in — the most common use — replace the page
-types in Part 1 with these, and delete this section once you have.
+types in Part 1 with these.
 
 | Type | Path | One page per | Purpose |
 |---|---|---|---|
@@ -445,3 +453,52 @@ Rules worth adding for code:
   were rejected. A decision without its discarded options is a description, not documentation.
 - Environment variables and endpoints are entities, never bullet lists buried in a summary. They
   are referenced from too many places to live inside one page.
+
+### Preset: outside research
+
+For a reading pile — papers, articles, vendor documentation, transcripts, competitor material.
+The knowledge base is *about* something the project does not own.
+
+| Type | Path | One page per | Purpose |
+|---|---|---|---|
+| Summary | `docs/summaries/<source-slug>.md` | paper, article, talk, thread | What it argues, what evidence it gives, where it is weak. |
+| Topic | `docs/topics/<slug>.md` | question or debate | What the field believes, who disagrees, and what is still unsettled. |
+| Entity | `docs/entities/<slug>.md` | person, lab, company, model, dataset, benchmark | Stable facts, and every place it appears. |
+
+Rules worth adding for outside material:
+
+- **A claim carries whose claim it is.** *"Latency drops 40%"* is not a fact; *"the vendor
+  reports latency drops 40%"* is. Attribute in the sentence, not only in the citation.
+- **Record the method before the result.** A number without a benchmark, sample size, or date is
+  not usable evidence, and a topic page that repeats it is laundering it.
+- **A vendor is a source, not a referee.** Marketing material is evidence of what a vendor
+  claims. Never let it settle a contradiction against an independent source.
+- Disagreement between researchers is the normal state, not a defect. Expect topic pages to
+  carry standing contradictions for a long time.
+- Capture the date you read a web source. Pages change silently and the citation is all you will
+  have.
+
+### Preset: operations and runbooks
+
+For how a running system is actually operated — incidents, procedures, configuration, on-call
+knowledge. The distinguishing risk is that a page can be *out of date and confident* while
+someone is following it at 3am.
+
+| Type | Path | One page per | Purpose |
+|---|---|---|---|
+| Summary | `docs/summaries/<source-slug>.md` | incident report, runbook, postmortem, audit | What happened or what the procedure says, verbatim enough to act on. |
+| Topic | `docs/topics/<slug>.md` | procedure, failure mode, or invariant | How to do it, what breaks, what must stay true. |
+| Entity | `docs/entities/<slug>.md` | service, queue, alert, dashboard, config key, on-call rota | Stable facts, plus every place it is referenced. |
+
+Rules worth adding for operations:
+
+- **Every configuration value carries its unit and its as-of date.** `86400 seconds (24 hours,
+  since 2026-06-02)`, never a bare number. This is the rule that catches drift first.
+- **Never state a designed value as a running value.** A specification says what should be true;
+  a runbook says what is. When they differ that is a contradiction, and it is the most common one
+  this preset produces.
+- **A procedure page names its blast radius** — what this action takes down, and who notices.
+- **Staleness is not cosmetic here.** A `stale` procedure page should say so in its first line,
+  not only in front matter, because the person reading it at 3am is scrolling, not auditing.
+- Incidents are dated sources and keep their `YYMMDD` prefix. Procedures are evergreen and carry
+  no date.
