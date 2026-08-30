@@ -81,7 +81,7 @@ Latency rose under batching ([[batching]] ← docs/sources/260415-bench.pdf, p.4
 ```
 
 **Cite only what you actually opened.** A citation is a claim that you read the document. A
-plausible-looking path you did not open is fabrication, and `eval-docs` scores it as a hard
+plausible-looking path you did not open is fabrication, and `test-docs` scores it as a hard
 failure. If a page you would like to cite was outside the budget, say it was not consulted.
 
 Close the answer with what you consulted, so the user can audit the retrieval rather than

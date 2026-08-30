@@ -1,7 +1,7 @@
 # Questions this knowledge base must answer correctly.
 #
 # Human-owned. The agent reads this file and never edits it.
-# Run with /eval-docs.
+# Run with /test-docs.
 
 questions:
   # The most valuable case in the file: the base must admit the gap.
@@ -30,7 +30,7 @@ questions:
       - "24 hours"
     expect_state: contradicted
 
-  # A plain retrieval case. The two sources agree, so there is a right answer.
+  # A plain retriscenario. The two sources agree, so there is a right answer.
   - id: session-identifier
     question: Are sessions JWTs?
     expect_sources:

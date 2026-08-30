@@ -13,7 +13,7 @@ docs/
   DOCS.md                        the schema, with three sections customized
   README.md                      the index
   CHANGELOG.md                   what each run did
-  evals/questions.yaml           three questions this base must answer correctly
+  scenarios/questions.yaml           three questions this base must answer correctly
   sources/
     260415-auth-spec.md          a specification. Says the TTL is 30 minutes.
     260710-ops-runbook.md        a runbook. Says production runs 24 hours.
@@ -34,7 +34,7 @@ who has not read the sources.
 ```
 sources/  ──scan──▶  summaries/ topics/ entities/  ──ask──▶  answer + citations
                               ▲                                      │
-                              └──────  lint  ◀──  eval  ◀────────────┘
+                              └──────  lint  ◀──  test  ◀────────────┘
 ```
 
 Run it yourself from this directory:
@@ -45,7 +45,7 @@ Run it yourself from this directory:
 | 2 | `/scan-docs` | Already run twice, once per source. See `docs/CHANGELOG.md`. |
 | 3 | `/ask-docs "What is the session TTL?"` | Should return **both** values and say the sources disagree. |
 | 4 | `/lint-docs` | Should report the open contradiction as INFO, not as an error. |
-| 5 | `/eval-docs` | Runs the three cases in `docs/evals/questions.yaml`. |
+| 5 | `/test-docs` | Runs the three cases in `docs/scenarios/questions.yaml`. |
 
 ## What to look at, and why
 
@@ -63,8 +63,8 @@ is evidence one was made, not authority that it still holds. An agent may record
 human may promote it.
 
 **The unknown** — the *Open questions* section of the same topic page, and the
-`session-revocation` case in `docs/evals/questions.yaml`. Neither source says who owns session
-revocation or when it will be fixed. The eval asserts that the base keeps saying so. It is the
+`session-revocation` case in `docs/scenarios/questions.yaml`. Neither source says who owns session
+revocation or when it will be fixed. The scenario asserts that the base keeps saying so. It is the
 most valuable case in the file: a system that quietly invents a plausible policy here passes
 every other check.
 

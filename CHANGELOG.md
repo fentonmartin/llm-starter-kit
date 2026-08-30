@@ -48,12 +48,12 @@ valid; see *Migration* below.
   `credentials/`, `private/`, `.ssh/`, `.aws/` — that `scan-docs` checks before reading and
   `lint-docs` checks after. A source found to contain credentials halts the scan rather than
   being redacted, and an optional `sensitivity` marker documents what a page holds.
-- **`eval-docs`, a fifth operation.** `lint-docs` checks that the base is well-formed;
-  `eval-docs` checks that it is still right. Cases live in `docs/evals/questions.yaml` and score
+- **`test-docs`, a fifth operation.** `lint-docs` checks that the base is well-formed;
+  `test-docs` checks that it is still right. Cases live in `docs/scenarios/questions.yaml` and score
   on citation validity, source coverage, required facts, forbidden claims, and answer state.
   Structural checks and semantic ones are reported separately.
-- **`examples/example-project/`.** Two sources that disagree, four generated pages, three eval
-  cases, and three suggested edits that should each produce a specific finding.
+- **`examples/example-project/`.** Two sources that disagree, four generated pages, three
+  scenarios, and three suggested edits that should each produce a specific finding.
 - **`CHANGELOG.md`** — this file.
 
 ### Changed
@@ -73,11 +73,11 @@ valid; see *Migration* below.
   and reported: answers close with what was and was not consulted.
 - **`scan-docs` types claims and anchors provenance**, records anchors while reading, and leads
   its report with what only a human can settle.
-- **`init-docs` scaffolds `docs/evals/questions.yaml`**, asks what must never be read separately
+- **`init-docs` scaffolds `docs/scenarios/questions.yaml`**, asks what must never be read separately
   from what is out of scope, and lists the governance sections it must copy through unchanged.
 - **`AGENTS.md` grew from 6 hard rules to 11**, and gained a repository map so an agent does not
   rediscover the architecture each session.
-- **`docs/CHANGELOG.md`** now logs `eval-docs` runs alongside the other three.
+- **`docs/CHANGELOG.md`** now logs `test-docs` runs alongside the other three.
 
 ### Migration
 
@@ -88,7 +88,7 @@ None required. `1.1.0` is additive.
   `open-question` on a topic or entity it cannot classify. It never defaults to `decision`.
 - Run `/lint-docs` once and accept the mechanical fixes to upgrade a base in place. Or do
   nothing: pages are upgraded as they are next touched.
-- `docs/evals/` is optional. Without it, `eval-docs` has nothing to run and says so.
+- `docs/scenarios/` is optional. Without it, `test-docs` has nothing to run and says so.
 - No file was renamed, no command was renamed, no field was removed, and no directory moved.
 
 ### Known limitations
@@ -98,7 +98,7 @@ exists to prevent.
 
 - **Nothing here executes.** All five operations are Markdown instructions an agent follows.
   There is no CLI, no parser, no test suite, and **nothing that can run in CI.**
-- **`lint-docs` and `eval-docs` are therefore not deterministic.** Two runs may word the same
+- **`lint-docs` and `test-docs` are therefore not deterministic.** Two runs may word the same
   finding differently or disagree at the margin. The structural checks are far more stable than
   the semantic ones, because they compare paths and strings rather than meaning — but "more
   stable" is not "reproducible," and neither can gate a merge on its own.

@@ -1,7 +1,7 @@
 # DOCS.md — the knowledge governance contract
 
 This file is the contract between you and the agent. The agent reads it before every
-`scan-docs`, `ask-docs`, `lint-docs`, and `eval-docs` run, and `init-docs` writes it. Edit it to
+`scan-docs`, `ask-docs`, `lint-docs`, and `test-docs` run, and `init-docs` writes it. Edit it to
 change how the knowledge base behaves; do not edit the agent's skills for project-specific rules.
 
 **It is in two parts. [Part 1 — The contract](#part-1--the-contract) is the rules, and it is
@@ -22,7 +22,7 @@ Everything lives under `docs/`, but the layers are strictly separate.
 |---|---|---|
 | Sources | `docs/sources/` | **Humans only.** Immutable. The agent reads it, never edits, renames, or deletes. |
 | Pages | `docs/summaries/`, `docs/topics/`, `docs/entities/` | **Agent only.** Every file derives from a source or an explicit instruction. |
-| Evals | `docs/evals/` | **Humans.** Questions the knowledge base must answer correctly. |
+| Scenarios | `docs/scenarios/` | **Humans.** Questions the knowledge base must answer correctly. |
 | Bookkeeping | `docs/README.md`, `docs/CHANGELOG.md` | **Agent only.** Index and log. |
 | Guidance | `docs/DOCS.md` | **Humans.** This file. |
 

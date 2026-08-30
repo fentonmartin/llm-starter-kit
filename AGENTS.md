@@ -67,7 +67,7 @@ relevant one before starting, whatever agent you are.
 | `scan-docs` | New or changed files in `docs/sources/` need folding into the pages. |
 | `ask-docs` | A question needs answering from the pages, with citations. |
 | `lint-docs` | Health-checking for orphans, gaps, contradictions, stale pages, schema violations. |
-| `eval-docs` | Checking whether the knowledge base still answers its known questions correctly. |
+| `test-docs` | Checking whether the knowledge base still answers its known questions correctly. |
 
 If a request does not clearly match one of the five, ask which is meant rather than improvising
 a sixth.
@@ -81,12 +81,12 @@ CHANGELOG.md               this kit's release history
 docs/
   DOCS.md                  the governance contract. Read first, always.
   README.md                the index of every generated page
-  CHANGELOG.md             append-only log of scan / lint / ask / eval runs
+  CHANGELOG.md             append-only log of scan / lint / ask / test runs
   sources/                 raw material. Human-owned, immutable to you.
   summaries/               one page per source
   topics/                  one page per idea, question, or theme
   entities/                one page per person, org, product, dataset
-  evals/questions.yaml     questions the knowledge base must answer correctly
+  scenarios/questions.yaml     questions the knowledge base must answer correctly
 examples/example-project/  a small worked example of the whole loop
 .claude/skills/            the five skills, as plain Markdown
 .claude/commands/          slash-command aliases

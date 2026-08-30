@@ -43,7 +43,7 @@ you can propose sensible defaults and let the user correct them.
    cover the usual suspects (`.env*`, `*.pem`, `secrets/`); ask what this project has *beyond*
    them. A customer export, a licensed corpus, an HR folder.
 6. **What would you be most embarrassed to get wrong?** Two or three questions the knowledge
-   base must answer correctly. These become `docs/evals/questions.yaml`, and they are worth
+   base must answer correctly. These become `docs/scenarios/questions.yaml`, and they are worth
    more than they look — including the ones the answer to is *"nobody knows yet."*
 
 If the user gives thin answers, propose a concrete draft from what you found in step 1 and ask
@@ -60,7 +60,7 @@ docs/
   CHANGELOG.md          the log, empty to start
   sources/              empty, for raw material
   summaries/  topics/  entities/
-  evals/questions.yaml  the questions this base must answer — empty to start
+  scenarios/questions.yaml  the questions this base must answer — empty to start
 ```
 
 Five files and five folders. Nothing else — the schema carries the rules, so there is no
@@ -120,7 +120,7 @@ contract, they are what make the kit work, and they are not the place for local 
 project genuinely needs one changed, change it deliberately and note it in
 `docs/CHANGELOG.md` — do not quietly trim it because the file is long.
 
-Then write `docs/evals/questions.yaml` from interview question 6 — three to five cases, in the
+Then write `docs/scenarios/questions.yaml` from interview question 6 — three to five cases, in the
 format the shipped template documents. Include at least one `expect_state: unknown`. If the
 user had no answer to question 6, leave the file with `questions: []` and its comments intact,
 and say it is theirs to fill in.

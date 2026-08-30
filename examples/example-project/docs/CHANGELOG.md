@@ -1,6 +1,6 @@
 # Changelog
 
-Append-only. Newest first. One entry per `scan-docs`, `ask-docs`, `lint-docs`, or `eval-docs` run. Never rewrite history.
+Append-only. Newest first. One entry per `scan-docs`, `ask-docs`, `lint-docs`, or `test-docs` run. Never rewrite history.
 
 ## 2026-08-30 — scan
 
@@ -24,7 +24,7 @@ Append-only. Newest first. One entry per `scan-docs`, `ask-docs`, `lint-docs`, o
 
 ## 2026-08-30 — init
 
-- Scaffolded: docs/ with DOCS.md, README.md, CHANGELOG.md, evals/questions.yaml, and the
+- Scaffolded: docs/ with DOCS.md, README.md, CHANGELOG.md, scenarios/questions.yaml, and the
   sources, summaries, topics, entities folders
 - Wrote: docs/DOCS.md from the interview
-- Wrote: docs/evals/questions.yaml with 3 cases
+- Wrote: docs/scenarios/questions.yaml with 3 cases

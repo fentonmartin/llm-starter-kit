@@ -8,7 +8,7 @@ Drop it into any repo. It builds a `docs/` folder that every agent reads, mainta
 answers from — where every claim traces to a source, disagreements stay visible, and obsolete
 knowledge is marked as obsolete.
 
-`init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `eval-docs`
+`init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `test-docs`
 
 [**Quick start**](#quick-start) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-human-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
 
@@ -159,7 +159,7 @@ It reads your README, your manifest, and your layout — then asks you six quest
 > - What recurring things deserve a page each? *(your nouns: services, tables, endpoints…)*
 > - What must never be got wrong?
 > - What's out of scope, and what must never be read?
-> - What would you be most embarrassed to get wrong? *(these become your eval cases)*
+> - What would you be most embarrassed to get wrong? *(these become your scenarios)*
 
 Out comes a `docs/` folder and a `docs/DOCS.md` **written for your project**, in your
 vocabulary.
@@ -170,7 +170,7 @@ vocabulary.
 /scan-docs                      # read new material, write the pages
 /ask-docs how does auth work?   # answer from the pages, with citations
 /lint-docs                      # gaps, contradictions, stale pages, schema errors
-/eval-docs                      # check the base still answers its known questions
+/test-docs                      # check the base still answers its known questions
 ```
 
 > [!TIP]
@@ -195,7 +195,7 @@ docs/                           docs/
                                 │   └── old-notes.md         ← unclassifiable → safe here
                                 ├── summaries/
                                 ├── entities/
-                                └── evals/
+                                └── scenarios/
 ```
 
 Anything it can't confidently classify goes to `sources/`, where the next scan turns it into
@@ -216,9 +216,9 @@ published docs as sources.
 | **`/scan-docs`** | Reads new sources in full, writes a summary each, updates every topic and entity they touch, types the claims, flags contradictions | When material piles up |
 | **`/ask-docs`** | Answers from the pages within a context budget, with citations and an explicit known / inferred / contradicted / unknown split | Instead of digging |
 | **`/lint-docs`** | 14 checks at three severities — schema, citations, staleness, orphans, gaps, contradictions. Fixes the mechanical, escalates the rest | Every few scans |
-| **`/eval-docs`** | Runs `docs/evals/questions.yaml` and reports what the base no longer answers correctly | After big changes |
+| **`/test-docs`** | Runs `docs/scenarios/questions.yaml` and reports what the base no longer answers correctly | After big changes |
 
-`/init` `/scan` `/ask` `/lint` `/eval` work as short aliases. The long names are canonical
+`/init` `/scan` `/ask` `/lint` `/test` work as short aliases. The long names are canonical
 because this installs globally — a bare `/lint` would collide with code linters and misfire on
 *"lint my code."*
 
@@ -250,7 +250,7 @@ docs/
 ├── summaries/           📄  one page per source
 ├── topics/              💡  one page per idea, decision, or flow
 ├── entities/            🏷️  one page per service, table, person, product…
-└── evals/               ✅  questions.yaml — what this base must answer correctly
+└── scenarios/               ✅  questions.yaml — what this base must answer correctly
 examples/example-project/  a complete worked example, five minutes to read
 .claude/skills/          the five skills, as plain Markdown
 .claude/commands/        the five, plus short aliases
@@ -365,7 +365,7 @@ deleted.
 
 **A citation is a claim that a document was read.** An agent may cite only what it actually
 opened in that run. Citing a plausible-looking path it did not open is fabrication, and
-`eval-docs` scores it as a hard failure.
+`test-docs` scores it as a hard failure.
 
 Claims carry the most precise anchor the source format supports — `p.4` for a PDF, `§4.2` for a
 spec, `src/auth/session.php:112-140` for code, `14:20` for a transcript:
@@ -506,13 +506,13 @@ corrected block and lets you write it.
 
 ---
 
-## Evaluation
+## Testing
 
-`lint-docs` checks that the knowledge base is well-formed. **`eval-docs` checks that it is still
+`lint-docs` checks that the knowledge base is well-formed. **`test-docs` checks that it is still
 right.** A base can pass every schema check and quietly stop answering the questions it was built
 to answer.
 
-Cases live in `docs/evals/questions.yaml`. Humans write it; the agent never edits it:
+Cases live in `docs/scenarios/questions.yaml`. Humans write it; the agent never edits it:
 
 ```yaml
 questions:
@@ -536,7 +536,7 @@ facts, forbidden claims, answer state — path and string comparison, trust thes
 via `--semantic` (unsupported claims, overstated certainty, evidence sufficiency — judgment,
 opt-in, and the only way to catch the interesting failures).
 
-`eval-docs` never edits pages to make a case pass.
+`test-docs` never edits pages to make a case pass.
 
 ---
 
@@ -603,7 +603,7 @@ before you begin:
 - scan-docs → .claude/skills/scan-docs/SKILL.md
 - ask-docs  → .claude/skills/ask-docs/SKILL.md
 - lint-docs → .claude/skills/lint-docs/SKILL.md
-- eval-docs → .claude/skills/eval-docs/SKILL.md
+- test-docs → .claude/skills/test-docs/SKILL.md
 
 Non-negotiable:
 - You propose; I decide. Never set claim_type: decision or instruction, and never set
@@ -618,7 +618,7 @@ Non-negotiable:
 - docs/README.md lists every generated page exactly once. Keep it current.
 - Dates in file names are YYMMDD. Dates inside files are YYYY-MM-DD.
 
-Start with: init-docs, scan-docs, ask-docs QUESTION, lint-docs, or eval-docs
+Start with: init-docs, scan-docs, ask-docs QUESTION, lint-docs, or test-docs
 ```
 
 In a chat window with no file access, upload `docs/DOCS.md` and the one skill file you need,
@@ -660,7 +660,7 @@ if you prefer.
 <br>
 
 **This kit does not bundle Obsidian skills.** It ships five: `init-docs`, `scan-docs`,
-`ask-docs`, `lint-docs`, `eval-docs`. What it borrows from
+`ask-docs`, `lint-docs`, `test-docs`. What it borrows from
 [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills) is the packaging model and
 the Markdown conventions — not the skills themselves.
 
@@ -692,7 +692,7 @@ What you can do today:
   control that actually works.
 - **Run `/lint-docs` before merging** a branch that touched `docs/`, and treat its ERROR
   findings as blocking. A human runs it; nothing enforces it.
-- **Run `/eval-docs` after a large scan** or when sources changed materially.
+- **Run `/test-docs` after a large scan** or when sources changed materially.
 - **Use ordinary secret scanning** on the repo. The exclusion list in `docs/DOCS.md` is guidance
   to an agent, not a control.
 
@@ -712,14 +712,14 @@ have. See [Roadmap](#roadmap).
                    instead of digging
                           │
                    /lint-docs every fifth scan
-                   /eval-docs after big changes
+                   /test-docs after big changes
 ```
 
 - **Commit after each scan.** A scan touches many files; the diff is your review, and your undo.
 - **Revisit `docs/DOCS.md` monthly.** It's the highest-leverage file in the repo.
 - **Watch the gaps.** Dangling wikilinks ranked by inbound count are a reading list, generated
   for free.
-- **Write eval cases for what you'd hate to get wrong**, especially the ones whose honest answer
+- **Write scenarios for what you'd hate to get wrong**, especially the ones whose honest answer
   is "nobody knows yet."
 
 Month one it's a filing cabinet. Month six it answers things you'd never have found by
@@ -752,7 +752,7 @@ exists to prevent.
 
 - **Nothing here executes.** All five operations are Markdown instructions. There is no CLI, no
   parser, no test suite, and nothing that can run in CI.
-- **`lint-docs` and `eval-docs` are therefore not deterministic.** Two runs may word the same
+- **`lint-docs` and `test-docs` are therefore not deterministic.** Two runs may word the same
   finding differently or disagree at the margin. Structural checks are far more stable than
   semantic ones because they compare paths and strings rather than meaning — but "more stable"
   is not "reproducible."
@@ -780,7 +780,7 @@ Genuinely useful, roughly in order. Nothing here is promised.
 - **Fixtures for the linter**, including the malformed-YAML case, so its behavior is testable.
 - **Better staleness for code sources** — comparing a cited line range against the current file
   rather than trusting mtime.
-- **An eval report format** that can be diffed between runs, so drift is visible over time.
+- **A test report format** that can be diffed between runs, so drift is visible over time.
 
 Deliberately **not** planned: a vector database, an embeddings pipeline, a web UI, an API
 server, a hosted service, or multi-agent orchestration. If retrieval needs to scale further, the

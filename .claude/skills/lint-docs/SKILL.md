@@ -140,7 +140,7 @@ Then append to `docs/CHANGELOG.md`:
 - Fixed: 3 index omissions, 4 pages defaulted to status: active
 - Errors: 1 broken citation (docs/topics/auth.md → docs/sources/260101-old-spec.pdf, missing),
   1 malformed front matter (docs/topics/authentication.md)
-- Open: 2 contradictions, 3 gaps (most-linked: [[retrieval-eval]], 5 inbound), 1 stale summary
+- Open: 2 contradictions, 3 gaps (most-linked: [[retrieval-benchmark]], 5 inbound), 1 stale summary
 ```
 
 If everything is clean, say so in one line. Do not manufacture findings.

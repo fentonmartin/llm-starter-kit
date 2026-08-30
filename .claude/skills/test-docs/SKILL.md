@@ -1,11 +1,11 @@
 ---
-name: eval-docs
-description: Check the knowledge base against the questions in docs/evals/questions.yaml — whether each still retrieves the right sources, states the required facts, avoids the forbidden claims, and admits what it does not know. Use when the user says eval, evaluate the docs, test the knowledge base, or asks whether the docs still answer correctly after a change.
+name: test-docs
+description: Run the scenarios in docs/scenarios/questions.yaml against the knowledge base — whether each still retrieves the right sources, states the required facts, avoids the forbidden claims, and admits what it does not know. Use when the user says test the docs, run the scenarios, eval or evaluate the knowledge base, or asks whether the docs still answer correctly after a change.
 ---
 
-# Eval
+# Test
 
-`lint-docs` checks whether the knowledge base is well-formed. **`eval-docs` checks whether it is
+`lint-docs` checks whether the knowledge base is well-formed. **`test-docs` checks whether it is
 still right.** A base can pass every schema check and quietly stop answering the questions it
 was built to answer — a source gets superseded, a page goes stale, a merge drops a citation.
 
@@ -22,11 +22,11 @@ not bit-reproducible, and they cannot gate CI.** Two runs may word the same find
 differently. The structural checks below are far more stable than the semantic ones because
 they compare paths and strings rather than meaning, but "more stable" is not "deterministic."
 
-Treat eval output as a considered review, not as a test suite exit code.
+Treat test output as a considered review, not as a test suite exit code.
 
 ## Input
 
-`docs/evals/questions.yaml`. Humans write it; you never edit it. Each case:
+`docs/scenarios/questions.yaml`. Humans write it; you never edit it. Each case:
 
 ```yaml
 - id: session-ttl
@@ -58,7 +58,7 @@ is the one no other check catches.
 
 For each case, run `ask-docs` on the question **exactly as written**, under normal rules — same
 retrieval, same budget, same citation contract. Do not read ahead to the expectations and do
-not steer toward them. An eval that helps itself pass measures nothing.
+not steer toward them. A scenario that helps itself pass measures nothing.
 
 Then score in two passes.
 
@@ -95,7 +95,7 @@ one is your reading of it, and the user should be able to tell them apart at a g
 ## Output
 
 ```
-docs/evals/questions.yaml — 12 cases
+docs/scenarios/questions.yaml — 12 cases
 
 PASS  10
 FAIL   2
@@ -122,26 +122,26 @@ WARN  auth-flow                                             [structural]
 Then append to `docs/CHANGELOG.md`:
 
 ```markdown
-## 2026-08-30 — eval
-- Ran: 12 cases from docs/evals/questions.yaml (structural)
+## 2026-08-30 — test
+- Ran: 12 cases from docs/scenarios/questions.yaml (structural)
 - Passed: 10
 - Failed: session-ttl (source not cited, page stale), revocation-policy (unsupported claim)
 - Warned: auth-flow rests on a stale page
 ```
 
-Report failures, then stop. **Do not fix the knowledge base to make an eval pass.** Editing a
-page so its question scores green is how an eval suite becomes decoration. Say what failed and
+Report failures, then stop. **Do not fix the knowledge base to make a scenario pass.** Editing a
+page so its question scores green is how an scenario suite becomes decoration. Say what failed and
 what would fix it — `/scan-docs` on a stale source, a human ruling on a contradiction, a
 citation added — and let the user decide.
 
 If a case fails because the *expectation* is wrong rather than the base, say so. Sources change
-and yesterday's required fact becomes today's superseded one. But `docs/evals/` is human-owned:
+and yesterday's required fact becomes today's superseded one. But `docs/scenarios/` is human-owned:
 propose the edit, never make it.
 
 ## Rules
 
-- Never edit `docs/evals/questions.yaml`.
-- Never edit pages during an eval. Findings go in the report; fixes belong to `scan-docs`,
+- Never edit `docs/scenarios/questions.yaml`.
+- Never edit pages during a test run. Findings go in the report; fixes belong to `scan-docs`,
   `lint-docs`, or a human.
 - Never look at a case's expectations before answering its question.
 - Never report a semantic finding as a structural one.
