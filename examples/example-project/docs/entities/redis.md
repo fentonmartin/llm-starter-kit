@@ -26,9 +26,9 @@ is a serialized map of user id, issue time, and originating IP ([[docs/sources/2
 
 | Setting | Value | Source |
 |---|---|---|
-| `SESSION_TTL` | `86400` seconds — 24 hours, raised from 1800 on 2026-06-02 | [[docs/sources/260710-ops-runbook|260710-ops-runbook]] |
-| `SESSION_IDLE` | `900` seconds — 15 minutes | [[docs/sources/260710-ops-runbook|260710-ops-runbook]] |
-| `REDIS_MAXMEMORY_POLICY` | `noeviction` | [[docs/sources/260710-ops-runbook|260710-ops-runbook]] |
+| `SESSION_TTL` | `86400` seconds — 24 hours (since 2026-06-02) | [[docs/sources/260710-ops-runbook\|260710-ops-runbook]] |
+| `SESSION_IDLE` | `900` seconds — 15 minutes (2026-07-10) | [[docs/sources/260710-ops-runbook\|260710-ops-runbook]] |
+| `REDIS_MAXMEMORY_POLICY` | `noeviction` (2026-07-10) | [[docs/sources/260710-ops-runbook\|260710-ops-runbook]] |
 
 `SESSION_TTL` is disputed. The runbook value above is what production runs; the spec specifies
 30 minutes. See the contradiction on [[session-management]].

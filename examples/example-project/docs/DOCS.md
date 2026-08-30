@@ -1,17 +1,20 @@
 # DOCS.md — the knowledge governance contract
 
-*This is the example project's schema. It is the shipped `docs/DOCS.md` with only the three
-sections `/init-docs` customizes — page types, out of scope, project-specific rules — replaced.
-Everything else is inherited verbatim and abbreviated here with a pointer, so this example
-cannot drift out of sync with the real contract.*
+> [!NOTE]
+> **This file is abbreviated, and real `/init-docs` output is not.** In a real project this file
+> is standalone: `/init-docs` copies Part 1 of the shipped contract into it in full, so the
+> knowledge base carries its own rules and stays readable without the kit.
+>
+> Here it is reduced to a pointer instead, purely so the example cannot drift out of sync with
+> the contract it is demonstrating. The cost is that this one directory is not portable — copy
+> it elsewhere and the link below breaks. That is the only way it differs from real output.
 
 **Everything in Part 1 of the shipped contract — layers, authority, front matter, claim types,
 lifecycle, citations and provenance, contradictions, retrieval and context, security, git
 conflicts, naming and dates — applies here unchanged. Read it in
 [`../../../docs/DOCS.md`](../../../docs/DOCS.md).**
 
-In a real project they are copied into this file in full, so the knowledge base carries its own
-contract and stays readable without the kit.
+Below are the only three sections `/init-docs` rewrites per project.
 
 ## Page types
 

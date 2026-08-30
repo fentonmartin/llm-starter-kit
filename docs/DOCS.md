@@ -146,6 +146,13 @@ Claims in topic and entity pages carry a source:
 
 Uncited claims are allowed only for definitions and connective prose.
 
+**Inside a table cell, escape the wikilink's pipe as `\|`** — an unescaped one splits the cell and
+silently breaks the table:
+
+```markdown
+| `SESSION_TTL` | `86400` | [[docs/sources/260710-ops-runbook\|260710-ops-runbook]] |
+```
+
 **A citation is a claim that a document was read.** Cite only sources and pages actually opened
 in this run.
 

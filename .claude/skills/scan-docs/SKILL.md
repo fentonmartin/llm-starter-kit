@@ -110,6 +110,11 @@ For each linked topic and entity:
   unless `docs/DOCS.md` contains a rule that says so.
 - **Page does not exist** → create it if the source gives you two or more substantive facts.
   One passing mention is a link to a page you leave unwritten; `lint-docs` surfaces it later.
+  **Name it for the thing, not the source or the question**: `session-management`, not
+  `auth-spec-sessions` or `how-sessions-work`. Prefer the noun the sources themselves use, and
+  check `docs/README.md` for an existing page under a near-synonym before inventing a slug —
+  two agents naming the same subject differently is the most common way this knowledge base
+  grows duplicates.
 - Bump `updated` on every page you touch. Leave `status: active` unless the page is genuinely
   incomplete, in which case `draft`.
 - **Never change a `status` of `superseded`, `deprecated`, or `archived`**, and never edit the
