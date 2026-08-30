@@ -10,8 +10,9 @@ creates summary pages.
 
 ## Before you start
 
-1. Read `docs/DOCS.md`. It overrides anything here — page types, slugs, front matter, link style,
-   and any project-specific rules at the bottom.
+1. Read `docs/DOCS.md`. It overrides anything here — page types, slugs, front matter, claim
+   types, provenance, link style, security exclusions, and any project-specific rules at the
+   bottom.
 2. Read `docs/README.md` to learn what already exists. Never create a page without checking
    the index for one that covers the same ground.
 3. Determine the work set:
@@ -21,26 +22,102 @@ creates summary pages.
 
 If the work set is empty, say so and stop. Do not invent work.
 
+**Check the work set against the security exclusions in `docs/DOCS.md` first.** Skip excluded
+paths without reading them. If a source you have already opened turns out to contain
+credentials, stop: do not write a summary, do not quote it, and tell the user which file. Do
+not redact and continue — the secret is already in your context, and a partial summary
+normalizes the leak.
+
 ## Per source
 
 Work one source at a time, all the way through, before starting the next. A half-scanned
 source is worse than an un-scanned one.
 
-1. **Read it fully.** "Scan" is the name of the command, not the depth of the reading — never
-   skim. Do not summarize from the first page. For long PDFs, read in ranges until you reach
-   the end. For a URL in `docs/sources/*.url` or a link file, fetch it.
-2. **Write `docs/summaries/<source-slug>.md`.** The slug is the source's file name minus its
-   extension, carried over verbatim — including any `YYMMDD` date prefix. Never reformat a
-   date in a file name; `docs/DOCS.md` fixes the format at `YYMMDD` and dates inside files at
-   `YYYY-MM-DD`. Front matter per `docs/DOCS.md`, `sources:` naming the one file. Structure:
-   what it is, its main claims, its evidence, its limits. Wikilink every concept and entity
-   worth its own page — including ones that do not exist yet.
-3. **Update what it touches.** For each linked topic and entity:
-   - Page exists → integrate the new claim. Add the citation. If it conflicts with what is
-     already there, use the contradiction callout from `docs/DOCS.md`; do not overwrite.
-   - Page does not exist → create it if the source gives you two or more substantive facts.
-     One passing mention is a link to a page you leave unwritten. `lint-docs` will surface it later.
-4. **Update `docs/README.md`** with any new pages, in the right group, one line each.
+### 1. Read it fully
+
+"Scan" is the name of the command, not the depth of the reading — never skim. Do not summarize
+from the first page. For long PDFs, read in ranges until you reach the end. For a URL in
+`docs/sources/*.url` or a link file, fetch it.
+
+Note the anchors as you go — page numbers, section headings, timestamps, line ranges. You
+cannot reconstruct them afterwards, and you must never guess them.
+
+### 2. Write the summary page
+
+`docs/summaries/<source-slug>.md`. The slug is the source's file name minus its extension,
+carried over verbatim — including any `YYMMDD` date prefix. Never reformat a date in a file
+name; `docs/DOCS.md` fixes file names at `YYMMDD` and dates inside files at `YYYY-MM-DD`.
+
+Front matter per `docs/DOCS.md`, with `sources:` naming the one file:
+
+```yaml
+---
+type: summary
+title: Attention Is All You Need
+status: active
+claim_type: fact
+created: 2026-08-30
+updated: 2026-08-30
+sources: [docs/sources/260415-attention-is-all-you-need.pdf]
+---
+```
+
+Structure: what it is, its main claims, its evidence, its limits. Wikilink every concept and
+entity worth its own page — including ones that do not exist yet.
+
+### 3. Type the claims
+
+A summary reports what its source says, so it is `claim_type: fact` by default. The distinction
+matters on the topic and entity pages you touch next, where a source's *"we chose X"* must not
+land as *"X is true."*
+
+Mark individual claims in the body with the callouts from `docs/DOCS.md`:
+
+| The source says | Write it as |
+|---|---|
+| Something is the case | Plain cited prose |
+| A human chose something for this project | `> [!check] Decision` — and only if a human actually decided it |
+| Something is taken as true but unevidenced | `> [!note] Assumption` |
+| Something is proposed and untested | `> [!abstract] Hypothesis` |
+| Nobody knows yet | `> [!question] Open question` |
+| Two sources disagree | `> [!warning] Contradiction` |
+
+**Never set `claim_type: decision` or `claim_type: instruction` in front matter.** Those are
+human acts. A source describing a decision is evidence that one was made — record it as a
+`[!check] Decision` callout citing the source, and leave the page's front matter as `fact`, or
+as `open-question` if you cannot tell whether the decision still stands.
+
+### 4. Cite with real anchors
+
+Every substantive claim gets the most precise anchor the source format actually supports —
+page, section, timestamp, or line range, per the provenance table in `docs/DOCS.md`:
+
+```markdown
+Throughput dropped 40% under batching ([[docs/sources/260415-bench|260415-bench]], p.4).
+```
+
+**Falling back to the bare file name is always correct. Inventing an anchor never is.** A page
+number you did not see is worse than no page number, because it survives review.
+
+### 5. Update what it touches
+
+For each linked topic and entity:
+
+- **Page exists** → integrate the new claim and add the citation. If it conflicts with what is
+  already there, use the contradiction callout from `docs/DOCS.md`, set the page's
+  `claim_type: contradiction`, and do not overwrite. Do not decide that the newer source wins
+  unless `docs/DOCS.md` contains a rule that says so.
+- **Page does not exist** → create it if the source gives you two or more substantive facts.
+  One passing mention is a link to a page you leave unwritten; `lint-docs` surfaces it later.
+- Bump `updated` on every page you touch. Leave `status: active` unless the page is genuinely
+  incomplete, in which case `draft`.
+- **Never change a `status` of `superseded`, `deprecated`, or `archived`**, and never edit the
+  Decision or Rationale section of a page a human has ruled on. Add your new evidence under
+  Evidence and flag it in your report.
+
+### 6. Update the index
+
+`docs/README.md` gets a line for any new page, in the right group.
 
 ## After the work set
 
@@ -52,13 +129,25 @@ Append one entry to the top of `docs/CHANGELOG.md`:
 - Created: docs/summaries/260415-attention-is-all-you-need.md, docs/topics/attention.md
 - Updated: docs/entities/transformer.md, docs/README.md
 - Flagged: contradiction on parameter count between [[attention]] and [[scaling-laws]]
+- Skipped: docs/sources/.env.backup (security exclusion)
 ```
 
 Then report to the user: what came in, what pages moved, and anything that needs their
-judgment. Contradictions and low-confidence claims go in the report, not just the files.
+judgment. Lead with what only a human can settle:
+
+- contradictions you opened, and what each one turns on
+- decisions the source describes that you recorded as evidence rather than as project decisions
+- pages you left as `open-question` because you could not classify them
+- low-confidence claims, and sources you could not fully read
+
+Contradictions and low-confidence claims go in the report, not just in the files.
 
 ## Rules
 
-- Never edit or delete anything under `docs/sources/`.
+- Never edit, rename, or delete anything under `docs/sources/`.
+- Never read a path excluded by the security section of `docs/DOCS.md`.
 - Never assert something the source does not support. `confidence: low` is a valid answer.
+- Never invent provenance — no unseen page numbers, no unverified line ranges, no guessed
+  commit hashes.
+- Never resolve a contradiction, and never overwrite a human ruling.
 - Prefer touching many pages lightly over rewriting one page heavily.
