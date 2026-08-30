@@ -29,6 +29,10 @@ valid; see *Migration* below.
   agent discovers, summarizes, classifies, and proposes; the human decides. Agents may not set
   `claim_type: decision` or `instruction`, nor `status: superseded`, `deprecated`, or
   `archived`. `confidence: high` is not authority.
+- **A table-cell escaping rule.** A wikilink's pipe must be written `\|` inside a table cell;
+  unescaped it splits the cell and silently breaks the table. Found by running the scan loop
+  against the example sources and comparing the result against the shipped pages, which had the
+  bug.
 - **Provenance anchors.** A per-format ladder — page for PDFs, section for specs, line range for
   code, timestamp for transcripts — with a graceful fallback to the bare file name and a
   standing prohibition on inventing an anchor that was not seen.
@@ -48,8 +52,9 @@ valid; see *Migration* below.
   `credentials/`, `private/`, `.ssh/`, `.aws/` — that `scan-docs` checks before reading and
   `lint-docs` checks after. A source found to contain credentials halts the scan rather than
   being redacted, and an optional `sensitivity` marker documents what a page holds.
-- **`test-docs`, a fifth operation.** `lint-docs` checks that the base is well-formed;
-  `test-docs` checks that it is still right. Cases live in `docs/scenarios/questions.yaml` and score
+- **`test-docs`, a fifth operation** (alias `/test`). `lint-docs` checks that the base is
+  well-formed; `test-docs` checks that it is still right. Individual cases are called
+  **scenarios**, they live in `docs/scenarios/questions.yaml`, and they score
   on citation validity, source coverage, required facts, forbidden claims, and answer state.
   Structural checks and semantic ones are reported separately.
 - **`examples/example-project/`.** Two sources that disagree, four generated pages, three
