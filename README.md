@@ -932,13 +932,3 @@ Released under the [MIT License](LICENSE). © 2026 Fenton Martin.
 
 Your knowledge base is Markdown in a folder — no database, no lock-in, no service to depend on.
 Remove this kit tomorrow and every page it wrote still opens in any text editor.
-
----
-
-<div align="center">
-
-[**Quick start**](#quick-start) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-human-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
-
-<sub>[Issues](https://github.com/fentonmartin/llm-starter-kit/issues) · [Repository](https://github.com/fentonmartin/llm-starter-kit) · Built on [Karpathy's LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) and [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)</sub>
-
-</div>
