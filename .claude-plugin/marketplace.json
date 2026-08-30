@@ -1,0 +1,11 @@
+{
+  "name": "llm-starter-kit",
+  "owner": { "name": "Fenton Martin", "url": "https://github.com/fentonmartin" },
+  "plugins": [
+    {
+      "name": "llm-starter-kit",
+      "source": "./",
+      "description": "A drop-in knowledge base for any project: init-docs, scan-docs, ask-docs, lint-docs."
+    }
+  ]
+}
