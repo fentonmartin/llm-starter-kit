@@ -14,7 +14,7 @@ Read `docs/DOCS.md` first — it defines every rule you are checking against.
 "Pages" means files in `docs/summaries/`, `docs/topics/`, and `docs/entities/`.
 
 **Every check below skips `docs/sources/`.** It is raw material, not pages — exempt from front
-matter, slugs, wikilinks, and page types. Only checks 11 and 12 look inside it, and only the
+matter, slugs, wikilinks, and page types. Only checks 13 and 14 look inside it, and only the
 `YYMMDD` file-name rule applies there. Also skip the files at the top of `docs/`: `DOCS.md`,
 `AGENTS.md`, `README.md`, `CHANGELOG.md`.
 
@@ -93,7 +93,7 @@ ERROR  docs/topics/authentication.md
          sources: [docs/sources/260415-auth-spec.pdf]
          ---
 
-       Not checked: this page was skipped by checks 2-12.
+       Not checked: this page was skipped by checks 2-14.
 ```
 
 ## What to fix, what to report

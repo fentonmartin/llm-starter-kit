@@ -14,7 +14,7 @@ confidence: high
 ## What it is
 
 The operational runbook for session infrastructure, revised 2026-07-10 after an incident in
-June. Unlike [[260415-auth-spec]], it describes what production actually runs rather than what
+June. Unlike [[docs/sources/260415-auth-spec|260415-auth-spec]], it describes what production actually runs rather than what
 was designed.
 
 ## Main claims
@@ -42,6 +42,6 @@ change. The drop is reported, not quantified.
 
 - **Records the change without recording the decision.** It says the TTL was raised and why it
   was raised, but not who approved it or whether the spec was meant to follow. That is exactly
-  why the contradiction with [[260415-auth-spec]] stays open.
+  why the contradiction with [[docs/sources/260415-auth-spec|260415-auth-spec]] stays open.
 - No date on the "known gaps" entry, so how long revocation has been outstanding is unknown.
 - Covers only session infrastructure, not the wider authentication flow.

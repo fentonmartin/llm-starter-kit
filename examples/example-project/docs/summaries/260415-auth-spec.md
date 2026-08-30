@@ -46,4 +46,4 @@ JWT rejection in §5 is the only claim carrying a stated reason.
   mistake it invites, and the reason the TTL contradiction exists.
 - Last revised 2026-04-15, before the June incident that changed the production TTL. Nothing in
   the document reflects that change.
-- Silent on session revocation. The gap surfaces in [[260710-ops-runbook]], not here.
+- Silent on session revocation. The gap surfaces in [[docs/sources/260710-ops-runbook|260710-ops-runbook]], not here.

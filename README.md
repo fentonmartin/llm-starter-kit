@@ -592,7 +592,7 @@ ERROR  docs/topics/authentication.md
          sources: [docs/sources/260415-auth-spec.pdf]
          ---
 
-       Not checked: this page was skipped by checks 2-12.
+       Not checked: this page was skipped by checks 2-14.
 ```
 
 ---

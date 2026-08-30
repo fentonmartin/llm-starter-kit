@@ -16,29 +16,29 @@ How the web application keeps a user logged in, and for how long.
 ## Session identity
 
 On successful password verification the server issues an opaque 256-bit random session
-identifier ([[260415-auth-spec]], §2). It carries no user data. JWTs were considered and
+identifier ([[docs/sources/260415-auth-spec|260415-auth-spec]], §2). It carries no user data. JWTs were considered and
 rejected: revocation would have required a denylist, which reintroduces the shared state that
-stateless tokens exist to avoid ([[260415-auth-spec]], §5).
+stateless tokens exist to avoid ([[docs/sources/260415-auth-spec|260415-auth-spec]], §5).
 
 ## Storage
 
 Sessions live in [[redis]], keyed by identifier, holding user id, issue time, and originating IP
-([[260415-auth-spec]], §3). Production runs a single primary with one replica on database 0,
-key prefix `sess:` ([[260710-ops-runbook]], "Where sessions live").
+([[docs/sources/260415-auth-spec|260415-auth-spec]], §3). Production runs a single primary with one replica on database 0,
+key prefix `sess:` ([[docs/sources/260710-ops-runbook|260710-ops-runbook]], "Where sessions live").
 
 Eviction is disabled — `REDIS_MAXMEMORY_POLICY=noeviction`, so sessions are never dropped under
-memory pressure ([[260710-ops-runbook]], "Configuration in production").
+memory pressure ([[docs/sources/260710-ops-runbook|260710-ops-runbook]], "Configuration in production").
 
 ## Expiry
 
-Idle timeout is 15 minutes, and both sources agree ([[260415-auth-spec]], §4.1;
-[[260710-ops-runbook]], `SESSION_IDLE`).
+Idle timeout is 15 minutes, and both sources agree ([[docs/sources/260415-auth-spec|260415-auth-spec]], §4.1;
+[[docs/sources/260710-ops-runbook|260710-ops-runbook]], `SESSION_IDLE`).
 
 The absolute TTL does not agree:
 
 > [!warning] Contradiction
-> [[260415-auth-spec]] (§4.2) specifies an absolute TTL of **30 minutes** after issue.
-> [[260710-ops-runbook]] (`SESSION_TTL`) records **24 hours** in production, raised from 1800
+> [[docs/sources/260415-auth-spec|260415-auth-spec]] (§4.2) specifies an absolute TTL of **30 minutes** after issue.
+> [[docs/sources/260710-ops-runbook|260710-ops-runbook]] (`SESSION_TTL`) records **24 hours** in production, raised from 1800
 > seconds on 2026-06-02.
 > Unresolved as of 2026-08-30.
 
@@ -53,12 +53,12 @@ the Human review section of `docs/DOCS.md`, keeping both values on the page.*
 ## Restarting Redis
 
 Draining the primary destroys every live session and logs out every user, so it is scheduled
-outside business hours ([[260710-ops-runbook]], "Restart procedure").
+outside business hours ([[docs/sources/260710-ops-runbook|260710-ops-runbook]], "Restart procedure").
 
 ## Open questions
 
 > [!question] Open question
-> Password change does not invalidate existing sessions ([[260710-ops-runbook]], "Known gaps").
+> Password change does not invalidate existing sessions ([[docs/sources/260710-ops-runbook|260710-ops-runbook]], "Known gaps").
 > A user who changes their password after suspecting compromise stays logged in on the
 > attacker's device until the TTL expires. Tracked, not scheduled — and with the TTL at 24
 > hours rather than 30 minutes, the exposure window is 48 times longer than the spec assumed.
