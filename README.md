@@ -453,6 +453,31 @@ is exactly the failure this kit exists to prevent.
 
 <div align="center">
 
-**MIT** · Built for people who'd rather read their notes than trust a black box.
+### Ready?
+
+```
+/plugin marketplace add fentonmartin/llm-starter-kit
+/plugin install llm-starter-kit
+/init-docs
+```
+
+Three commands. Your agents stop starting from zero.
+
+<br>
+
+[**Quick start**](#-quick-start) · [**What it produces**](#-what-it-produces) · [**How it works**](#-how-it-works) · [**Any AI agent**](#-works-with-any-ai-agent)
+
+[Report an issue](https://github.com/fentonmartin/llm-starter-kit/issues) · [Star the repo](https://github.com/fentonmartin/llm-starter-kit) · [Karpathy's original gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+
+<br>
+
+<sub>
+
+**[MIT](LICENSE)** · Built for people who'd rather read their notes than trust a black box.
+
+*Your knowledge base is markdown in a folder. No database, no lock-in, no service to depend on.<br>
+Delete this kit tomorrow and every page you made still opens in any text editor.*
+
+</sub>
 
 </div>
