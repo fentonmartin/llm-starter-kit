@@ -55,8 +55,7 @@ additive. See *Breaking changes* and *Migration* below.
   values an agent may never set. Everything else it can reach on its own evidence.
 - **An authority model.** An explicit source-of-truth hierarchy, and the rule it enforces: the
   agent discovers, summarizes, classifies, and proposes; the human decides. Agents may not set
-  `claim_type: decision` or `instruction`, nor `status: superseded`, `deprecated`, or
-  `archived`. `confidence: high` is not authority.
+  `claim_type: decision` nor `status: superseded`. `confidence: high` is not authority.
 - **A table-cell escaping rule.** A wikilink's pipe must be written `\|` inside a table cell;
   unescaped it splits the cell and silently breaks the table. Found by running the scan loop
   against the example sources and comparing the result against the shipped pages, which had the
