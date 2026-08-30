@@ -80,8 +80,8 @@ Six required fields:
 ---
 type: summary | topic | entity
 title: Human readable title
-status: draft | active | stale | superseded | deprecated | archived
-claim_type: fact | decision | assumption | hypothesis | open-question | contradiction | instruction
+status: draft | active | stale | superseded
+claim_type: fact | decision | assumption | open-question | contradiction
 updated: YYYY-MM-DD
 sources: [docs/core-sources/foo.pdf]     # summaries: exactly one. topics/entities: all that back it.
 ---
@@ -114,22 +114,24 @@ summary, `open-question` on a topic or entity that cannot be classified. **Never
 |---|---|---|
 | `fact` | The sources support this as true of the world. | Evidence |
 | `decision` | A human chose this for this project. | **Human only** |
-| `assumption` | Taken as true to make progress; not evidenced. | Either, if labelled |
-| `hypothesis` | Proposed, testable, untested. | Either, if labelled |
+| `assumption` | Taken as true to make progress; not evidenced. Covers untested proposals too. | Either, if labelled |
 | `open-question` | Nobody knows yet. Evidence is missing. | Either |
 | `contradiction` | Sources disagree and it is unresolved. | Either |
-| `instruction` | A rule for how work is done here. | **Human only** |
 
 *"Authentication uses Redis"*, *"the team chose Redis"*, and *"we believe Redis is required"* are
 three different claims. Storing them identically is how a knowledge base starts lying.
 
-**An agent may never set `claim_type: decision` or `instruction`.** One that thinks a decision
-was made writes `open-question` and asks.
+**An agent may never set `claim_type: decision`.** One that thinks a decision was made writes
+`open-question` and asks. That is the only claim value reserved to humans.
 
 Mark individual claims in the body with callouts: `[!check]` decision, `[!note]` assumption,
-`[!abstract]` hypothesis, `[!question]` open question, `[!warning]` contradiction,
-`[!important]` instruction. Unmarked prose is a `fact` and must be cited.
-→ [Examples](#marking-claims-inside-a-page)
+`[!question]` open question, `[!warning]` contradiction. Unmarked prose is a `fact` and must be
+cited. → [Examples](#marking-claims-inside-a-page)
+
+Five values, deliberately. A sixth distinction you cannot apply consistently at 2am is worse than
+no distinction, because it makes the field unreliable rather than merely coarse. Rules for how
+work is done here belong in this file, not on a page — a page that carries a rule is a second,
+unenforced home for it.
 
 ## Lifecycle
 
@@ -139,13 +141,16 @@ Mark individual claims in the body with callouts: `[!check]` decision, `[!note]`
 | `active` | Current and believed accurate. | Agent or human |
 | `stale` | A source it depends on changed after `updated`. Unverified, not wrong. | Agent |
 | `superseded` | Replaced by another page. **Requires `superseded_by`.** | **Human only** |
-| `deprecated` | Describes something no longer in use. Kept for history. | **Human only** |
-| `archived` | Retired from active retrieval. Still readable. | **Human only** |
 
-- **An agent may set only `draft`, `active`, and `stale`.**
+- **An agent may set only `draft`, `active`, and `stale`.** `superseded` is the one status
+  reserved to humans, because retiring a page is a judgment about the project.
 - A `superseded` page keeps its content. It is not emptied and not deleted.
 - `ask-docs` retrieves `active` and `stale` pages, labels the stale ones, and excludes
-  `superseded`, `deprecated`, and `archived` unless asked for history.
+  `superseded` unless asked for history.
+
+Four values, deliberately. *"No longer in use"* is a fact about the world and belongs in the page
+body with a citation; retiring a page from view is a filesystem decision. Neither needs its own
+lifecycle state, and both were previously easy to confuse with `superseded`.
 
 **Freshness:** a page is `stale` when a source it cites changed after its `updated` date —
 compared by modification time or last commit date, not by a dependency graph. A cited line range

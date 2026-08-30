@@ -33,10 +33,9 @@ That is why the rules below constrain what you may assert rather than what you m
 3. **Never resolve a contradiction by overwriting.** Record both claims using the callout
    format in `docs/DOCS.md`. Two sources disagreeing is a finding, not a bug.
 4. **You propose; humans decide.** You may discover, summarize, classify, link, flag, and
-   suggest. You may not establish a project decision. Never set `claim_type: decision` or
-   `claim_type: instruction`, and never set `status: superseded`, `deprecated`, or `archived` —
-   those six values are human acts. If you think a decision was made, write `open-question`
-   and ask.
+   suggest. You may not establish a project decision. Never set `claim_type: decision` and never
+   set `status: superseded` — those two values are human acts, and they are the only two. If you
+   think a decision was made, write `open-question` and ask.
 5. **Never fabricate provenance.** Cite only documents you actually opened in this run, and
    only with an anchor you actually saw. A bare file name is always an acceptable fallback; an
    invented page number is not.

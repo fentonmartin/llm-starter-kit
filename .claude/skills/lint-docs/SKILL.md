@@ -40,7 +40,7 @@ lint, gate on ERROR only.
 | 1 | **Malformed front matter** | ERROR | Front matter that does not parse: unclosed `---`, tabs used for indentation, unquoted `:` in a value, a broken list. See below — this check must not crash you. |
 | 2 | **Missing required fields** | ERROR / WARNING | `type`, `title`, `updated`, `sources` missing → ERROR. `status` or `claim_type` missing → WARNING (the page predates them). |
 | 3 | **Invalid field values** | ERROR | A `type`, `status`, or `claim_type` outside the sets in `docs/DOCS.md`. `status: superseded` with no `superseded_by`, or pointing at a file that does not exist. |
-| 4 | **Agent-set human values** | WARNING | `claim_type: decision` or `instruction`, or `status: superseded`/`deprecated`/`archived`, on a page with no human ruling recorded and no sign of one in `docs/CHANGELOG.md` or git history. |
+| 4 | **Agent-set human values** | WARNING | `claim_type: decision` or `status: superseded` on a page with no human ruling recorded and no sign of one in `docs/CHANGELOG.md` or git history. |
 | 5 | **Broken citations** | ERROR | A citation naming a source path that does not exist. Also a code citation whose line range now runs past the end of the file. |
 | 6 | **Uncited claims** | INFO | Substantive claims in topic and entity pages with no citation. Definitions and connective prose are exempt. |
 | 7 | **Schema and naming** | WARNING | Wrong page type for its folder, non-kebab-case slugs, summaries with more or fewer than one `sources:` entry, nested YAML where `docs/DOCS.md` requires flat. Any date in a file name must be `YYMMDD`, and a summary's date prefix must match its source's. |
@@ -95,7 +95,7 @@ ERROR  docs/topics/authentication.md
          sources: [docs/core-sources/260415-auth-spec.pdf]
          ---
 
-       Not checked: this page was skipped by checks 2-14.
+       Not checked: this page was skipped by checks 2-15.
 ```
 
 ### Check 15 in detail — migrating a 1.x base
@@ -128,7 +128,7 @@ Fix without asking — mechanical, reversible, no judgment:
 - Add missing pages to `docs/README.md`; remove index lines pointing at deleted files.
 - Add `status: active` and a defaulted `claim_type` to pages that predate those fields
   (`fact` on a summary, `open-question` on a topic or entity you cannot classify). **Never
-  default to `decision` or `instruction`.**
+  default to `decision`.**
 - Lowercase field values that are valid but miscased, and fix slug casing.
 - Set `status: stale` on pages check 8 found stale.
 - Correct wikilinks broken by a rename you can confirm from `docs/CHANGELOG.md`.
@@ -177,5 +177,5 @@ If everything is clean, say so in one line. Do not manufacture findings.
 - Never edit, rename, or delete anything under `docs/core-sources/`.
 - Never resolve a contradiction. Surfacing it is the whole point of the check.
 - Never rewrite front matter you could not parse.
-- Never promote a page to `claim_type: decision` or `instruction`, or to a human-only `status`,
-  to make a finding go away.
+- Never promote a page to `claim_type: decision` or `status: superseded` to make a finding go
+  away.

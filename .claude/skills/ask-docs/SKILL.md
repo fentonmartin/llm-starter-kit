@@ -38,7 +38,7 @@ Honor explicit scope when given, and say what you scoped to:
 | `--entity <slug>` | Start from that entity page and its links only. |
 | `--source <path>` | Answer from that source and its summary only. |
 
-Skip pages with `status: superseded`, `deprecated`, or `archived` unless the user is asking
+Skip pages with `status: superseded` unless the user is asking
 about history. Include `status: stale` pages, and label them in the answer.
 
 Drop to `docs/core-sources/` **only** when the pages are thin, the question needs a verbatim quote,

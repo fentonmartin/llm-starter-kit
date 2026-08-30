@@ -35,13 +35,24 @@ additive. See *Breaking changes* and *Migration* below.
 
 ### Added
 
-- **Claim types.** `claim_type` distinguishes `fact`, `decision`, `assumption`, `hypothesis`,
-  `open-question`, `contradiction`, and `instruction`. *"Authentication uses Redis"* and *"the
-  team chose Redis"* are different claims, and storing them identically is how a knowledge base
-  starts lying. Individual claims inside a page are marked with Obsidian callouts.
-- **Lifecycle.** `status` tracks `draft`, `active`, `stale`, `superseded`, `deprecated`, and
-  `archived`, with `superseded_by` naming the replacement. Obsolete knowledge no longer looks
-  identical to current knowledge.
+- **Claim types.** `claim_type` distinguishes `fact`, `decision`, `assumption`, `open-question`,
+  and `contradiction`. *"Authentication uses Redis"* and *"the team chose Redis"* are different
+  claims, and storing them identically is how a knowledge base starts lying. Individual claims
+  inside a page are marked with Obsidian callouts.
+
+  Five values, deliberately. `hypothesis` was folded into `assumption` — a distinction nobody
+  applies consistently makes the field unreliable rather than merely coarse. `instruction` was
+  dropped as a category error: a rule for how work is done here belongs in `DOCS.md`, and a page
+  carrying one is a second, unenforced home for it.
+- **Lifecycle.** `status` tracks `draft`, `active`, `stale`, and `superseded`, with
+  `superseded_by` naming the replacement. Obsolete knowledge no longer looks identical to
+  current knowledge.
+
+  Four values, deliberately. `deprecated` and `archived` were dropped: *"no longer in use"* is a
+  fact about the world that belongs in the page body with a citation, and retiring a page from
+  view is a filesystem decision. Both were easy to confuse with `superseded`.
+- **A two-value authority rule.** `claim_type: decision` and `status: superseded` are the only
+  values an agent may never set. Everything else it can reach on its own evidence.
 - **An authority model.** An explicit source-of-truth hierarchy, and the rule it enforces: the
   agent discovers, summarizes, classifies, and proposes; the human decides. Agents may not set
   `claim_type: decision` or `instruction`, nor `status: superseded`, `deprecated`, or

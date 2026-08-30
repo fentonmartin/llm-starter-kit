@@ -272,10 +272,11 @@ starts lying.** These are not interchangeable:
 | Authentication uses Redis. | `fact` | Evidence |
 | The team chose Redis for sessions. | `decision` | **Human only** |
 | We believe Redis is required here. | `assumption` | Either, if labelled |
-| Redis might cut p99 latency; untested. | `hypothesis` | Either, if labelled |
 
-Plus `open-question` (nobody knows yet), `contradiction` (sources disagree), and `instruction`
-(a rule for how work is done here — **human only**).
+Plus `open-question` (nobody knows yet) and `contradiction` (sources disagree).
+
+**Five values, deliberately.** A sixth distinction you can't apply consistently at 2am is worse
+than no distinction — it makes the field unreliable rather than merely coarse.
 
 Individual claims inside a page are marked with Obsidian callouts, which render in Obsidian and
 grep cleanly:
@@ -299,9 +300,9 @@ The agent's background knowledge    ← none; must be labelled if used at all
 ```
 
 **The agent discovers, summarizes, classifies, links, flags, and proposes. It does not decide.**
-It may never set `claim_type: decision` or `instruction`, nor `status: superseded`,
-`deprecated`, or `archived` — those six values are human acts. An agent that thinks a decision
-was made writes `open-question` and asks.
+It may never set `claim_type: decision` or `status: superseded` — those two values are human
+acts, and they are the only two. An agent that thinks a decision was made writes `open-question`
+and asks.
 
 `confidence: high` is not authority. Confidence describes how well evidence supports a claim; it
 never promotes an interpretation into a project decision.
@@ -334,11 +335,14 @@ WARNING with safe defaults, never as errors. **No migration is required.**
 Obsolete knowledge must not look identical to current knowledge.
 
 ```
-draft ──→ active ──→ stale ──→ active        (re-scanned against current sources)
-             │          │
-             │          └────→ superseded ──→ archived
-             └────→ deprecated
+draft ──→ active ──→ stale ──→ active     (re-scanned against current sources)
+                        │
+                        └────→ superseded
 ```
+
+**Four values, deliberately.** *"No longer in use"* is a fact about the world and belongs in the
+page body with a citation; retiring a page from view is a filesystem decision. Neither needs its
+own lifecycle state, and both were easy to confuse with `superseded`.
 
 A page goes `stale` when a source it cites changed after its `updated` date. **Stale means
 unverified, not wrong** — an agent answering from a stale page says so. Re-scanning clears it. A
@@ -592,8 +596,8 @@ before you begin:
 - test-docs → .claude/skills/test-docs/SKILL.md
 
 Non-negotiable:
-- You propose; I decide. Never set claim_type: decision or instruction, and never set
-  status: superseded, deprecated, or archived.
+- You propose; I decide. Never set claim_type: decision and never set status: superseded.
+  Those are the only two values reserved to me.
 - Never resolve a contradiction by overwriting. Record both claims.
 - Never cite a document you did not actually open, and never invent a page number or
   line range.

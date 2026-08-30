@@ -91,14 +91,13 @@ Mark individual claims in the body with the callouts from `docs/DOCS.md`:
 | Something is the case | Plain cited prose |
 | A human chose something for this project | `> [!check] Decision` — and only if a human actually decided it |
 | Something is taken as true but unevidenced | `> [!note] Assumption` |
-| Something is proposed and untested | `> [!abstract] Hypothesis` |
 | Nobody knows yet | `> [!question] Open question` |
 | Two sources disagree | `> [!warning] Contradiction` |
 
-**Never set `claim_type: decision` or `claim_type: instruction` in front matter.** Those are
-human acts. A source describing a decision is evidence that one was made — record it as a
-`[!check] Decision` callout citing the source, and leave the page's front matter as `fact`, or
-as `open-question` if you cannot tell whether the decision still stands.
+**Never set `claim_type: decision` in front matter.** That is a human act, and the only claim
+value reserved to one. A source describing a decision is evidence that one was made — record it
+as a `[!check] Decision` callout citing the source, and leave the page's front matter as `fact`,
+or as `open-question` if you cannot tell whether the decision still stands.
 
 ### 4. Cite with real anchors
 
@@ -129,7 +128,7 @@ For each linked topic and entity:
   grows duplicates.
 - Bump `updated` on every page you touch. Leave `status: active` unless the page is genuinely
   incomplete, in which case `draft`.
-- **Never change a `status` of `superseded`, `deprecated`, or `archived`**, and never edit the
+- **Never change a `status` of `superseded`**, and never edit the
   Decision or Rationale section of a page a human has ruled on. Add your new evidence under
   Evidence and flag it in your report.
 
