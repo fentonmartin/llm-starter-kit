@@ -9,7 +9,7 @@ answers from — so the next agent doesn't start from zero.
 
 `init-docs` · `scan-docs` · `ask-docs` · `lint-docs`
 
-[Quick start](#-quick-start) · [What it produces](#-what-it-produces) · [How it works](#-how-it-works) · [Any AI agent](#-works-with-any-ai-agent) · [Obsidian](#-obsidian-compatible-by-design)
+[**Start here**](#1-paste-this-into-your-agent) · [What it produces](#-what-it-produces) · [How it works](#-how-it-works) · [Any AI agent](#-works-with-any-ai-agent) · [Obsidian](#-obsidian-compatible-by-design)
 
 </div>
 
@@ -56,54 +56,18 @@ to the next agent. A vector index is not something you can read.
 
 ## 🚀 Quick start
 
-### In an existing project
+Whichever route you take, commit first — a scan touches many files, and the diff is how you
+review what the agent did:
 
 ```bash
 cd your-project
-git commit -am "checkpoint"     # so you can read the diff afterwards
+git commit -am "checkpoint"
 ```
 
-**1. Install** (once — then it's available in every repo):
+### 1. Paste this into your agent
 
-```
-/plugin marketplace add fentonmartin/llm-starter-kit
-/plugin install llm-starter-kit
-```
-
-**2. Set it up** from inside the project you want documented:
-
-```
-/init-docs
-```
-
-It reads your README, your manifest, and your layout — then asks you five questions:
-
-> - What is this knowledge base for: this codebase, outside research, or both?
-> - Who reads it — you, your team, or mostly agents working in this repo?
-> - What recurring things deserve a page each? *(your nouns: services, tables, endpoints…)*
-> - What must never be got wrong?
-> - What's out of scope?
-
-Out comes a `docs/` folder and a `docs/DOCS.md` schema **written for your project**, in your
-vocabulary.
-
-**3. Feed it and use it:**
-
-```
-/scan-docs                      # read new material, write the pages
-/ask-docs how does auth work?   # answer from the pages, with citations
-/lint-docs                      # find gaps, contradictions, stale pages
-```
-
-> [!TIP]
-> After your first `/scan-docs`, run `git diff`. It's the most useful fifteen minutes you'll
-> spend with this kit — you see exactly where the agent's judgment differs from yours, and
-> that's what the rules in `docs/DOCS.md` exist to correct.
-
-### Without the plugin — paste this into your agent
-
-Works in Claude Code, opencode, Codex, Cursor, Windsurf, or anything else with file access.
-Open the project you want documented and paste:
+**Works everywhere** — Claude Code, opencode, Codex, Cursor, Windsurf, or anything else with
+file access. Open the project you want documented and paste this into the chat box:
 
 ```
 Set up the llm-starter-kit documentation system in this project.
@@ -162,6 +126,45 @@ Most agents don't need this much hand-holding once `AGENTS.md` is in the repo �
 sources" or "what do the docs say about X" usually routes correctly on its own.
 
 </details>
+
+### 2. Or install as a Claude Code plugin
+
+**Install** once — it is then available in every repo:
+
+```
+/plugin marketplace add fentonmartin/llm-starter-kit
+/plugin install llm-starter-kit
+```
+
+**Set up** from inside the project you want documented:
+
+```
+/init-docs
+```
+
+It reads your README, your manifest, and your layout — then asks you five questions:
+
+> - What is this knowledge base for: this codebase, outside research, or both?
+> - Who reads it — you, your team, or mostly agents working in this repo?
+> - What recurring things deserve a page each? *(your nouns: services, tables, endpoints…)*
+> - What must never be got wrong?
+> - What's out of scope?
+
+Out comes a `docs/` folder and a `docs/DOCS.md` schema **written for your project**, in your
+vocabulary.
+
+**Use it:**
+
+```
+/scan-docs                      # read new material, write the pages
+/ask-docs how does auth work?   # answer from the pages, with citations
+/lint-docs                      # find gaps, contradictions, stale pages
+```
+
+> [!TIP]
+> After your first `/scan-docs`, run `git diff`. It's the most useful fifteen minutes you'll
+> spend with this kit — you see exactly where the agent's judgment differs from yours, and
+> that's what the rules in `docs/DOCS.md` exist to correct.
 
 ### Already have a `docs/` folder?
 
@@ -560,8 +563,7 @@ Remove this kit tomorrow and every page it wrote still opens in any text editor.
 
 <div align="center">
 
-[Quick start](#-quick-start) · [What it produces](#-what-it-produces) · [How it works](#-how-it-works) · [Any AI agent](#-works-with-any-ai-agent) · [Obsidian](#-obsidian-compatible-by-design)
+[**Start here**](#1-paste-this-into-your-agent) · [What it produces](#-what-it-produces) · [How it works](#-how-it-works) · [Any AI agent](#-works-with-any-ai-agent) · [Obsidian](#-obsidian-compatible-by-design)
 
 <sub>[Issues](https://github.com/fentonmartin/llm-starter-kit/issues) · [Repository](https://github.com/fentonmartin/llm-starter-kit) · Built on [Karpathy's LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) and [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)</sub>
 
-</div>
