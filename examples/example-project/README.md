@@ -14,7 +14,7 @@ docs/
   README.md                      the index
   CHANGELOG.md                   what each run did
   scenarios/questions.yaml           three questions this base must answer correctly
-  sources/
+  core-sources/
     260415-auth-spec.md          a specification. Says the TTL is 30 minutes.
     260710-ops-runbook.md        a runbook. Says production runs 24 hours.
   summaries/
@@ -72,7 +72,7 @@ every other check.
 spec's numbered sections, `SESSION_TTL` and section names for the runbook's tables. Nothing
 carries a page number, because Markdown sources do not have pages.
 
-**Lifecycle** — every page is `status: active` today. Edit `docs/sources/260710-ops-runbook.md`
+**Lifecycle** — every page is `status: active` today. Edit `docs/core-sources/260710-ops-runbook.md`
 and run `/lint-docs`: its summary and both pages citing it become `stale`, because their
 `updated` now predates the source. Staleness means unverified, not wrong.
 

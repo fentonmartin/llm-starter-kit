@@ -1,6 +1,6 @@
 # Index
 
-This is the index of generated pages. Raw material lives in [sources/](sources/) and is not
+This is the index of generated pages. Raw material lives in [core-sources/](core-sources/) and is not
 listed here.
 
 Every page in `summaries/`, `topics/`, and `entities/` is listed here exactly once.
@@ -8,7 +8,7 @@ Maintained by the agent; `lint-docs` reports anything missing or dangling.
 
 ## Summaries
 
-_One page per file in `sources/`. None yet — put files in `sources/` and run `/scan-docs`._
+_One page per file in `core-sources/`. None yet — put files in `core-sources/` and run `/scan-docs`._
 
 ## Topics
 

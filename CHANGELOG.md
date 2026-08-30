@@ -7,14 +7,31 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning is [semantic](https://semver.org/spec/v2.0.0.html), applied to the schema and the
 command surface: a breaking change is one that invalidates an existing knowledge base.
 
-## [1.1.0] — 2026-08-30
+## [2.0.0] — 2026-08-30
 
 An architectural maturity release. `1.0.0` established the loop — sources in, pages out, with
-citations. `1.1.0` makes the result auditable: what kind of claim a page carries, where it came
+citations. `2.0.0` makes the result auditable: what kind of claim a page carries, where it came
 from, whether it is still current, and who is allowed to decide.
 
-**No breaking changes. No migration required.** Every knowledge base built on `1.0.0` remains
-valid; see *Migration* below.
+**One breaking change** — `docs/sources/` is now `docs/core-sources/`. Everything else is
+additive. See *Breaking changes* and *Migration* below.
+
+### Breaking changes
+
+- **`docs/sources/` → `docs/core-sources/`.** The folder holding raw material was renamed, and
+  every `sources:` value and citation now points at the new path.
+
+  The prefix names a **role**, not a file type: `core-sources/` is the root of the provenance
+  chain, the one layer every page is reproducible from. It also removes a real ambiguity — a
+  knowledge base documenting a codebase has two kinds of source, the curated immutable material
+  here and `src/**` which the codebase preset reads in place and which changes every commit.
+  Calling both "sources" blurred the immutability rule exactly where it mattered most.
+
+  The `sources:` front-matter field keeps its name. It lists source paths; only the paths change.
+
+  `lint-docs` check 15 detects a `1.x` layout and offers the migration, and `scan-docs` checks
+  for it before reporting an empty work set — an empty work set on a base full of material is
+  the one failure here that looks like success.
 
 ### Added
 
@@ -67,7 +84,7 @@ valid; see *Migration* below.
   It defines claim types, lifecycle, authority, provenance, freshness, retrieval limits, answer
   states, human review, git conflicts, and security, alongside the page and naming rules it
   already carried.
-- **`lint-docs` gained severity levels and grew from 8 checks to 14.** ERROR is reserved for
+- **`lint-docs` gained severity levels and grew from 8 checks to 15.** ERROR is reserved for
   mechanically certain faults, so a merge gate can depend on it. An open contradiction is INFO,
   never an ERROR — it is the system working. New checks cover malformed front matter, invalid
   field values, agent-set human-only values, broken citations, and excluded material.
@@ -86,15 +103,29 @@ valid; see *Migration* below.
 
 ### Migration
 
-None required. `1.1.0` is additive.
+One required step, then everything else is optional.
+
+**Required — rename the sources folder:**
+
+```bash
+git mv docs/sources docs/core-sources
+```
+
+Then run `/lint-docs`. Check 15 rewrites the `sources:` values and citations that still point at
+the old path. Do it in that order: rewriting paths *before* the folder moves breaks every
+citation in the base. If both folders somehow exist, lint stops and asks — a half-finished
+migration needs a human to say which file wins.
+
+**Optional — everything else is additive:**
 
 - Pages without `status` or `claim_type` remain valid. `lint-docs` reports them as **WARNING**,
   not ERROR, and offers safe defaults: `status: active`, and `claim_type: fact` on a summary or
   `open-question` on a topic or entity it cannot classify. It never defaults to `decision`.
-- Run `/lint-docs` once and accept the mechanical fixes to upgrade a base in place. Or do
-  nothing: pages are upgraded as they are next touched.
+- The same `/lint-docs` run applies those mechanical fixes. Or do nothing: pages are upgraded as
+  they are next touched.
 - `docs/scenarios/` is optional. Without it, `test-docs` has nothing to run and says so.
-- No file was renamed, no command was renamed, no field was removed, and no directory moved.
+- No command was renamed for `1.x` users, and no field was removed. `test-docs` and
+  `docs/scenarios/` are new in this release, never having shipped under another name.
 
 ### Known limitations
 
@@ -122,7 +153,7 @@ Initial release.
 
 - Four operations — `init-docs`, `scan-docs`, `ask-docs`, `lint-docs` — as agent-agnostic
   Markdown skills, with slash-command aliases.
-- `docs/` structure: `sources/` (human-owned, immutable to agents), `summaries/`, `topics/`,
+- `docs/` structure: `core-sources/` (human-owned, immutable to agents), `summaries/`, `topics/`,
   `entities/`, plus an index and an append-only changelog.
 - `docs/DOCS.md` as a per-project schema, written by `init-docs` from an interview.
 - Front matter: `type`, `title`, `created`, `updated`, `sources`, `confidence`.
@@ -130,5 +161,5 @@ Initial release.
 - Contradiction callouts, and the rule that contradictions are never silently resolved.
 - `AGENTS.md` as the entry point for any filesystem-capable agent.
 
-[1.1.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v1.1.0
+[2.0.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.0.0
 [1.0.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v1.0.0

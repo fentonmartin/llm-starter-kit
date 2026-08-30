@@ -1,11 +1,11 @@
 ---
 name: scan-docs
-description: Read new or changed files in docs/sources/ and fold them into the rest of docs/ — writing summary pages, updating the topic and entity pages they touch, flagging contradictions, and appending to the changelog. Use when the user says scan, process my sources, add this article/paper/transcript to the knowledge base, or drops a new file into docs/sources/.
+description: Read new or changed files in docs/core-sources/ and fold them into the rest of docs/ — writing summary pages, updating the topic and entity pages they touch, flagging contradictions, and appending to the changelog. Use when the user says scan, process my sources, add this article/paper/transcript to the knowledge base, or drops a new file into docs/core-sources/.
 ---
 
 # Scan
 
-Turn raw material in `docs/sources/` into linked pages in `docs/`. This is the only operation that
+Turn raw material in `docs/core-sources/` into linked pages in `docs/`. This is the only operation that
 creates summary pages.
 
 ## Before you start
@@ -18,10 +18,22 @@ creates summary pages.
    the index for one that covers the same ground.
 3. Determine the work set:
    - Explicit file(s) named by the user, or
-   - Everything in `docs/sources/` with no corresponding `docs/summaries/<slug>.md`, or
+   - Everything in `docs/core-sources/` with no corresponding `docs/summaries/<slug>.md`, or
    - Files whose mtime is newer than their summary's `updated` field.
 
 If the work set is empty, say so and stop. Do not invent work.
+
+**Before reporting an empty work set, check for a legacy `docs/sources/`.** Knowledge bases built
+on `1.x` used that path. If it exists and `docs/core-sources/` does not, say so and offer the
+rename rather than reporting that there is nothing to do — an empty work set on a base full of
+material is the one failure here that looks like success:
+
+```
+docs/core-sources/ does not exist, but docs/sources/ holds 14 files.
+This base predates the 2.0 rename. To migrate:
+  git mv docs/sources docs/core-sources
+  then update the sources: paths in existing pages — /lint-docs will do it.
+```
 
 **Check the work set against the security exclusions in `docs/DOCS.md` first.** Skip excluded
 paths without reading them. If a source you have already opened turns out to contain
@@ -38,7 +50,7 @@ source is worse than an un-scanned one.
 
 "Scan" is the name of the command, not the depth of the reading — never skim. Do not summarize
 from the first page. For long PDFs, read in ranges until you reach the end. For a URL in
-`docs/sources/*.url` or a link file, fetch it.
+`docs/core-sources/*.url` or a link file, fetch it.
 
 Note the anchors as you go — page numbers, section headings, timestamps, line ranges. You
 cannot reconstruct them afterwards, and you must never guess them.
@@ -59,7 +71,7 @@ status: active
 claim_type: fact
 created: 2026-08-30
 updated: 2026-08-30
-sources: [docs/sources/260415-attention-is-all-you-need.pdf]
+sources: [docs/core-sources/260415-attention-is-all-you-need.pdf]
 ---
 ```
 
@@ -94,7 +106,7 @@ Every substantive claim gets the most precise anchor the source format actually 
 page, section, timestamp, or line range, per the provenance table in `docs/DOCS.md`:
 
 ```markdown
-Throughput dropped 40% under batching ([[docs/sources/260415-bench|260415-bench]], p.4).
+Throughput dropped 40% under batching ([[docs/core-sources/260415-bench|260415-bench]], p.4).
 ```
 
 **Falling back to the bare file name is always correct. Inventing an anchor never is.** A page
@@ -131,11 +143,11 @@ Append one entry to the top of `docs/CHANGELOG.md`:
 
 ```markdown
 ## 2026-08-30 — scan
-- Scanned: docs/sources/260415-attention-is-all-you-need.pdf
+- Scanned: docs/core-sources/260415-attention-is-all-you-need.pdf
 - Created: docs/summaries/260415-attention-is-all-you-need.md, docs/topics/attention.md
 - Updated: docs/entities/transformer.md, docs/README.md
 - Flagged: contradiction on parameter count between [[attention]] and [[scaling-laws]]
-- Skipped: docs/sources/.env.backup (security exclusion)
+- Skipped: docs/core-sources/.env.backup (security exclusion)
 ```
 
 Then report to the user: what came in, what pages moved, and anything that needs their
@@ -150,7 +162,7 @@ Contradictions and low-confidence claims go in the report, not just in the files
 
 ## Rules
 
-- Never edit, rename, or delete anything under `docs/sources/`.
+- Never edit, rename, or delete anything under `docs/core-sources/`.
 - Never read a path excluded by the security section of `docs/DOCS.md`.
 - Never assert something the source does not support. `confidence: low` is a valid answer.
 - Never invent provenance — no unseen page numbers, no unverified line ranges, no guessed

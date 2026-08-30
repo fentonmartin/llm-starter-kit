@@ -4,7 +4,7 @@ Append-only. Newest first. One entry per `scan-docs`, `ask-docs`, `lint-docs`, o
 
 ## 2026-08-30 — scan
 
-- Scanned: docs/sources/260710-ops-runbook.md
+- Scanned: docs/core-sources/260710-ops-runbook.md
 - Created: docs/summaries/260710-ops-runbook.md
 - Updated: docs/topics/session-management.md, docs/entities/redis.md, docs/README.md
 - Flagged: contradiction on absolute session TTL — 260415-auth-spec §4.2 gives 30 minutes,
@@ -14,7 +14,7 @@ Append-only. Newest first. One entry per `scan-docs`, `ask-docs`, `lint-docs`, o
 
 ## 2026-08-30 — scan
 
-- Scanned: docs/sources/260415-auth-spec.md
+- Scanned: docs/core-sources/260415-auth-spec.md
 - Created: docs/summaries/260415-auth-spec.md, docs/topics/session-management.md,
   docs/entities/redis.md
 - Updated: docs/README.md

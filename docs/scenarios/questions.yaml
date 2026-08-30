@@ -34,7 +34,7 @@ questions: []
 #   - id: session-ttl
 #     question: What is the session TTL?
 #     expect_sources:
-#       - docs/sources/260710-ops-runbook.pdf
+#       - docs/core-sources/260710-ops-runbook.pdf
 #     require_facts:
 #       - "24 hours"
 #     forbid_claims:
@@ -49,5 +49,5 @@ questions: []
 #     question: What is the rate limit window?
 #     expect_state: contradicted
 #     expect_sources:
-#       - docs/sources/260415-auth-spec.pdf
-#       - docs/sources/260710-ops-runbook.pdf
+#       - docs/core-sources/260415-auth-spec.pdf
+#       - docs/core-sources/260710-ops-runbook.pdf

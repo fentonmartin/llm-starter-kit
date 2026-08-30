@@ -32,7 +32,7 @@ Treat test output as a considered review, not as a test suite exit code.
 - id: session-ttl
   question: What is the session TTL?
   expect_sources:
-    - docs/sources/260710-ops-runbook.pdf
+    - docs/core-sources/260710-ops-runbook.pdf
   require_facts:
     - "24 hours"
   forbid_claims:
@@ -101,12 +101,12 @@ PASS  10
 FAIL   2
 
 FAIL  session-ttl                                          [structural]
-      expect_sources: docs/sources/260710-ops-runbook.pdf not cited
+      expect_sources: docs/core-sources/260710-ops-runbook.pdf not cited
       The answer cited only 260415-auth-spec.pdf (§4.2, "30 minutes"),
       which forbid_claims rules out.
       Likely cause: docs/topics/session-management.md is status: stale;
       its source changed 2026-07-10, the page was updated 2026-04-20.
-      Fix: /scan-docs docs/sources/260710-ops-runbook.pdf
+      Fix: /scan-docs docs/core-sources/260710-ops-runbook.pdf
 
 FAIL  revocation-policy                                     [structural]
       expect_state: unknown, got: known

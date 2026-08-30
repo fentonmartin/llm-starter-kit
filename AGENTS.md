@@ -25,7 +25,7 @@ That is why the rules below constrain what you may assert rather than what you m
 
 ## Hard rules
 
-1. **Never create, edit, rename, or delete anything under `docs/sources/`.** It is human-owned
+1. **Never create, edit, rename, or delete anything under `docs/core-sources/`.** It is human-owned
    and immutable to you. Everything else in `docs/` is yours to maintain. If a source is wrong,
    say so in a page; do not touch the file.
 2. **Every claim in a page traces to a source or an explicit human instruction.** Do not fill
@@ -64,7 +64,7 @@ relevant one before starting, whatever agent you are.
 | Operation | Run it when |
 |---|---|
 | `init-docs` | Setting the knowledge base up in a project for the first time. Once only. |
-| `scan-docs` | New or changed files in `docs/sources/` need folding into the pages. |
+| `scan-docs` | New or changed files in `docs/core-sources/` need folding into the pages. |
 | `ask-docs` | A question needs answering from the pages, with citations. |
 | `lint-docs` | Health-checking for orphans, gaps, contradictions, stale pages, schema violations. |
 | `test-docs` | Checking whether the knowledge base still answers its known questions correctly. |
@@ -82,11 +82,11 @@ docs/
   DOCS.md                  the governance contract. Read first, always.
   README.md                the index of every generated page
   CHANGELOG.md             append-only log of scan / lint / ask / test runs
-  sources/                 raw material. Human-owned, immutable to you.
+  core-sources/            raw material. Human-owned, immutable to you.
   summaries/               one page per source
   topics/                  one page per idea, question, or theme
   entities/                one page per person, org, product, dataset
-  scenarios/questions.yaml     questions the knowledge base must answer correctly
+  scenarios/questions.yaml questions the knowledge base must answer correctly
 examples/example-project/  a small worked example of the whole loop
 .claude/skills/            the five skills, as plain Markdown
 .claude/commands/          slash-command aliases

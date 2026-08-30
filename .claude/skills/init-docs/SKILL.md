@@ -58,7 +58,7 @@ docs/
   DOCS.md               written from the interview — see below
   README.md             the index, empty to start
   CHANGELOG.md          the log, empty to start
-  sources/              empty, for raw material
+  core-sources/              empty, for raw material
   summaries/  topics/  entities/
   scenarios/questions.yaml  the questions this base must answer — empty to start
 ```
@@ -83,8 +83,8 @@ Classify every existing file, then act:
 |---|---|
 | Reads like a topic — an explanation, a design doc, an architecture note | Move it to `docs/topics/`, add front matter, keep the prose. Rename to a kebab-case slug. |
 | Reads like an entity — one service, one table, one endpoint, one tool | Move it to `docs/entities/`, add front matter. |
-| Raw or external material — specs, vendor PDFs, exports, meeting notes | Move it to `docs/sources/`. It becomes material to scan. |
-| You cannot confidently classify it | Move it to `docs/sources/`. **This is the safe default** — nothing is lost, and the next scan will read it and produce proper pages. |
+| Raw or external material — specs, vendor PDFs, exports, meeting notes | Move it to `docs/core-sources/`. It becomes material to scan. |
+| You cannot confidently classify it | Move it to `docs/core-sources/`. **This is the safe default** — nothing is lost, and the next scan will read it and produce proper pages. |
 | Generated output — API reference, coverage reports, build artifacts | Leave it exactly where it is. Note it in `DOCS.md` as out of scope. |
 | `README.md`, `CONTRIBUTING.md`, `LICENSE`, or anything the project's tooling reads by path | Leave it. Moving these breaks things. |
 
@@ -142,8 +142,8 @@ For a codebase, a good starting shape:
    - every file you moved, and anything you deliberately did not touch
    - **the rules you wrote in `DOCS.md`, quoted** — ask them to read and correct these now,
      while it is cheap
-3. Tell them what to do next: put material in `docs/sources/`, then run `/scan-docs`. If you
-   moved existing files into `docs/sources/`, say that a scan will turn them into pages.
+3. Tell them what to do next: put material in `docs/core-sources/`, then run `/scan-docs`. If you
+   moved existing files into `docs/core-sources/`, say that a scan will turn them into pages.
 
 Do not run a scan yourself. Init sets up; scan is a separate decision.
 

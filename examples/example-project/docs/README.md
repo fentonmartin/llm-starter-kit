@@ -1,6 +1,6 @@
 # Index
 
-This is the index of generated pages. Raw material lives in [sources/](sources/) and is not
+This is the index of generated pages. Raw material lives in [core-sources/](core-sources/) and is not
 listed here.
 
 Every page in `summaries/`, `topics/`, and `entities/` is listed here exactly once.

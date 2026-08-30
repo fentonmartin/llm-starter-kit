@@ -174,7 +174,7 @@ docs/                           docs/
 ├── vendor-api-spec.pdf         ├── topics/
 └── old-notes.md                │   ├── architecture.md      ← kept, front matter added
                                 │   └── setup-guide.md
-                                ├── sources/
+                                ├── core-sources/
                                 │   ├── vendor-api-spec.pdf  ← raw material
                                 │   └── old-notes.md         ← unclassifiable → safe here
                                 ├── summaries/
@@ -182,7 +182,7 @@ docs/                           docs/
                                 └── scenarios/
 ```
 
-Anything it can't confidently classify goes to `sources/`, where the next scan turns it into
+Anything it can't confidently classify goes to `core-sources/`, where the next scan turns it into
 proper pages — **nothing is lost by that default**. It shows you every move as `old → new`
 before touching a thing, then fixes inbound links across the repo.
 
@@ -201,7 +201,7 @@ docs as sources.
 | **`/init-docs`** | Surveys the project, interviews you, scaffolds `docs/`, writes a schema for *this* codebase | Once, at the start |
 | **`/scan-docs`** | Reads new sources in full, writes a summary each, updates every topic and entity they touch, types the claims, flags contradictions | When material piles up |
 | **`/ask-docs`** | Answers from the pages within a context budget, with citations and an explicit known / inferred / contradicted / unknown split | Instead of digging |
-| **`/lint-docs`** | 14 checks at three severities — schema, citations, staleness, orphans, gaps, contradictions. Fixes the mechanical, escalates the rest | Every few scans |
+| **`/lint-docs`** | 15 checks at three severities — schema, citations, staleness, orphans, gaps, contradictions. Fixes the mechanical, escalates the rest | Every few scans |
 | **`/test-docs`** | Runs `docs/scenarios/questions.yaml` and reports what the base no longer answers correctly | After big changes |
 
 `/init` `/scan` `/ask` `/lint` `/test` work as short aliases. The long names are canonical
@@ -215,7 +215,7 @@ repo"* runs `init-docs`.
 
 ```
 /ask-docs what is the TTL? --topic session-management
-/ask-docs what is the TTL? --source docs/sources/260710-ops-runbook.md
+/ask-docs what is the TTL? --source docs/core-sources/260710-ops-runbook.md
 /ask-docs where is Redis used? --entity redis
 ```
 
@@ -232,11 +232,11 @@ docs/
 ├── DOCS.md              ⚖️  the governance contract — read below
 ├── README.md            🗂️  the index. every generated page, once.
 ├── CHANGELOG.md         📜  append-only log of every run
-├── sources/             📥  raw material. yours. read-only to the agent.
+├── core-sources/        📥  raw material. yours. read-only to the agent.
 ├── summaries/           📄  one page per source
 ├── topics/              💡  one page per idea, decision, or flow
 ├── entities/            🏷️  one page per service, table, person, product…
-└── scenarios/               ✅  questions.yaml — what this base must answer correctly
+└── scenarios/           ✅  questions.yaml — what this base must answer correctly
 examples/example-project/  a complete worked example, five minutes to read
 .claude/skills/          the five skills, as plain Markdown
 .claude/commands/        the five, plus short aliases
@@ -246,7 +246,7 @@ examples/example-project/  a complete worked example, five minutes to read
 The `docs/` folder here is the template. `/init-docs` reproduces it inside your project.
 
 Everything sits under `docs/` so the knowledge base is one self-contained folder you can copy
-anywhere. `docs/sources/` is nested for filing only — it stays read-only to the agent and
+anywhere. `docs/core-sources/` is nested for filing only — it stays read-only to the agent and
 exempt from every page rule.
 
 ---
@@ -293,7 +293,7 @@ grep cleanly:
 
 ```
 Human decision recorded in a page   ← highest
-Source material in docs/sources/
+Source material in docs/core-sources/
 Agent-generated page content
 The agent's background knowledge    ← none; must be labelled if used at all
 ```
@@ -322,7 +322,7 @@ title: Session management
 status: active
 claim_type: contradiction
 updated: 2026-08-30
-sources: [docs/sources/260415-auth-spec.md, docs/sources/260710-ops-runbook.md]
+sources: [docs/core-sources/260415-auth-spec.md, docs/core-sources/260710-ops-runbook.md]
 ---
 ```
 
@@ -357,7 +357,7 @@ Claims carry the most precise anchor the source format supports — `p.4` for a 
 spec, `src/auth/session.php:112-140` for code, `14:20` for a transcript:
 
 ```markdown
-... throughput dropped 40% ([[docs/sources/260415-bench|260415-bench]], p.4).
+... throughput dropped 40% ([[docs/core-sources/260415-bench|260415-bench]], p.4).
 ```
 
 **Falling back to the bare file name is always correct. Inventing an anchor never is.** A page
@@ -407,7 +407,7 @@ The evidence for this question exceeds the context budget:
 
 Narrow the scope and I can answer precisely:
   --topic authentication      7 pages
-  --source docs/sources/260415-auth-spec.pdf
+  --source docs/core-sources/260415-auth-spec.pdf
 ```
 
 Reading the largest few and answering anyway is the worst available outcome. An answer built on
@@ -467,11 +467,11 @@ the only exceptions, because neither carries meaning.
 
 ## Linting
 
-`/lint-docs` runs 14 checks at three severities.
+`/lint-docs` runs 15 checks at three severities.
 
 | Severity | Reserved for | Examples |
 |:--|:--|:--|
-| **ERROR** | Mechanically certain and factually wrong | Unparseable front matter, a citation to a file that does not exist, `superseded` with no `superseded_by`, a secret in `sources/` |
+| **ERROR** | Mechanically certain and factually wrong | Unparseable front matter, a citation to a file that does not exist, `superseded` with no `superseded_by`, a secret in `core-sources/` |
 | **WARNING** | Certain but tolerable | Missing `status`, an orphan, a stale page, a malformed slug |
 | **INFO** | Needs a human | An open contradiction, a gap with five inbound links, a probable duplicate |
 
@@ -504,7 +504,7 @@ Cases live in `docs/scenarios/questions.yaml`. Humans write it; the agent never 
 questions:
   - id: session-ttl
     question: What is the absolute session TTL?
-    expect_sources: [docs/sources/260710-ops-runbook.md]
+    expect_sources: [docs/core-sources/260710-ops-runbook.md]
     require_facts: ["24 hours", "30 minutes"]
     expect_state: contradicted
 
@@ -575,7 +575,7 @@ can read a file can follow it. **The repository is the interface.**
 ```
 This project is a knowledge base with three layers:
 
-- docs/sources/ — raw material. Read it. NEVER create, edit, rename, or delete anything
+- docs/core-sources/ — raw material. Read it. NEVER create, edit, rename, or delete anything
                   in it. It is exempt from all page rules.
 - docs/         — everything else here is markdown pages you write and maintain. Each must
                   trace back to a source or to something I explicitly told you.
@@ -778,11 +778,31 @@ this project."*
 </details>
 
 <details>
-<summary><b>Why the agent never writes to <code>docs/sources/</code></b></summary>
+<summary><b>Why the agent never writes to <code>docs/core-sources/</code></b></summary>
 
 One-way flow means you can always regenerate the pages from scratch and compare. If the agent
 could edit its own inputs, that guarantee is gone — and a subtly rewritten source is nearly
 impossible to spot later.
+
+</details>
+
+<details>
+<summary><b>Why it's called <code>core-sources</code> and not <code>sources</code></b></summary>
+
+The prefix names a **role**, not a file type. `docs/core-sources/` is the root of the provenance
+chain: every page is reproducible from it, and nothing else is. Deleting a page loses work;
+deleting from here loses the truth. "Core" says trunk, not folder.
+
+It also removes a real ambiguity. A knowledge base documenting a codebase has two kinds of
+source: the curated, immutable material in `core-sources/`, and `src/**`, which the codebase
+preset reads in place and which changes every commit. Calling both "sources" blurred the
+immutability rule exactly where it mattered most — the one rule an agent must never get wrong.
+
+And "source" was already carrying three jobs in this kit: the `sources:` front-matter field, the
+citation format, and source code. The folder now means one thing.
+
+The practical payoff is small but real: *never write to `core-sources/`* reads as a boundary,
+where *never write to `sources/`* read like a category, and categories invite exceptions.
 
 </details>
 

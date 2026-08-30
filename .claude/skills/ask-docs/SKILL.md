@@ -41,7 +41,7 @@ Honor explicit scope when given, and say what you scoped to:
 Skip pages with `status: superseded`, `deprecated`, or `archived` unless the user is asking
 about history. Include `status: stale` pages, and label them in the answer.
 
-Drop to `docs/sources/` **only** when the pages are thin, the question needs a verbatim quote,
+Drop to `docs/core-sources/` **only** when the pages are thin, the question needs a verbatim quote,
 or you suspect a page is stale. Say so in the answer when you do.
 
 *This step is the retriever. It is deliberately replaceable — a project that later indexes
@@ -68,7 +68,7 @@ The evidence for this question exceeds the context budget:
 Narrow the scope and I can answer precisely:
   --topic authentication      7 pages
   --topic rate-limiting       5 pages
-  --source docs/sources/260415-auth-spec.pdf
+  --source docs/core-sources/260415-auth-spec.pdf
 ```
 
 ### 4. Answer, then cite
@@ -77,7 +77,7 @@ Answer directly first. Then attribute every substantive claim to the page it cam
 that page's own citation carrying the source:
 
 ```
-Latency rose under batching ([[batching]] ← docs/sources/260415-bench.pdf, p.4).
+Latency rose under batching ([[batching]] ← docs/core-sources/260415-bench.pdf, p.4).
 ```
 
 **Cite only what you actually opened.** A citation is a claim that you read the document. A
@@ -109,10 +109,10 @@ A worked shape:
 
 ```
 Known — sessions are stored in Redis with a 24-hour TTL
-  ([[session-management]] ← docs/sources/260710-ops-runbook.pdf, p.2).
+  ([[session-management]] ← docs/core-sources/260710-ops-runbook.pdf, p.2).
 
 Contradicted — the auth spec gives the TTL as 30 minutes
-  ([[docs/sources/260415-auth-spec|260415-auth-spec]], §4.2). Unresolved; see
+  ([[docs/core-sources/260415-auth-spec|260415-auth-spec]], §4.2). Unresolved; see
   [[session-management]].
 
 Unknown — nothing in the sources describes revocation on password change.

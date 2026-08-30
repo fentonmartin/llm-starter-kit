@@ -14,7 +14,7 @@ complete on its own. Part 2 is examples and rationale, read on demand.
 
 "Pages" means files in `docs/summaries/`, `docs/topics/`, and `docs/entities/`.
 
-**Every check below skips `docs/sources/`.** It is raw material, not pages — exempt from front
+**Every check below skips `docs/core-sources/`.** It is raw material, not pages — exempt from front
 matter, slugs, wikilinks, and page types. Only checks 13 and 14 look inside it, and only the
 `YYMMDD` file-name rule applies there. Also skip the files at the top of `docs/`: `DOCS.md`,
 `AGENTS.md`, `README.md`, `CHANGELOG.md`.
@@ -49,8 +49,9 @@ lint, gate on ERROR only.
 | 10 | **Gaps** | INFO | Wikilinks pointing at pages that do not exist. Group by how many pages link to each — a target with five inbound links is a real hole. |
 | 11 | **Contradictions** | INFO | Existing contradiction callouts still open. Plus new ones: claims across pages that conflict on the same fact. |
 | 12 | **Duplicates** | INFO | Pages with heavily overlapping titles or subject matter. |
-| 13 | **Unread sources** | WARNING | Files in `docs/sources/` with no summary page. |
-| 14 | **Excluded material** | ERROR | Anything in `docs/sources/` matching the security exclusions in `docs/DOCS.md`, and any page that quotes from one. |
+| 13 | **Unread sources** | WARNING | Files in `docs/core-sources/` with no summary page. |
+| 14 | **Excluded material** | ERROR | Anything in `docs/core-sources/` matching the security exclusions in `docs/DOCS.md`, and any page that quotes from one. |
+| 15 | **Legacy layout** | WARNING | A `docs/sources/` folder, or `sources:` values and citations pointing at `docs/sources/`. The base predates the 2.0 rename. See below. |
 
 ### Check 1 in detail — do not crash on bad YAML
 
@@ -91,11 +92,34 @@ ERROR  docs/topics/authentication.md
          status: active
          claim_type: fact
          updated: 2026-08-30
-         sources: [docs/sources/260415-auth-spec.pdf]
+         sources: [docs/core-sources/260415-auth-spec.pdf]
          ---
 
        Not checked: this page was skipped by checks 2-14.
 ```
+
+### Check 15 in detail — migrating a 1.x base
+
+Bases built on `1.x` keep their material in `docs/sources/`. Nothing about them is wrong; the
+folder was renamed in `2.0`. Report it once, at the top, and offer the migration:
+
+```
+WARNING  legacy layout
+         docs/sources/ exists (14 files). 2.0 renamed it to docs/core-sources/.
+
+         Migrate:
+           git mv docs/sources docs/core-sources
+
+         Then re-run /lint-docs and I will rewrite the 31 `sources:` values and
+         citations that still point at the old path.
+```
+
+**Do the folder move only when the user asks** — it is a rename in their repository, and
+`docs/sources/` is human-owned regardless of what it is called. Rewriting the *paths inside
+pages* after the folder has moved is mechanical, and belongs in the fix-silently list below.
+
+If both `docs/sources/` and `docs/core-sources/` exist, do not merge them. Report it and stop:
+a half-finished migration needs a human to say which file wins.
 
 ## What to fix, what to report
 
@@ -108,6 +132,9 @@ Fix without asking — mechanical, reversible, no judgment:
 - Lowercase field values that are valid but miscased, and fix slug casing.
 - Set `status: stale` on pages check 8 found stale.
 - Correct wikilinks broken by a rename you can confirm from `docs/CHANGELOG.md`.
+- Rewrite `docs/sources/` to `docs/core-sources/` in `sources:` values and citations — but only
+  once the folder itself has actually moved. Rewriting paths that still point at real files
+  breaks every citation in the base.
 
 Report, do not fix — anything requiring judgment:
 
@@ -119,7 +146,7 @@ Report, do not fix — anything requiring judgment:
 - Anything under check 4 or check 14. A page claiming human authority it may not have, and a
   secret that reached the knowledge base, are both escalations.
 - Any file name with a malformed date. Renaming a page breaks inbound links, and files under
-  `docs/sources/` are immutable to you regardless — report the bad name and the corrected
+  `docs/core-sources/` are immutable to you regardless — report the bad name and the corrected
   `YYMMDD` form you propose.
 
 ## Output
@@ -138,7 +165,7 @@ Then append to `docs/CHANGELOG.md`:
 ```markdown
 ## 2026-08-30 — lint
 - Fixed: 3 index omissions, 4 pages defaulted to status: active
-- Errors: 1 broken citation (docs/topics/auth.md → docs/sources/260101-old-spec.pdf, missing),
+- Errors: 1 broken citation (docs/topics/auth.md → docs/core-sources/260101-old-spec.pdf, missing),
   1 malformed front matter (docs/topics/authentication.md)
 - Open: 2 contradictions, 3 gaps (most-linked: [[retrieval-benchmark]], 5 inbound), 1 stale summary
 ```
@@ -147,7 +174,7 @@ If everything is clean, say so in one line. Do not manufacture findings.
 
 ## Rules
 
-- Never edit, rename, or delete anything under `docs/sources/`.
+- Never edit, rename, or delete anything under `docs/core-sources/`.
 - Never resolve a contradiction. Surfacing it is the whole point of the check.
 - Never rewrite front matter you could not parse.
 - Never promote a page to `claim_type: decision` or `instruction`, or to a human-only `status`,

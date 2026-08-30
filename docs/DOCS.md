@@ -20,22 +20,37 @@ Everything lives under `docs/`, but the layers are strictly separate.
 
 | Layer | Path | Who writes it |
 |---|---|---|
-| Sources | `docs/sources/` | **Humans only.** Immutable. The agent reads it, never edits, renames, or deletes. |
+| Core sources | `docs/core-sources/` | **Humans only.** Immutable. The agent reads it, never edits, renames, or deletes. |
 | Pages | `docs/summaries/`, `docs/topics/`, `docs/entities/` | **Agent only.** Every file derives from a source or an explicit instruction. |
 | Scenarios | `docs/scenarios/` | **Humans.** Questions the knowledge base must answer correctly. |
 | Bookkeeping | `docs/README.md`, `docs/CHANGELOG.md` | **Agent only.** Index and log. |
 | Guidance | `docs/DOCS.md` | **Humans.** This file. |
 
-`docs/sources/` is exempt from every page rule below — front matter, slugs, wikilinks, page
+`docs/core-sources/` is exempt from every page rule below — front matter, slugs, wikilinks, page
 types. Only the `YYMMDD` file-name rule applies there. Checks that sweep `docs/` skip it.
 
 **If a fact is not traceable to a source or to a human instruction, it does not belong in a page.**
+
+### Why "core"
+
+The prefix names a **role**, not a file type. `docs/core-sources/` is the root of the provenance
+chain: every page in the knowledge base is reproducible from it, and nothing else is. Deleting a
+page loses work; deleting from here loses the truth.
+
+It also removes a genuine ambiguity. In a knowledge base that documents a codebase there are two
+kinds of source — the curated, immutable material here, and `src/**`, which the codebase preset
+reads in place and which changes every commit. Calling both "sources" blurred the immutability
+rule precisely where it mattered most. And "source" is already overloaded across the `sources:`
+field, the citation format, and source code; the folder now has a name that means one thing.
+
+The practical payoff is that the hard rule reads as a boundary rather than a category:
+*never write to `core-sources/`*.
 
 ## Authority
 
 ```
 Human decision recorded in a page   ← highest
-Source material in docs/sources/
+Source material in docs/core-sources/
 Agent-generated page content
 The agent's background knowledge    ← none; must be labelled if used at all
 ```
@@ -68,7 +83,7 @@ title: Human readable title
 status: draft | active | stale | superseded | deprecated | archived
 claim_type: fact | decision | assumption | hypothesis | open-question | contradiction | instruction
 updated: YYYY-MM-DD
-sources: [docs/sources/foo.pdf]     # summaries: exactly one. topics/entities: all that back it.
+sources: [docs/core-sources/foo.pdf]     # summaries: exactly one. topics/entities: all that back it.
 ---
 ```
 
@@ -141,7 +156,7 @@ that no longer exists is a *broken citation*, not staleness. Re-scanning clears 
 Claims in topic and entity pages carry a source:
 
 ```markdown
-... throughput dropped 40% ([[docs/sources/260415-bench|260415-bench]], p.4).
+... throughput dropped 40% ([[docs/core-sources/260415-bench|260415-bench]], p.4).
 ```
 
 Uncited claims are allowed only for definitions and connective prose.
@@ -150,7 +165,7 @@ Uncited claims are allowed only for definitions and connective prose.
 silently breaks the table:
 
 ```markdown
-| `SESSION_TTL` | `86400` | [[docs/sources/260710-ops-runbook\|260710-ops-runbook]] |
+| `SESSION_TTL` | `86400` | [[docs/core-sources/260710-ops-runbook\|260710-ops-runbook]] |
 ```
 
 **A citation is a claim that a document was read.** Cite only sources and pages actually opened
@@ -177,8 +192,8 @@ question, and set `claim_type: contradiction` while it stands:
 
 ```markdown
 > [!warning] Contradiction
-> [[docs/sources/260415-auth-spec|260415-auth-spec]] (§4.2) gives session TTL as 30 minutes.
-> [[docs/sources/260710-ops-runbook|260710-ops-runbook]] (p.2) gives it as 24 hours.
+> [[docs/core-sources/260415-auth-spec|260415-auth-spec]] (§4.2) gives session TTL as 30 minutes.
+> [[docs/core-sources/260710-ops-runbook|260710-ops-runbook]] (p.2) gives it as 24 hours.
 > Unresolved as of 2026-08-30.
 ```
 
@@ -192,7 +207,7 @@ stays open until a human rules. → [Human review](#human-review)
 
 **Selection:** match the question against `docs/README.md` titles and descriptions, read those
 pages, then follow their wikilinks one hop out — two if the question is broad. Then stop. Drop to
-`docs/sources/` only when the pages are thin, a verbatim quote is needed, or a page is suspected
+`docs/core-sources/` only when the pages are thin, a verbatim quote is needed, or a page is suspected
 stale, and say so. Scope may be constrained with `--topic`, `--entity`, `--source`.
 
 **Budget:** roughly half the context window, estimated before reading at ~4 characters per token.
@@ -260,7 +275,7 @@ callout, not a choice.
 Paths the agent never reads, beyond the security exclusions. Replace with this project's own:
 
 ```
-docs/sources/archive/**
+docs/core-sources/archive/**
 ```
 
 ## Project-specific rules
@@ -272,7 +287,7 @@ interview; **if it still reads like the text below, that interview never happene
   defect: nothing is unresolved yet.
 - Every entity page opens with a one-sentence definition, so a reader following a wikilink
   mid-sentence gets oriented in one line.
-- Ignore `docs/sources/archive/**` unless the user names a file in it explicitly.
+- Ignore `docs/core-sources/archive/**` unless the user names a file in it explicitly.
 - Figures carry their unit and as-of date: `$4.2M (FY2025)`, `340ms p99 (2026-04-15)`. A bare
   number in a topic page is a lint finding.
 - Cap summary pages at roughly 600 words. A source needing more should produce topic pages, not a
@@ -292,7 +307,7 @@ A page has one dominant `claim_type` in front matter. Individual claims are mark
 callouts, which render in Obsidian and grep cleanly:
 
 ```markdown
-Sessions expire after 30 minutes ([[docs/sources/260415-auth-spec|260415-auth-spec]], §4.2).
+Sessions expire after 30 minutes ([[docs/core-sources/260415-auth-spec|260415-auth-spec]], §4.2).
 
 > [!check] Decision
 > Session storage moved to Redis on 2026-03-11. Rejected: in-process cache (loses state on
@@ -324,7 +339,7 @@ title: Session TTL
 status: active
 claim_type: decision
 updated: 2026-08-30
-sources: [docs/sources/260415-auth-spec.pdf, docs/sources/260710-ops-runbook.pdf]
+sources: [docs/core-sources/260415-auth-spec.pdf, docs/core-sources/260710-ops-runbook.pdf]
 ---
 
 ## Decision
@@ -338,9 +353,9 @@ March migration; the spec was not updated. The runbook is authoritative for oper
 
 ## Evidence
 
-- [[docs/sources/260415-auth-spec|260415-auth-spec]] (§4.2) — 30 minutes. Superseded by the
+- [[docs/core-sources/260415-auth-spec|260415-auth-spec]] (§4.2) — 30 minutes. Superseded by the
   March 2026 migration.
-- [[docs/sources/260710-ops-runbook|260710-ops-runbook]] (p.2) — 24 hours. Matches production.
+- [[docs/core-sources/260710-ops-runbook|260710-ops-runbook]] (p.2) — 24 hours. Matches production.
 ```
 
 What makes this auditable is that the disagreement is still on the page after it is settled.
@@ -395,7 +410,7 @@ and unresolved links all work without conversion.
 > migrate; the skills read this file for link style rather than assuming one.
 
 Note that a summary carries its source's file name, so the two share a basename. That is why
-source citations use the full-path form `[[docs/sources/foo|foo]]` — a bare `[[foo]]` would be
+source citations use the full-path form `[[docs/core-sources/foo|foo]]` — a bare `[[foo]]` would be
 ambiguous.
 
 ## Preset: documenting a codebase
@@ -412,7 +427,7 @@ types in Part 1 with these, and delete this section once you have.
 Then set the source layer. Code is read in place rather than copied:
 
 ```markdown
-- Treat `src/**` as sources, in addition to `docs/sources/`.
+- Treat `src/**` as sources, in addition to `docs/core-sources/`.
 - Out of scope: `node_modules/**`, `dist/**`, `**/*.generated.*`, `vendor/**`, test fixtures.
 ```
 

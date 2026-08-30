@@ -5,7 +5,7 @@ status: active
 claim_type: fact
 created: 2026-08-30
 updated: 2026-08-30
-sources: [docs/sources/260415-auth-spec.md]
+sources: [docs/core-sources/260415-auth-spec.md]
 confidence: high
 ---
 
@@ -46,4 +46,4 @@ JWT rejection in §5 is the only claim carrying a stated reason.
   mistake it invites, and the reason the TTL contradiction exists.
 - Last revised 2026-04-15, before the June incident that changed the production TTL. Nothing in
   the document reflects that change.
-- Silent on session revocation. The gap surfaces in [[docs/sources/260710-ops-runbook|260710-ops-runbook]], not here.
+- Silent on session revocation. The gap surfaces in [[docs/core-sources/260710-ops-runbook|260710-ops-runbook]], not here.

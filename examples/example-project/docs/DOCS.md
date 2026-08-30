@@ -27,7 +27,7 @@ Below are the only three sections `/init-docs` rewrites per project.
 ## Out of scope
 
 ```
-docs/sources/archive/**
+docs/core-sources/archive/**
 ```
 
 Plus the security exclusions in the shipped contract.
