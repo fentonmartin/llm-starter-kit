@@ -100,15 +100,68 @@ vocabulary.
 > spend with this kit — you see exactly where the agent's judgment differs from yours, and
 > that's what the rules in `docs/DOCS.md` exist to correct.
 
-### Without the plugin
+### Without the plugin — paste this into your agent
 
-Copy three things into your project. That's the whole install:
+Works in Claude Code, opencode, Codex, Cursor, Windsurf, or anything else with file access.
+Open the project you want documented and paste:
+
+```
+Set up the llm-starter-kit documentation system in this project.
+
+1. Clone https://github.com/fentonmartin/llm-starter-kit into a temp folder
+   outside this repo.
+2. Copy its docs/, .claude/ and AGENTS.md into this project. Do not overwrite
+   anything that already exists here — if a file or folder collides, stop and
+   tell me before touching it.
+3. Read .claude/skills/init-docs/SKILL.md and follow it exactly: survey this
+   project first, then interview me, then write docs/DOCS.md from my answers.
+4. Delete the temp folder.
+
+Do not skip the interview and do not answer its questions on my behalf.
+Show me the docs/DOCS.md rules you wrote before we go any further.
+```
+
+Prefer to copy the files yourself? Same result:
 
 ```bash
-cp -r llm-starter-kit/docs      your-project/
-cp -r llm-starter-kit/.claude   your-project/
-cp    llm-starter-kit/AGENTS.md your-project/
+git clone https://github.com/fentonmartin/llm-starter-kit /tmp/lsk
+cp -r /tmp/lsk/docs /tmp/lsk/.claude /tmp/lsk/AGENTS.md your-project/
+rm -rf /tmp/lsk
 ```
+
+Then paste this to start:
+
+```
+Read .claude/skills/init-docs/SKILL.md and follow it exactly. Survey this project
+first, then interview me before writing anything.
+```
+
+<details>
+<summary><b>Day-to-day prompts</b> — for agents without slash commands</summary>
+
+<br>
+
+Each skill is a plain markdown file, so pointing an agent at one is the same as running the
+command:
+
+```
+Read .claude/skills/scan-docs/SKILL.md and follow it.
+```
+
+```
+Read .claude/skills/ask-docs/SKILL.md and follow it, then answer:
+how does session expiry work?
+```
+
+```
+Read .claude/skills/lint-docs/SKILL.md and follow it. Fix what it says you may
+fix, and report the rest to me rather than acting on it.
+```
+
+Most agents don't need this much hand-holding once `AGENTS.md` is in the repo — "scan my
+sources" or "what do the docs say about X" usually routes correctly on its own.
+
+</details>
 
 ### Already have a `docs/` folder?
 
