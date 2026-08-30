@@ -206,33 +206,46 @@ docs as sources.
 
 ### Already using an older version?
 
-`/init-docs` detects an existing install and switches to an upgrade instead of interviewing you
-again. Or do it by hand — it's five steps:
+Commit first, then paste this into your agent:
 
-```bash
-# 1. kit files — safe to overwrite, nothing of yours is in them
-/plugin update llm-starter-kit          # or re-copy .claude/ and AGENTS.md
+```
+Upgrade the llm-starter-kit installation in this project to 2.0.
 
-# 2. rename the sources folder (2.0's one breaking change)
-git mv docs/sources docs/core-sources
+1. Clone https://github.com/fentonmartin/llm-starter-kit into a temp folder
+   outside this repo.
+2. Read its .claude/skills/init-docs/SKILL.md, section "7. Upgrading an
+   existing install", and follow it exactly.
+3. Delete the temp folder when you are done.
 
-# 3. upgrade docs/DOCS.md — see below
-# 4. then:
-/lint-docs
+Rules for this upgrade:
+- .claude/ and AGENTS.md are kit files. Replace them wholesale.
+- docs/ is MY knowledge base. The only file you may change there is
+  docs/DOCS.md, plus whatever /lint-docs fixes at the end.
+- docs/DOCS.md holds three sections I wrote: page types, project-specific
+  rules, and out of scope. Start from the new DOCS.md and port those three
+  into it — do not merge the new sections into my old file. Show me the
+  diff before you write it.
+- Rename docs/sources to docs/core-sources BEFORE rewriting any paths.
+- Then run /lint-docs and show me what it changed.
+
+Tell me what version I was on before you start, and stop if anything is
+ambiguous rather than guessing.
 ```
 
-**Step 3 is the one that needs care.** Your `docs/DOCS.md` was written from your interview, so it
-holds three sections you authored: **page types**, **project-specific rules**, and **out of
-scope**. Copy the new `docs/DOCS.md` over yours and port those three back — not the reverse. 2.0
-adds about a dozen governance sections, and merging those into your old file by hand is where
-mistakes happen; carrying three sections the other way is mechanical.
+**Installed as a plugin?** Run `/plugin update llm-starter-kit` first, then paste the same prompt
+with steps 1 and 3 removed — the plugin has already replaced the kit files for you.
 
-`/lint-docs` then does the rest: rewrites the `sources:` paths still pointing at `docs/sources/`,
-and adds `status: active` plus a defaulted `claim_type` to every page written before those fields
-existed. Expect a large diff and plenty of WARNINGs on a base of any size — that's the upgrade
-landing, not breakage. **Commit before you start**, as always.
+**Why the prompt is that specific about `docs/DOCS.md`:** it's the only file in this kit you
+authored — written from your `init-docs` interview. 2.0 adds about a dozen governance sections,
+and merging those into your old file is where mistakes happen; carrying your three sections into
+the new file is mechanical and you can check it at a glance.
 
-Your pages themselves need no editing. Full detail in [CHANGELOG.md](CHANGELOG.md#migration).
+Everything else is automatic. `/lint-docs` rewrites the `sources:` paths and adds `status` and
+`claim_type` to pages written before those fields existed. **Your pages need no editing.** Expect
+a large diff and plenty of WARNINGs on a base of any size — that's the upgrade landing, not
+breakage.
+
+Prefer to drive it yourself? The manual steps are in [CHANGELOG.md](CHANGELOG.md#migration).
 
 ---
 
