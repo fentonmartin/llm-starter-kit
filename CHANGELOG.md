@@ -92,7 +92,12 @@ additive. See *Breaking changes* and *Migration* below.
   what a page is about and which rules come pre-written, and `init-docs` deletes the unused ones
   so a project's contract carries exactly one page-type table.
 - **`examples/example-project/`.** Two sources that disagree, four generated pages, three
-  scenarios, and three suggested edits that should each produce a specific finding.
+  scenarios, and suggested edits that should each produce a specific finding.
+- **`examples/example-project/TRANSCRIPT.md`.** What `ask-docs`, `lint-docs`, and `test-docs`
+  actually output against that base — the contradicted answer, a clean lint holding the
+  contradiction open as INFO, and three passing scenarios. The generated pages already showed
+  what `scan-docs` produces; the other three operations were documented but never demonstrated,
+  which is a poor look for a kit arguing evidence over assertion.
 - **`CHANGELOG.md`** — this file.
 
 ### Changed

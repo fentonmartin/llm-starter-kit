@@ -45,7 +45,11 @@ Run it yourself from this directory:
 | 2 | `/scan-docs` | Already run twice, once per source. See `docs/CHANGELOG.md`. |
 | 3 | `/ask-docs "What is the session TTL?"` | Should return **both** values and say the sources disagree. |
 | 4 | `/lint-docs` | Should report the open contradiction as INFO, not as an error. |
-| 5 | `/test-docs` | Runs the three cases in `docs/scenarios/questions.yaml`. |
+| 5 | `/test-docs` | Runs the three scenarios in `docs/scenarios/questions.yaml`. |
+
+**[`TRANSCRIPT.md`](TRANSCRIPT.md) shows what steps 3, 4 and 5 actually output** against this
+base — the contradicted answer, a clean lint with the contradiction held open as INFO, and three
+passing scenarios. It ends with four edits that each make something fail on purpose.
 
 ## What to look at, and why
 
@@ -78,13 +82,15 @@ and run `/lint-docs`: its summary and both pages citing it become `stale`, becau
 
 ## Try breaking it
 
-Three edits, each of which should produce a specific finding rather than a wrong answer:
+Two edits worth making before you read anything else, because a system that only ever succeeds
+teaches you nothing about what it does under stress:
 
 1. **Change the runbook's `SESSION_TTL` to `3600`.** Re-scan. The contradiction should change
    its numbers, not disappear.
-2. **Delete the closing `---` from any page's front matter.** Run `/lint-docs`. It should report
-   one ERROR with the corrected block, keep checking the other files, and not ingest the half of
-   the metadata that still looked like YAML.
-3. **Ask something no source covers** — `/ask-docs "How many concurrent sessions can Redis
+2. **Ask something no source covers** — `/ask-docs "How many concurrent sessions can Redis
    hold?"` The answer should be that the knowledge base does not cover it, naming the gap. Any
    number in that answer is a bug.
+
+[`TRANSCRIPT.md`](TRANSCRIPT.md) has four more, each aimed at a specific check: a broken
+citation, malformed front matter, a stale page, and a scenario whose *expectation* is what's
+wrong rather than the knowledge base.
