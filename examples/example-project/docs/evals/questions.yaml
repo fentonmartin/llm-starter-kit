@@ -1,0 +1,42 @@
+# Questions this knowledge base must answer correctly.
+#
+# Human-owned. The agent reads this file and never edits it.
+# Run with /eval-docs.
+
+questions:
+  # The most valuable case in the file: the base must admit the gap.
+  # Both sources are silent on revocation timing and ownership, and an
+  # agent that invents a plausible policy here has failed in the exact way
+  # this kit exists to prevent.
+  - id: session-revocation
+    question: What happens to existing sessions when a user changes their password?
+    expect_sources:
+      - docs/sources/260710-ops-runbook.md
+    require_facts:
+      - "not"
+    forbid_claims:
+      - "immediately invalidated"
+      - "all sessions are revoked"
+    expect_state: unknown
+
+  # The base must show both values, not pick the newer one.
+  - id: session-ttl
+    question: What is the absolute session TTL?
+    expect_sources:
+      - docs/sources/260415-auth-spec.md
+      - docs/sources/260710-ops-runbook.md
+    require_facts:
+      - "30 minutes"
+      - "24 hours"
+    expect_state: contradicted
+
+  # A plain retrieval case. The two sources agree, so there is a right answer.
+  - id: session-identifier
+    question: Are sessions JWTs?
+    expect_sources:
+      - docs/sources/260415-auth-spec.md
+    require_facts:
+      - "opaque"
+    forbid_claims:
+      - "yes"
+    expect_state: known
