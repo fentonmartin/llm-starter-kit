@@ -2,62 +2,72 @@
 
 # 📚 llm-starter-kit
 
-**Give your AI agents a memory of your project.**
+**A persistent, governed knowledge layer for LLMs and AI agents.**
 
 Drop it into any repo. It builds a `docs/` folder that every agent reads, maintains, and
-answers from — so the next agent doesn't start from zero.
+answers from — where every claim traces to a source, disagreements stay visible, and obsolete
+knowledge is marked as obsolete.
 
-`init-docs` · `scan-docs` · `ask-docs` · `lint-docs`
+`init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `eval-docs`
 
-[**Start here**](#1-paste-this-into-your-agent) · [What it produces](#-what-it-produces) · [How it works](#-how-it-works) · [Any AI agent](#-works-with-any-ai-agent) · [Obsidian](#-obsidian-compatible-by-design)
+[**Quick start**](#quick-start) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval) · [Governance](#contradictions) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
 
 </div>
 
 ---
 
-## The problem
+## Overview
 
 Every agent that opens your repo starts blind. It greps around, half-understands the
 architecture, and gives you a confident answer built on a partial reading. Next session, it
 does the whole thing again.
 
-You could point it at a vector database — but then the understanding lives in embeddings
-nobody can read, review, or correct.
+This kit makes the repository the durable knowledge layer instead. The thinking happens *once*,
+when material comes in, and the result is Markdown you can read, diff, and correct.
 
-**This kit takes the other path.** The thinking happens *once*, when material comes in, and
-the result is markdown you can read.
+**The core principle: knowledge should survive changing models and agents.** The agent is not
+the owner of what the project knows. The repository is.
 
 ```
-   ┌──────────────────┐                    ┌──────────────────┐
-   │       RAG        │                    │    this kit      │
-   ├──────────────────┤                    ├──────────────────┤
-   │ ask a question   │                    │ material comes in│
-   │       ↓          │                    │       ↓          │
-   │ search chunks    │                    │ agent reads it   │
-   │       ↓          │                    │       ↓          │
-   │ hope they're     │                    │ writes linked    │
-   │ the right ones   │                    │ pages, flags     │
-   │       ↓          │                    │ contradictions   │
-   │ answer           │                    │       ↓          │
-   │                  │                    │ ask = just       │
-   │ 🔒 opaque        │                    │      reading     │
-   │ 🔒 not reviewable│                    │                  │
-   │ 🔒 re-done every │                    │ ✅ readable      │
-   │    single time   │                    │ ✅ reviewable    │
-   └──────────────────┘                    │ ✅ compounds     │
-                                           └──────────────────┘
+Sources  →  Scan  →  Knowledge  →  Governance  →  Retrieve  →  Ask  →  Evidence-backed answer
 ```
 
-The trade-off is honest: scanning costs more time and tokens up front. What you get back
-survives — you can diff it, review it in a pull request, fix a wrong line by hand, and hand it
-to the next agent. A vector index is not something you can read.
+### What it is not
+
+Not a RAG framework, not a LangChain alternative, not a vector database wrapper, not an agent
+orchestrator, not a hosted service. There is no database, no index to rebuild, no server, and no
+runtime dependency. Markdown, YAML front matter, git, and the filesystem are the entire stack.
 
 ---
 
-## 🚀 Quick start
+## Why
 
-Whichever route you take, commit first — a scan touches many files, and the diff is how you
-review what the agent did:
+You could point an agent at a vector database. Retrieval is the easy half of the problem, and it
+leaves the hard half untouched:
+
+| Retrieval alone gives you | It does not give you |
+|---|---|
+| Relevant chunks | Whether the chunk is a fact, a proposal, or somebody's assumption |
+| A similarity score | Whether a human ever approved it |
+| The nearest match | Whether two sources disagree, or which one you got |
+| An answer | Whether the source changed after the answer was written |
+| Embeddings | Anything you can read, review in a pull request, or fix by hand |
+
+A retriever asked *"what is the session TTL?"* returns the more relevant of two conflicting
+documents and answers confidently. **The confidence is the bug.** This kit records both values,
+marks the page `claim_type: contradiction`, and says a human has not ruled.
+
+The trade-off is honest: scanning costs time and tokens up front, and there is more structure to
+learn. What you get back survives. A vector index is not something you can read.
+
+See [`examples/example-project/`](examples/example-project/) — that exact contradiction, worked
+end to end, in about five minutes of reading.
+
+---
+
+## Quick start
+
+Commit first. A scan touches many files, and the diff is how you review what the agent did:
 
 ```bash
 cd your-project
@@ -105,7 +115,7 @@ first, then interview me before writing anything.
 
 <br>
 
-Each skill is a plain markdown file, so pointing an agent at one is the same as running the
+Each skill is a plain Markdown file, so pointing an agent at one is the same as running the
 command:
 
 ```
@@ -142,15 +152,16 @@ sources" or "what do the docs say about X" usually routes correctly on its own.
 /init-docs
 ```
 
-It reads your README, your manifest, and your layout — then asks you five questions:
+It reads your README, your manifest, and your layout — then asks you six questions:
 
 > - What is this knowledge base for: this codebase, outside research, or both?
 > - Who reads it — you, your team, or mostly agents working in this repo?
 > - What recurring things deserve a page each? *(your nouns: services, tables, endpoints…)*
 > - What must never be got wrong?
-> - What's out of scope?
+> - What's out of scope, and what must never be read?
+> - What would you be most embarrassed to get wrong? *(these become your eval cases)*
 
-Out comes a `docs/` folder and a `docs/DOCS.md` schema **written for your project**, in your
+Out comes a `docs/` folder and a `docs/DOCS.md` **written for your project**, in your
 vocabulary.
 
 **Use it:**
@@ -158,7 +169,8 @@ vocabulary.
 ```
 /scan-docs                      # read new material, write the pages
 /ask-docs how does auth work?   # answer from the pages, with citations
-/lint-docs                      # find gaps, contradictions, stale pages
+/lint-docs                      # gaps, contradictions, stale pages, schema errors
+/eval-docs                      # check the base still answers its known questions
 ```
 
 > [!TIP]
@@ -182,7 +194,8 @@ docs/                           docs/
                                 │   ├── vendor-api-spec.pdf  ← raw material
                                 │   └── old-notes.md         ← unclassifiable → safe here
                                 ├── summaries/
-                                └── entities/
+                                ├── entities/
+                                └── evals/
 ```
 
 Anything it can't confidently classify goes to `sources/`, where the next scan turns it into
@@ -195,122 +208,464 @@ published docs as sources.
 
 ---
 
-## 📄 What it produces
-
-Say you drop a design doc into `docs/sources/`. One `/scan-docs` later:
-
-```
-docs/sources/260830-auth-redesign.md
-                    │
-                    ├──► docs/summaries/260830-auth-redesign.md   what the doc says
-                    ├──► docs/topics/session-management.md         synthesis across sources
-                    └──► docs/entities/auth-service.md             one subject, stable facts
-```
-
-Every page is plain markdown with front matter an agent — and a linter — can check:
-
-```markdown
----
-type: topic
-title: Session management
-created: 2026-08-30
-updated: 2026-08-30
-sources: [docs/sources/260830-auth-redesign.md, docs/sources/260415-security-audit.pdf]
-confidence: high
----
-
-Sessions are issued by [[auth-service]] as opaque tokens, not JWTs, and stored in
-[[redis]] with a 24-hour TTL ([[260830-auth-redesign]]).
-
-> [!warning] Contradiction
-> [[260830-auth-redesign]] specifies a 24-hour TTL. [[260415-security-audit]] recommends
-> 1 hour for admin sessions. Unresolved as of 2026-08-30.
-
-## Open questions
-- What happens to in-flight requests when a session is revoked?
-```
-
-Three things are happening there that make the difference:
-
-| | |
-|---|---|
-| 🔗 **`[[wikilinks]]`** | Link to a page that doesn't exist yet and that's *encouraged* — it's a to-do. `lint-docs` ranks them by how many pages point at them, so your biggest gaps surface first. |
-| ⚠️ **Contradictions recorded, never resolved** | Two sources disagreeing is a *finding*. Overwriting one destroys the most valuable signal the knowledge base produces. |
-| 📎 **Every claim cites its source** | So you can check it, and so `lint-docs` can tell you when the source changed and the page didn't. |
-
----
-
-## 🛠 The four commands
+## Commands
 
 | Command | What it does | When |
 |:--|:--|:--|
 | **`/init-docs`** | Surveys the project, interviews you, scaffolds `docs/`, writes a schema for *this* codebase | Once, at the start |
-| **`/scan-docs`** | Reads new sources in full, writes a summary each, updates every topic and entity they touch, flags contradictions | When material piles up |
-| **`/ask-docs`** | Answers from the pages, with citations. Drops to raw sources only when the pages are thin — and says so | Instead of digging |
-| **`/lint-docs`** | Orphans, gaps, contradictions, stale pages, duplicates, schema violations. Fixes the mechanical, escalates the rest | Every few scans |
+| **`/scan-docs`** | Reads new sources in full, writes a summary each, updates every topic and entity they touch, types the claims, flags contradictions | When material piles up |
+| **`/ask-docs`** | Answers from the pages within a context budget, with citations and an explicit known / inferred / contradicted / unknown split | Instead of digging |
+| **`/lint-docs`** | 14 checks at three severities — schema, citations, staleness, orphans, gaps, contradictions. Fixes the mechanical, escalates the rest | Every few scans |
+| **`/eval-docs`** | Runs `docs/evals/questions.yaml` and reports what the base no longer answers correctly | After big changes |
 
-`/init` `/scan` `/ask` `/lint` work as short aliases. The long names are canonical because this
-installs globally — a bare `/lint` would collide with code linters and misfire on *"lint my
-code."*
+`/init` `/scan` `/ask` `/lint` `/eval` work as short aliases. The long names are canonical
+because this installs globally — a bare `/lint` would collide with code linters and misfire on
+*"lint my code."*
 
 These are [Agent Skills](.claude/skills/), so plain description works too: *"document this
 repo"* runs `init-docs`.
 
----
+**Scope flags** for `ask-docs`, when a question would otherwise pull in too much:
 
-## 🧩 How it works
-
-Three layers, and the arrow only points one way:
-
-```mermaid
-flowchart LR
-    A["📥 docs/sources/<br/><i>yours — read-only to agents</i>"]
-    B["📝 summaries · topics · entities<br/><i>the agent's</i>"]
-    C["💬 your answer<br/><i>with citations</i>"]
-    D["⚖️ docs/DOCS.md<br/><i>the schema — you write this</i>"]
-
-    A -->|scan-docs| B
-    B -->|ask-docs| C
-    D -.->|governs| B
-    B -->|lint-docs| B
+```
+/ask-docs what is the TTL? --topic session-management
+/ask-docs what is the TTL? --source docs/sources/260710-ops-runbook.md
+/ask-docs where is Redis used? --entity redis
 ```
 
-| Layer | Path | Written by | Why it matters |
-|:--|:--|:--|:--|
-| **Sources** | `docs/sources/` | **you** — append-only | One-way flow means you can always regenerate the pages and compare. If an agent could edit its own inputs, that guarantee is gone. |
-| **Pages** | `summaries/` `topics/` `entities/` | **the agent** | Every claim traces to a source or an explicit instruction. `confidence: low` is a valid answer; inventing is not. |
-| **Schema** | `docs/DOCS.md` | **you** | The steering wheel. Read below. |
+---
+
+## Directory structure
+
+```
+README.md                you are here
+AGENTS.md                agent entry point — 11 hard rules, and a pointer to the schema
+CHANGELOG.md             this kit's release history
+LICENSE
+docs/
+├── DOCS.md              ⚖️  the governance contract — read below
+├── README.md            🗂️  the index. every generated page, once.
+├── CHANGELOG.md         📜  append-only log of every run
+├── sources/             📥  raw material. yours. read-only to the agent.
+├── summaries/           📄  one page per source
+├── topics/              💡  one page per idea, decision, or flow
+├── entities/            🏷️  one page per service, table, person, product…
+└── evals/               ✅  questions.yaml — what this base must answer correctly
+examples/example-project/  a complete worked example, five minutes to read
+.claude/skills/          the five skills, as plain Markdown
+.claude/commands/        the five, plus short aliases
+.claude-plugin/          install this repo as a Claude Code plugin
+```
+
+The `docs/` folder here is the template. `/init-docs` reproduces it inside your project.
 
 Everything sits under `docs/` so the knowledge base is one self-contained folder you can copy
-anywhere. `docs/sources/` is nested for filing only — it stays read-only and exempt from every
-page rule.
-
-### The one file that matters: `docs/DOCS.md`
-
-> [!IMPORTANT]
-> A generic schema produces generic pages. This is the single biggest reason the kit
-> disappoints people. `/init-docs` writes it from your answers — **read what it proposes and
-> correct it** before you go further.
-
-It defines your page types, front matter, link style, citations… and your own rules. Vague
-rules do nothing. Rules that earn their keep are specific and checkable:
-
-```markdown
-- A summary page names the file paths it covers, so lint can tell when the code moved.
-- Architectural decisions get a topic page including the alternatives that were rejected.
-- Never document intended behavior as actual behavior; if code and comment disagree,
-  that is a contradiction, and both go on the page.
-- Every claim about a person carries the date it was true.
-```
-
-Add more as you notice the agent guessing wrong. Every rule you add improves every future scan.
+anywhere. `docs/sources/` is nested for filing only — it stays read-only to the agent and
+exempt from every page rule.
 
 ---
 
-## 🤖 Works with any AI agent
+## Knowledge model
 
-Nothing here is Claude-specific. The kit is markdown and a folder convention — any agent that
-can read a file can follow it.
+Three page types, and one distinction that does most of the work.
+
+| Type | Path | One page per | Purpose |
+|:--|:--|:--|:--|
+| **Summary** | `summaries/<source-slug>.md` | source file | Faithful condensation of one source. The only page allowed to paraphrase at length. |
+| **Topic** | `topics/<slug>.md` | idea, question, theme | Synthesis across sources. Where claims are compared and contradictions surface. |
+| **Entity** | `entities/<slug>.md` | person, org, product, dataset | Stable facts about one thing, plus links to where it appears. |
+
+### Claim types
+
+**Sources say different kinds of things, and storing them identically is how a knowledge base
+starts lying.** These four sentences are not interchangeable:
+
+| Sentence | `claim_type` | Who can establish it |
+|:--|:--|:--|
+| Authentication uses Redis. | `fact` | Evidence |
+| The team chose Redis for sessions. | `decision` | **Human only** |
+| We believe Redis is required here. | `assumption` | Either, if labelled |
+| Redis might cut p99 latency; untested. | `hypothesis` | Either, if labelled |
+
+Plus `open-question` (nobody knows yet), `contradiction` (sources disagree), and `instruction`
+(a rule for how work is done here — **human only**).
+
+Individual claims inside a page are marked with Obsidian callouts, which render in Obsidian and
+grep cleanly:
+
+```markdown
+> [!check] Decision
+> Session storage moved to Redis on 2026-03-11. Rejected: in-process cache (loses state on
+> deploy), Postgres (write amplification). — approved by @fenton
+
+> [!question] Open question
+> Nothing in the sources describes session revocation on password change.
+```
+
+### Authority
+
+```
+Human decision recorded in a page   ← highest
+Source material in docs/sources/
+Agent-generated page content
+The agent's background knowledge    ← none; must be labelled if used at all
+```
+
+**The agent discovers, summarizes, classifies, links, flags, and proposes. It does not decide.**
+It may never set `claim_type: decision` or `instruction`, nor `status: superseded`,
+`deprecated`, or `archived` — those six values are human acts. An agent that thinks a decision
+was made writes `open-question` and asks.
+
+`confidence: high` is not authority. Confidence describes how well evidence supports a claim; it
+never promotes an interpretation into a project decision.
+
+---
+
+## Metadata
+
+Front matter identifies and governs the document. **The knowledge lives in the Markdown body,
+never in YAML** — agents corrupt nested YAML far more readily than they corrupt prose, so the
+schema is kept small enough to be hard to break.
+
+Six required fields, three optional:
+
+```yaml
+---
+type: summary | topic | entity
+title: Session management
+status: draft | active | stale | superseded | deprecated | archived
+claim_type: fact | decision | assumption | hypothesis | open-question | contradiction | instruction
+updated: 2026-08-30
+sources: [docs/sources/260415-auth-spec.md, docs/sources/260710-ops-runbook.md]
+
+created: 2026-08-30                              # optional
+confidence: high | medium | low                  # optional. Not authority.
+superseded_by: docs/topics/authentication-v2.md  # required when status is superseded
+---
+```
+
+**Flat scalars and flat lists only.** No nested maps, no lists of maps, no anchors. If a
+relationship needs structure, it goes in a Markdown section.
+
+Pages written before `status` and `claim_type` existed stay valid — `lint-docs` reports them as
+WARNING with safe defaults, never as errors. **No migration is required.**
+
+---
+
+## Lifecycle
+
+Obsolete knowledge must not look identical to current knowledge.
+
+```
+draft ──→ active ──→ stale ──→ active        (re-scanned against current sources)
+             │          │
+             │          └────→ superseded ──→ archived
+             └────→ deprecated
+```
+
+A page goes `stale` when a source it cites changed after its `updated` date. **Stale means
+unverified, not wrong** — an agent answering from a stale page says so rather than withholding
+the answer. Re-scanning clears it.
+
+A `superseded` page keeps its content. It is not emptied and not deleted; it gains a
+`superseded_by` pointer and stays readable for the audit trail. `ask-docs` skips superseded,
+deprecated, and archived pages unless you ask about history.
+
+---
+
+## Provenance
+
+The goal is to move from *"this came from foo.md"* to *"this came from this version of foo.md,
+at this section."* Cite with the most precise anchor the source format actually supports:
+
+| Source format | Anchor | Example |
+|:--|:--|:--|
+| PDF | page | `(260415-bench, p.4)` |
+| Spec, Markdown, doc | section | `(260415-auth-spec, §4.2)` |
+| Source code | path and line range | `(src/auth/session.php:112-140)` |
+| Transcript, video | timestamp | `(260302-standup, 14:20)` |
+| Web page | section and capture date | `(260110-redis-docs, "Expiration", captured 2026-01-10)` |
+| Anything else | the file alone | `(260415-notes)` |
+
+**Falling back to the bare file name is always correct. Inventing an anchor never is.** A page
+number the agent did not see is worse than no page number, because it survives review. The same
+applies to line ranges and commit hashes.
+
+---
+
+## Retrieval
+
+`ask-docs` never loads the whole knowledge base. At a thousand pages that is impossible; at a
+hundred it already buries the relevant page in noise.
+
+```
+question → select candidates → read → estimate budget
+                                            │
+                                ┌───────────┴───────────┐
+                           within budget           over budget
+                                │                       │
+                              answer          ask for narrower scope
+                                │
+                            citations
+```
+
+**Selection is by index and links**, not by reading everything: match the question against
+titles and descriptions in `docs/README.md`, read those entry points, follow their wikilinks one
+hop out — two if the question is broad. Then stop. If the answer is not in reach after two hops,
+that is a finding about the knowledge base, not a reason to widen the sweep.
+
+The selection step is deliberately isolated. **It is the retriever, and it is replaceable** — a
+project that later indexes `docs/` differently changes only that step, and nothing about the
+page format changes with it.
+
+Scale comes from the index and the link graph rather than from an embedding store, which is what
+keeps the whole thing readable and greppable. The cost is that an unlinked page missing from the
+index is invisible to retrieval — which is exactly why `lint-docs` reports orphans.
+
+---
+
+## Context limits
+
+The budget is roughly **half the agent's context window**, estimated before reading at about
+4 characters per token.
+
+**Exceeding it is a graceful failure, not a truncation:**
+
+```
+The evidence for this question exceeds the context budget:
+34 pages across 6 topics, roughly 180k tokens.
+
+Narrow the scope and I can answer precisely:
+  --topic authentication      7 pages
+  --topic rate-limiting       5 pages
+  --source docs/sources/260415-auth-spec.pdf
+```
+
+Reading the largest few and answering anyway is the worst available outcome. An answer built on
+silently dropped evidence is indistinguishable from a good one, and unauditable.
+
+---
+
+## Citations
+
+**A citation is a claim that a document was read.** An agent may cite only what it actually
+opened in that run. Citing a plausible-looking path it did not open is fabrication, and
+`eval-docs` scores it as a hard failure.
+
+Every answer closes with what was consulted, so you can audit the retrieval rather than trust
+it:
+
+```
+Consulted: docs/topics/batching.md, docs/entities/vllm.md, docs/summaries/260415-bench.md
+Not consulted: docs/topics/throughput.md (outside scope --topic batching)
+```
+
+Answers separate four states, always:
+
+```
+Known — sessions are stored in Redis with a 24-hour TTL
+  ([[session-management]] ← docs/sources/260710-ops-runbook.md, SESSION_TTL).
+
+Contradicted — the auth spec gives the TTL as 30 minutes
+  ([[260415-auth-spec]], §4.2). Unresolved.
+
+Unknown — nothing in the sources describes revocation on password change.
+```
+
+*"I don't know based on the available knowledge"* is a correct answer and often the most useful
+one. An unsupported inference presented as a fact is a defect regardless of whether it is right.
+
+---
+
+## Contradictions
+
+**Contradictions are never silently resolved.** Two sources disagreeing is a finding, not a bug —
+and surfacing it is the main thing this kit offers over plain retrieval.
+
+```markdown
+> [!warning] Contradiction
+> [[260415-auth-spec]] (§4.2) gives session TTL as 30 minutes.
+> [[260710-ops-runbook]] (SESSION_TTL) gives 24 hours, raised from 1800 on 2026-06-02.
+> Unresolved as of 2026-08-30.
+```
+
+The agent must not close this by reasoning that one source looks newer, more official, or more
+detailed. Recency decides only when `docs/DOCS.md` says so — for example, a project rule reading
+*"the runbook supersedes the spec for operational values."* Absent such a rule, it stays open
+until a human rules.
+
+`lint-docs` reports open contradictions as **INFO, never ERROR.** An open contradiction is the
+system working.
+
+---
+
+## Human review
+
+The documented path out of `contradiction` and `open-question`. **The evidence is preserved,
+never overwritten.**
+
+```markdown
+---
+claim_type: decision
+status: active
+---
+
+## Decision
+
+Session TTL is 24 hours. — @fenton, 2026-08-30
+
+## Rationale
+
+The spec and the runbook disagreed. The runbook reflects what production has run since the
+March migration; the spec was not updated.
+
+## Evidence
+
+- [[260415-auth-spec]] (§4.2) — 30 minutes. Superseded by the March 2026 migration.
+- [[260710-ops-runbook]] (SESSION_TTL) — 24 hours. Matches production.
+```
+
+What makes this auditable is that the disagreement is still on the page after it is settled.
+Deleting the losing side destroys the reason the decision exists.
+
+The ruling is committed, so it also has an author and a date in git.
+
+### Git conflicts
+
+A merge conflict inside `docs/` is a **semantic** conflict. Git can tell you a human wrote X and
+an agent wrote Y in the same place. It cannot tell you which is true.
+
+**Agents never auto-resolve a conflict in `summaries/`, `topics/`, or `entities/`.** They
+surface both sides and stop:
+
+```
+conflict → human reads both sides → checks the sources → resolves the Markdown
+        → /lint-docs → commit
+```
+
+`docs/CHANGELOG.md` (keep both, date order) and `docs/README.md` (keep the union, re-sort) are
+the only exceptions, because neither carries meaning.
+
+---
+
+## Linting
+
+`/lint-docs` runs 14 checks at three severities.
+
+**ERROR** is reserved for things that are mechanically certain and factually wrong: unparseable
+front matter, a citation to a file that does not exist, `superseded` with no `superseded_by`, an
+invalid field value, a secret in `sources/`. If you gate a merge on lint, gate on ERROR.
+
+**WARNING** is certain but tolerable: a missing `status`, an orphan page, a stale page, a
+malformed slug.
+
+**INFO** needs a human: an open contradiction, a gap with five inbound links, a probable
+duplicate.
+
+Fixed silently — mechanical, reversible, no judgment:
+
+- Index omissions and stale index lines
+- `status: active` and a defaulted `claim_type` on pages that predate those fields
+- Miscased field values and slugs
+- `status: stale` where a source outran the page
+- Wikilinks broken by a rename confirmable from `docs/CHANGELOG.md`
+
+Reported, never fixed: contradictions, duplicates worth merging, gaps, uncited claims, broken
+citations, unparseable front matter, and anything claiming human authority it may not have.
+
+**Malformed YAML is handled as a finding, not a failure.** One unparseable file is one ERROR;
+the sweep continues over every other page. Partial metadata from a block that failed to parse is
+never ingested, and a block that could not be read is never silently rewritten:
+
+```
+ERROR  docs/topics/authentication.md
+       Front matter does not parse: no closing `---` before the body.
+       Line 4 `missing_closing_dashes_or_invalid_yaml` is not a key/value pair.
+
+       Fix — replace lines 1-4 with:
+         ---
+         type: topic
+         title: Authentication
+         status: active
+         claim_type: fact
+         updated: 2026-08-30
+         sources: [docs/sources/260415-auth-spec.pdf]
+         ---
+
+       Not checked: this page was skipped by checks 2-12.
+```
+
+---
+
+## Evaluation
+
+`lint-docs` checks that the knowledge base is well-formed. **`eval-docs` checks that it is still
+right.** A base can pass every schema check and quietly stop answering the questions it was
+built to answer.
+
+Cases live in `docs/evals/questions.yaml`. Humans write it; the agent never edits it:
+
+```yaml
+questions:
+  - id: session-ttl
+    question: What is the absolute session TTL?
+    expect_sources:
+      - docs/sources/260710-ops-runbook.md
+    require_facts: ["24 hours", "30 minutes"]
+    expect_state: contradicted
+
+  - id: session-revocation
+    question: What happens to existing sessions when a user changes their password?
+    expect_state: unknown
+```
+
+**`expect_state: unknown` is the most valuable case you can write.** It asserts that the base
+admits a gap instead of inventing an answer — the failure this kit exists to prevent, and the
+one no other check catches.
+
+Two passes, reported separately:
+
+- **Structural** — citation validity, source coverage, required facts, forbidden claims, answer
+  state, stale evidence. Path and string comparison. Trust these.
+- **Semantic** (`--semantic`) — unsupported claims, overstated certainty, evidence sufficiency,
+  contradiction awareness. Judgment, opt-in, and the only way to catch the interesting failures.
+
+`eval-docs` never edits pages to make a case pass. It reports what failed and what would fix it.
+
+---
+
+## Security
+
+**Not every file in a repository is safe to read into an LLM.** The agent never reads, ingests,
+summarizes, or quotes from:
+
+```
+.env, .env.*                       secrets/**, credentials/**, private/**
+*.pem, *.key, *.p12, *.pfx         **/*.secret, **/*secrets*.y*ml
+id_rsa, id_dsa, id_ecdsa           .aws/**, .ssh/**, .netrc
+```
+
+`scan-docs` checks this before reading; `lint-docs` checks it after, as an ERROR. Add your own
+paths under *Out of scope* in `docs/DOCS.md`.
+
+If a source turns out to contain credentials, **the scan stops.** It does not redact and
+continue — the secret is already in the agent's context, and a partial summary normalizes the
+leak.
+
+Pages may carry an optional `sensitivity: public | internal | confidential` marker. It is
+documentation, not enforcement: it tells a human what they are about to share.
+
+> [!IMPORTANT]
+> These exclusions are **instructions, not enforcement.** Nothing written in a Markdown file can
+> stop an agent from reading a path. Use filesystem permissions, `.gitignore`, and secret
+> scanning for anything that actually matters.
+
+---
+
+## Works with any AI agent
+
+Nothing here is Claude-specific. The kit is Markdown and a folder convention — any agent that
+can read a file can follow it. **The repository is the interface.**
 
 | Tool | Setup |
 |:--|:--|
@@ -321,7 +676,7 @@ can read a file can follow it.
 | **ChatGPT / any chat window** | Paste the bootstrap prompt ↓ |
 
 <details>
-<summary><b>📋 Bootstrap prompt</b> — for an agent with no repo awareness</summary>
+<summary><b>Bootstrap prompt</b> — for an agent with no repo awareness</summary>
 
 <br>
 
@@ -332,24 +687,32 @@ This project is a knowledge base with three layers:
                   in it. It is exempt from all page rules.
 - docs/         — everything else here is markdown pages you write and maintain. Each must
                   trace back to a source or to something I explicitly told you.
-- docs/DOCS.md  — the schema. Read it fully before writing anything. It overrides these
-                  instructions.
+- docs/DOCS.md  — the governance contract. Read it fully before writing anything. It
+                  overrides these instructions.
 
-Four operations, fully specified in .claude/skills/<name>/SKILL.md — read the relevant file
+Five operations, fully specified in .claude/skills/<name>/SKILL.md — read the relevant file
 before you begin:
 
 - init-docs → .claude/skills/init-docs/SKILL.md   (set up, once per project)
 - scan-docs → .claude/skills/scan-docs/SKILL.md
 - ask-docs  → .claude/skills/ask-docs/SKILL.md
 - lint-docs → .claude/skills/lint-docs/SKILL.md
+- eval-docs → .claude/skills/eval-docs/SKILL.md
 
 Non-negotiable:
+- You propose; I decide. Never set claim_type: decision or instruction, and never set
+  status: superseded, deprecated, or archived.
 - Never resolve a contradiction by overwriting. Record both claims.
+- Never cite a document you did not actually open, and never invent a page number or
+  line range.
+- If the evidence a question needs exceeds your context, say so and ask me to narrow the
+  scope. Never answer from a silently truncated set.
+- Never read .env*, *.pem, *.key, secrets/, credentials/, private/, .ssh/, .aws/.
 - docs/CHANGELOG.md is append-only, newest first.
 - docs/README.md lists every generated page exactly once. Keep it current.
 - Dates in file names are YYMMDD. Dates inside files are YYYY-MM-DD.
 
-Start with: init-docs, scan-docs, ask-docs QUESTION, or lint-docs
+Start with: init-docs, scan-docs, ask-docs QUESTION, lint-docs, or eval-docs
 ```
 
 In a chat window with no file access, upload `docs/DOCS.md` and the one skill file you need,
@@ -359,7 +722,7 @@ then paste the results back into the repo yourself. Clumsy, but the format holds
 
 ---
 
-## 💎 Obsidian-compatible by design
+## Obsidian
 
 The page format isn't invented here — it's [Obsidian Flavored
 Markdown](https://help.obsidian.md/syntax). Open `docs/` as a vault and everything already
@@ -371,36 +734,68 @@ File → Open folder as vault → your-project/docs
 
 | What you get | Because |
 |:--|:--|
-| 🕸️ **Graph view of your knowledge base** | Pages link with `[[wikilinks]]`, so the graph is the real structure — not an approximation |
-| 🔗 **Backlinks and unlinked mentions** | Every citation is a link, so any page shows what references it |
-| ⚠️ **Callouts render properly** | Contradictions use `> [!warning]`, Obsidian's own syntax |
-| 🏷️ **Front matter in the Properties panel** | `type`, `created`, `updated`, `sources`, `confidence` are editable fields, not raw YAML |
-| 🔍 **Unresolved links show as your to-do list** | The gaps `lint-docs` reports are the same ones Obsidian greys out |
+| **Graph view of your knowledge base** | Pages link with `[[wikilinks]]`, so the graph is the real structure — not an approximation |
+| **Backlinks and unlinked mentions** | Every citation is a link, so any page shows what references it |
+| **Callouts render properly** | Contradictions, decisions, assumptions and open questions all use Obsidian's own `> [!type]` syntax |
+| **Front matter in the Properties panel** | `type`, `status`, `claim_type`, `updated`, `sources` are editable fields, not raw YAML |
+| **Unresolved links are your to-do list** | The gaps `lint-docs` reports are the same ones Obsidian greys out |
 
-Everything stays plain markdown in git, so editing a page by hand in Obsidian and having an
-agent scan it later are the same workflow. `.obsidian/` is gitignored — your vault settings
-stay yours.
+Everything stays plain Markdown in git, so editing a page by hand in Obsidian and having an
+agent scan it later are the same workflow. `.obsidian/` is gitignored — your vault settings stay
+yours.
 
-> [!NOTE]
-> **This kit does not bundle Obsidian skills.** It ships four: `init-docs`, `scan-docs`,
-> `ask-docs`, `lint-docs`. What it borrows from
-> [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills) is the packaging model
-> and the markdown conventions — not the skills themselves.
->
-> If you want an agent that can also drive Obsidian directly — Bases, JSON Canvas, the CLI,
-> clean web-page extraction — install that plugin alongside this one. They compose: his skills
-> handle Obsidian's formats and tooling, these handle what goes in the pages and why.
->
-> ```
-> /plugin marketplace add kepano/obsidian-skills
-> ```
+**Obsidian is optional.** Nothing in the core depends on it: wikilinks are just text, and
+`docs/DOCS.md` documents how to switch the whole knowledge base to plain relative Markdown links
+if you prefer.
 
-Not an Obsidian user? Nothing is lost — wikilinks are just text, and `docs/DOCS.md` documents
-how to switch the whole knowledge base to plain relative markdown links if you prefer.
+<details>
+<summary><b>Using kepano/obsidian-skills alongside</b></summary>
+
+<br>
+
+**This kit does not bundle Obsidian skills.** It ships five: `init-docs`, `scan-docs`,
+`ask-docs`, `lint-docs`, `eval-docs`. What it borrows from
+[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills) is the packaging model and
+the Markdown conventions — not the skills themselves.
+
+If you want an agent that can also drive Obsidian directly — Bases, JSON Canvas, the CLI, clean
+web-page extraction — install that plugin alongside this one. They compose: his skills handle
+Obsidian's formats and tooling, these handle what goes in the pages and why.
+
+```
+/plugin marketplace add kepano/obsidian-skills
+```
+
+</details>
 
 ---
 
-## 📆 A rhythm that works
+## Continuous integration
+
+**There is no CI in this repository, and nothing here can run in CI.** All five operations are
+Markdown instructions an agent follows — there is no program to execute, no exit code, and no
+deterministic pass or fail.
+
+That is a deliberate design choice, not an oversight. Adding a linter binary would mean adding a
+language runtime, a dependency tree, and a release process to a project whose entire value is
+that it is Markdown in a folder.
+
+What you can do today:
+
+- **Review the diff.** A scan touches many files; the pull request *is* the review. This is the
+  control that actually works.
+- **Run `/lint-docs` before merging** a branch that touched `docs/`, and treat its ERROR
+  findings as blocking. A human runs it; nothing enforces it.
+- **Run `/eval-docs` after a large scan** or when sources changed materially.
+- **Use ordinary secret scanning** on the repo. The exclusion list in `docs/DOCS.md` is guidance
+  to an agent, not a control.
+
+A deterministic linter that could gate a merge is the most valuable thing this project does not
+have. See [Roadmap](#roadmap).
+
+---
+
+## A rhythm that works
 
 ```
    add sources ─────► /scan-docs ─────► read the git diff
@@ -410,21 +805,22 @@ how to switch the whole knowledge base to plain relative markdown links if you p
         └──────────── /ask-docs ◄──────────────┘
                    instead of digging
                           │
-                   /lint-docs every
-                    fifth scan or so
+                   /lint-docs every fifth scan
+                   /eval-docs after big changes
 ```
 
-- **Commit after each scan.** A scan touches many files; the diff is your review, and your
-  undo.
+- **Commit after each scan.** A scan touches many files; the diff is your review, and your undo.
 - **Revisit `docs/DOCS.md` monthly.** It's the highest-leverage file in the repo.
 - **Watch the gaps.** Dangling wikilinks ranked by inbound count are a reading list, generated
   for free.
+- **Write eval cases for what you'd hate to get wrong**, especially the ones whose honest answer
+  is "nobody knows yet."
 
 Month one it's a filing cabinet. Month six it answers things you'd never have found by
 searching, because the connection was made when the material came in.
 
 <details>
-<summary><b>🔧 When things go wrong</b></summary>
+<summary><b>When things go wrong</b></summary>
 
 <br>
 
@@ -433,38 +829,60 @@ searching, because the connection was made when the material came in.
 | Pages are generic and say little | `DOCS.md` still has the shipped defaults, or sources were too few and unrelated | Rewrite the rules; scan three to five files on **one** subject — synthesis needs overlap |
 | Same concept split across two pages | Slugs differed on first mention | Lint reports duplicates; merge, then add a naming rule |
 | Agent asserts things no source supports | Rules too loose | Add an explicit rule; re-scan that source |
-| Pages drifted from their sources | Sources edited after scanning | Lint flags stale pages; re-scan them |
+| Pages drifted from their sources | Sources edited after scanning | Lint flags them `stale`; re-scan |
 | Summaries are shallow | Agent skimmed a long PDF | Scan that source alone, and say *"read it in full"* |
 | Too many dangling links | Normal and healthy | That's your reading list, not a bug |
+| `ask-docs` keeps refusing on budget | Question too broad, or the index is thin | Use `--topic` / `--source`; check `docs/README.md` descriptions are specific |
+| A contradiction won't go away | It is genuinely unresolved | That's the point. Rule on it — see [Human review](#human-review) |
 
 </details>
 
 ---
 
-## 📁 Layout
+## Limitations
 
-```
-README.md                you are here
-AGENTS.md                agent entry point — the rules, and a pointer to the schema
-LICENSE
-docs/
-├── DOCS.md              ⚖️  the schema — page types, front matter, links, your rules
-├── README.md            🗂️  the index. every generated page, once.
-├── CHANGELOG.md         📜  append-only log of every run
-├── sources/             📥  raw material. yours. read-only to the agent.
-├── summaries/           📄  one page per source
-├── topics/              💡  one page per idea, decision, or flow
-└── entities/            🏷️  one page per service, table, person, product…
-.claude/skills/          init-docs, scan-docs, ask-docs, lint-docs
-.claude/commands/        the four, plus short aliases
-.claude-plugin/          install this repo as a Claude Code plugin
-```
+Stated plainly, because documentation that claims more than it does is the failure this kit
+exists to prevent.
 
-The `docs/` folder here is the template. `/init-docs` reproduces it inside your project.
+- **Nothing here executes.** All five operations are Markdown instructions. There is no CLI, no
+  parser, no test suite, and nothing that can run in CI.
+- **`lint-docs` and `eval-docs` are therefore not deterministic.** Two runs may word the same
+  finding differently or disagree at the margin. Structural checks are far more stable than
+  semantic ones because they compare paths and strings rather than meaning — but "more stable"
+  is not "reproducible."
+- **The context budget is an estimate** at ~4 characters per token. It is deliberately
+  conservative and will sometimes refuse a question that would have fit.
+- **Retrieval depends on the index and the link graph.** An unlinked page missing from
+  `docs/README.md` is invisible to `ask-docs`. That is why orphans are a lint check, and it is
+  the real cost of not having an embedding index.
+- **Security exclusions are instructions, not enforcement.**
+- **Scanning is slow and token-expensive.** Reading a long PDF in full is the point, and it is
+  not cheap. The cost is paid once per source rather than once per question.
+- **Quality tracks `docs/DOCS.md`.** A generic schema produces generic pages, and no amount of
+  scanning fixes that.
 
 ---
 
-## 💭 Design notes
+## Roadmap
+
+Genuinely useful, roughly in order. Nothing here is promised.
+
+- **A deterministic linter.** A small zero-dependency script for the mechanical subset — front
+  matter parsing, required fields, valid enum values, broken source paths, orphans, dangling
+  links. Real exit codes, CI-gateable, and no LLM. The judgment checks stay in the skill. This
+  is the single biggest gap.
+- **Fixtures for the linter**, including the malformed-YAML case, so its behavior is testable.
+- **Better staleness for code sources** — comparing a cited line range against the current file
+  rather than trusting mtime.
+- **An eval report format** that can be diffed between runs, so drift is visible over time.
+
+Deliberately **not** planned: a vector database, an embeddings pipeline, a web UI, an API
+server, a hosted service, or multi-agent orchestration. If retrieval needs to scale further, the
+answer is a better index behind the same replaceable selection step — not a new dependency.
+
+---
+
+## Design notes
 
 <details>
 <summary><b>Why "docs" and not "wiki"</b></summary>
@@ -489,6 +907,25 @@ impossible to spot later.
 
 Overwriting a conflicting claim destroys the most valuable signal the knowledge base produces.
 Two sources disagreeing is a finding — often the finding that mattered most.
+
+</details>
+
+<details>
+<summary><b>Why the schema is only six required fields</b></summary>
+
+Every field is one a future agent will forget, reorder, or corrupt. Nested YAML fails far more
+often than prose does, so the rule is that front matter *identifies and governs* the document
+while the Markdown body *carries the knowledge*. Richer relationships go in sections, not in
+deeper YAML.
+
+</details>
+
+<details>
+<summary><b>Why <code>confidence</code> is not authority</b></summary>
+
+Confidence describes how well evidence supports a claim. Authority is about who decided. An
+agent can be highly confident about something no human ever approved, which is precisely the
+case the two fields have to keep apart.
 
 </details>
 
@@ -520,7 +957,26 @@ is exactly the failure this kit exists to prevent.
 
 ---
 
-## 🙏 Sources & inspiration
+## Contributing
+
+Issues and pull requests welcome. Two things worth knowing first.
+
+**The constraints are the product.** A change that adds a runtime dependency, a database, a
+service, or an agent-specific code path is very unlikely to be merged regardless of what it
+enables. See *Changing this kit* in [`AGENTS.md`](AGENTS.md).
+
+**Changes must land in every file that describes the behavior.** A change to a skill usually
+means a change to `docs/DOCS.md`, `AGENTS.md`, this README, and `CHANGELOG.md`. Documentation
+claiming a capability the skills don't implement is the exact failure mode this project exists
+to prevent, so a PR that updates one and not the others isn't finished.
+
+Schema changes stay backward compatible unless there is genuinely no alternative — someone's
+knowledge base is already using the old shape. If a field must change, `CHANGELOG.md` carries
+the migration.
+
+---
+
+## Sources & inspiration
 
 - **[Andrej Karpathy — *LLM Wiki*](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)**
   — the three-layer pattern (raw sources / wiki / schema) and the ingest–query–lint loop this
@@ -528,27 +984,25 @@ is exactly the failure this kit exists to prevent.
   `docs/README.md` and `docs/CHANGELOG.md`.
 - **[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)** — the Agent Skills
   packaging model (`skills/<name>/SKILL.md`, `.claude-plugin/`) and the Obsidian Flavored
-  Markdown conventions: wikilinks, callouts, YAML properties. **None of his skills are
-  vendored here** — install that plugin alongside this one if you want an agent that can drive
-  Obsidian itself. See [Obsidian-compatible](#-obsidian-compatible-by-design).
+  Markdown conventions: wikilinks, callouts, YAML properties. **None of his skills are vendored
+  here.**
 - **[Agent Skills specification](https://code.claude.com/docs/en/skills)** — the skill format.
 - **[Obsidian Flavored Markdown](https://help.obsidian.md/syntax)** — link, embed, and callout
-  syntax. Point a vault at `docs/` and the graph view just works.
+  syntax.
 
 ### What's different here
 
-- Built to be **installed into an existing project**, with `/init-docs` writing a schema from
-  an interview rather than shipping a template you're expected to edit later.
+- Built to be **installed into an existing project**, with `/init-docs` writing a schema from an
+  interview rather than shipping a template you're expected to edit later.
 - **Merges** with documentation that already exists instead of demanding a clean slate.
-- One vocabulary — `docs/`, `sources/`, `DOCS.md` — so it reads naturally pointed at a
-  codebase, not only at a reading pile.
-- Explicit page types with required front matter, giving `lint-docs` something concrete to
-  check rather than vibes.
-- A stated split in `lint-docs` between what the agent fixes silently and what it must
-  escalate.
-- Agent-agnostic by construction: plain-markdown skills and one root `AGENTS.md`.
-- **Obsidian-compatible out of the box** — the format is Obsidian Flavored Markdown, so the
-  graph view, backlinks and Properties panel work on `docs/` with nothing to convert.
+- **An epistemic model, not just a format.** Facts, decisions, assumptions, hypotheses, open
+  questions and contradictions are different things, and the schema keeps them apart.
+- **An explicit authority model.** The agent proposes; the human decides. Six metadata values
+  are reserved to humans.
+- **Retrieval with a stated budget and a graceful failure**, rather than an unbounded read.
+- **Provenance with real anchors** and a standing prohibition on inventing them.
+- Agent-agnostic by construction: plain-Markdown skills and one root `AGENTS.md`.
+- **Obsidian-compatible out of the box**, with nothing depending on Obsidian.
 
 ---
 
@@ -556,14 +1010,15 @@ is exactly the failure this kit exists to prevent.
 
 Released under the [MIT License](LICENSE). © 2026 Fenton Martin.
 
-Your knowledge base is markdown in a folder — no database, no lock-in, no service to depend on.
+Your knowledge base is Markdown in a folder — no database, no lock-in, no service to depend on.
 Remove this kit tomorrow and every page it wrote still opens in any text editor.
 
 ---
 
 <div align="center">
 
-[**Start here**](#1-paste-this-into-your-agent) · [What it produces](#-what-it-produces) · [How it works](#-how-it-works) · [Any AI agent](#-works-with-any-ai-agent) · [Obsidian](#-obsidian-compatible-by-design)
+[**Quick start**](#quick-start) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval) · [Governance](#contradictions) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
 
 <sub>[Issues](https://github.com/fentonmartin/llm-starter-kit/issues) · [Repository](https://github.com/fentonmartin/llm-starter-kit) · Built on [Karpathy's LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) and [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)</sub>
 
+</div>
