@@ -9,7 +9,7 @@ answers from — so the next agent doesn't start from zero.
 
 `init-docs` · `scan-docs` · `ask-docs` · `lint-docs`
 
-[Quick start](#-quick-start) · [What it produces](#-what-it-produces) · [How it works](#-how-it-works) · [Any AI agent](#-works-with-any-ai-agent)
+[Quick start](#-quick-start) · [What it produces](#-what-it-produces) · [How it works](#-how-it-works) · [Any AI agent](#-works-with-any-ai-agent) · [Obsidian](#-obsidian-compatible-by-design)
 
 </div>
 
@@ -303,6 +303,47 @@ then paste the results back into the repo yourself. Clumsy, but the format holds
 
 ---
 
+## 💎 Obsidian-compatible by design
+
+The page format isn't invented here — it's [Obsidian Flavored
+Markdown](https://help.obsidian.md/syntax). Open `docs/` as a vault and everything already
+works, no conversion and no plugins:
+
+```
+File → Open folder as vault → your-project/docs
+```
+
+| What you get | Because |
+|:--|:--|
+| 🕸️ **Graph view of your knowledge base** | Pages link with `[[wikilinks]]`, so the graph is the real structure — not an approximation |
+| 🔗 **Backlinks and unlinked mentions** | Every citation is a link, so any page shows what references it |
+| ⚠️ **Callouts render properly** | Contradictions use `> [!warning]`, Obsidian's own syntax |
+| 🏷️ **Front matter in the Properties panel** | `type`, `created`, `updated`, `sources`, `confidence` are editable fields, not raw YAML |
+| 🔍 **Unresolved links show as your to-do list** | The gaps `lint-docs` reports are the same ones Obsidian greys out |
+
+Everything stays plain markdown in git, so editing a page by hand in Obsidian and having an
+agent scan it later are the same workflow. `.obsidian/` is gitignored — your vault settings
+stay yours.
+
+> [!NOTE]
+> **This kit does not bundle Obsidian skills.** It ships four: `init-docs`, `scan-docs`,
+> `ask-docs`, `lint-docs`. What it borrows from
+> [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills) is the packaging model
+> and the markdown conventions — not the skills themselves.
+>
+> If you want an agent that can also drive Obsidian directly — Bases, JSON Canvas, the CLI,
+> clean web-page extraction — install that plugin alongside this one. They compose: his skills
+> handle Obsidian's formats and tooling, these handle what goes in the pages and why.
+>
+> ```
+> /plugin marketplace add kepano/obsidian-skills
+> ```
+
+Not an Obsidian user? Nothing is lost — wikilinks are just text, and `docs/DOCS.md` documents
+how to switch the whole knowledge base to plain relative markdown links if you prefer.
+
+---
+
 ## 📆 A rhythm that works
 
 ```
@@ -431,7 +472,9 @@ is exactly the failure this kit exists to prevent.
   `docs/README.md` and `docs/CHANGELOG.md`.
 - **[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)** — the Agent Skills
   packaging model (`skills/<name>/SKILL.md`, `.claude-plugin/`) and the Obsidian Flavored
-  Markdown conventions: wikilinks, callouts, YAML properties.
+  Markdown conventions: wikilinks, callouts, YAML properties. **None of his skills are
+  vendored here** — install that plugin alongside this one if you want an agent that can drive
+  Obsidian itself. See [Obsidian-compatible](#-obsidian-compatible-by-design).
 - **[Agent Skills specification](https://code.claude.com/docs/en/skills)** — the skill format.
 - **[Obsidian Flavored Markdown](https://help.obsidian.md/syntax)** — link, embed, and callout
   syntax. Point a vault at `docs/` and the graph view just works.
@@ -448,36 +491,24 @@ is exactly the failure this kit exists to prevent.
 - A stated split in `lint-docs` between what the agent fixes silently and what it must
   escalate.
 - Agent-agnostic by construction: plain-markdown skills and one root `AGENTS.md`.
+- **Obsidian-compatible out of the box** — the format is Obsidian Flavored Markdown, so the
+  graph view, backlinks and Properties panel work on `docs/` with nothing to convert.
+
+---
+
+## License
+
+Released under the [MIT License](LICENSE). © 2026 Fenton Martin.
+
+Your knowledge base is markdown in a folder — no database, no lock-in, no service to depend on.
+Remove this kit tomorrow and every page it wrote still opens in any text editor.
 
 ---
 
 <div align="center">
 
-### Ready?
+[Quick start](#-quick-start) · [What it produces](#-what-it-produces) · [How it works](#-how-it-works) · [Any AI agent](#-works-with-any-ai-agent) · [Obsidian](#-obsidian-compatible-by-design)
 
-```
-/plugin marketplace add fentonmartin/llm-starter-kit
-/plugin install llm-starter-kit
-/init-docs
-```
-
-Three commands. Your agents stop starting from zero.
-
-<br>
-
-[**Quick start**](#-quick-start) · [**What it produces**](#-what-it-produces) · [**How it works**](#-how-it-works) · [**Any AI agent**](#-works-with-any-ai-agent)
-
-[Report an issue](https://github.com/fentonmartin/llm-starter-kit/issues) · [Star the repo](https://github.com/fentonmartin/llm-starter-kit) · [Karpathy's original gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
-
-<br>
-
-<sub>
-
-**[MIT](LICENSE)** · Built for people who'd rather read their notes than trust a black box.
-
-*Your knowledge base is markdown in a folder. No database, no lock-in, no service to depend on.<br>
-Delete this kit tomorrow and every page you made still opens in any text editor.*
-
-</sub>
+<sub>[Issues](https://github.com/fentonmartin/llm-starter-kit/issues) · [Repository](https://github.com/fentonmartin/llm-starter-kit) · Built on [Karpathy's LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) and [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)</sub>
 
 </div>

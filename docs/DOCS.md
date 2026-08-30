@@ -79,6 +79,9 @@ Use Obsidian wikilinks: `[[vector-database]]`, or `[[vector-database|vector DBs]
 Link on first mention of any concept that has (or should have) its own page. A link to a page
 that does not exist yet is **encouraged** — it is a to-do, and `lint-docs` collects them as gaps.
 
+This is Obsidian Flavored Markdown, so `docs/` opens directly as a vault — graph view,
+backlinks, and unresolved links all work without conversion.
+
 > To use plain relative Markdown links instead, change this section and tell the agent to
 > migrate; the skills read this file for link style rather than assuming one.
 
