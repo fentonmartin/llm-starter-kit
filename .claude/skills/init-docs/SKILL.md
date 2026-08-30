@@ -58,9 +58,9 @@ docs/
   DOCS.md               written from the interview — see below
   README.md             the index, empty to start
   CHANGELOG.md          the log, empty to start
-  core-sources/              empty, for raw material
+  core-sources/         empty, for raw material
   summaries/  topics/  entities/
-  scenarios/questions.yaml  the questions this base must answer — empty to start
+  scenarios/questions.yaml  what this base must answer — empty to start
 ```
 
 Five files and five folders. Nothing else — the schema carries the rules, so there is no
