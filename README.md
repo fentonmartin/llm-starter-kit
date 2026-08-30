@@ -95,7 +95,10 @@ Do not skip the interview and do not answer its questions on my behalf.
 Show me the docs/DOCS.md rules you wrote before we go any further.
 ```
 
-Prefer to copy the files yourself? Same result:
+<details>
+<summary><b>Copy the files yourself instead</b>, and day-to-day prompts</summary>
+
+<br>
 
 ```bash
 git clone https://github.com/fentonmartin/llm-starter-kit /tmp/lsk
@@ -103,37 +106,13 @@ cp -r /tmp/lsk/docs /tmp/lsk/.claude /tmp/lsk/AGENTS.md your-project/
 rm -rf /tmp/lsk
 ```
 
-Then paste this to start:
-
-```
-Read .claude/skills/init-docs/SKILL.md and follow it exactly. Survey this project
-first, then interview me before writing anything.
-```
-
-<details>
-<summary><b>Day-to-day prompts</b> — for agents without slash commands</summary>
-
-<br>
+Then: *"Read `.claude/skills/init-docs/SKILL.md` and follow it exactly. Survey this project
+first, then interview me before writing anything."*
 
 Each skill is a plain Markdown file, so pointing an agent at one is the same as running the
-command:
-
-```
-Read .claude/skills/scan-docs/SKILL.md and follow it.
-```
-
-```
-Read .claude/skills/ask-docs/SKILL.md and follow it, then answer:
-how does session expiry work?
-```
-
-```
-Read .claude/skills/lint-docs/SKILL.md and follow it. Fix what it says you may
-fix, and report the rest to me rather than acting on it.
-```
-
-Most agents don't need this much hand-holding once `AGENTS.md` is in the repo — "scan my
-sources" or "what do the docs say about X" usually routes correctly on its own.
+command — `Read .claude/skills/scan-docs/SKILL.md and follow it.` Most agents don't need this
+much hand-holding once `AGENTS.md` is in the repo; "scan my sources" or "what do the docs say
+about X" usually routes correctly on its own.
 
 </details>
 
@@ -182,6 +161,11 @@ vocabulary.
 
 `/init-docs` **merges**. It never overwrites and never deletes.
 
+<details>
+<summary>What the merge does</summary>
+
+<br>
+
 ```
 BEFORE                          AFTER
 docs/                           docs/
@@ -203,8 +187,10 @@ proper pages — **nothing is lost by that default**. It shows you every move as
 before touching a thing, then fixes inbound links across the repo.
 
 If your `docs/` is built by a site generator (`mkdocs.yml`, `docusaurus.config.js`,
-`book.toml`), it won't rearrange anything — it scaffolds at `docs/kb/` and treats your
-published docs as sources.
+`book.toml`), it won't rearrange anything — it scaffolds at `docs/kb/` and treats your published
+docs as sources.
+
+</details>
 
 ---
 
@@ -678,23 +664,15 @@ Obsidian's formats and tooling, these handle what goes in the pages and why.
 
 ## Continuous integration
 
-**There is no CI in this repository, and nothing here can run in CI.** All five operations are
-Markdown instructions an agent follows — there is no program to execute, no exit code, and no
-deterministic pass or fail.
+**There is no CI here, and nothing in this kit can run in CI.** All five operations are Markdown
+instructions an agent follows — no program, no exit code, no deterministic pass or fail. That is
+a design choice: a linter binary would mean a language runtime, a dependency tree, and a release
+process, in a project whose value is that it is Markdown in a folder.
 
-That is a deliberate design choice, not an oversight. Adding a linter binary would mean adding a
-language runtime, a dependency tree, and a release process to a project whose entire value is
-that it is Markdown in a folder.
-
-What you can do today:
-
-- **Review the diff.** A scan touches many files; the pull request *is* the review. This is the
-  control that actually works.
-- **Run `/lint-docs` before merging** a branch that touched `docs/`, and treat its ERROR
-  findings as blocking. A human runs it; nothing enforces it.
-- **Run `/test-docs` after a large scan** or when sources changed materially.
-- **Use ordinary secret scanning** on the repo. The exclusion list in `docs/DOCS.md` is guidance
-  to an agent, not a control.
+What works today: **review the diff** (a scan touches many files; the pull request *is* the
+review), **run `/lint-docs` before merging** anything that touched `docs/` and treat ERROR as
+blocking, **run `/test-docs`** after a large scan, and **use ordinary secret scanning** — the
+exclusion list is guidance to an agent, not a control.
 
 A deterministic linter that could gate a merge is the most valuable thing this project does not
 have. See [Roadmap](#roadmap).
