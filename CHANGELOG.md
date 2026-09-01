@@ -7,6 +7,72 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning is [semantic](https://semver.org/spec/v2.0.0.html), applied to the schema and the
 command surface: a breaking change is one that invalidates an existing knowledge base.
 
+## [2.1.0] — 2026-09-01
+
+One structure, more use cases. `2.0.0` fixed what a page must contain; `2.1.0` answers the
+question that follows — *what if my project isn't a codebase?* — without giving each use case its
+own layout.
+
+**Nothing breaks.** No folder, field, command, or check was renamed or removed. Existing bases are
+current as they stand: the root defaults to `docs/`, and a `DOCS.md` with no root line behaves
+exactly as before.
+
+### Added
+
+- **A fourth preset: *a document library*.** For a project whose documents *are* the project — a
+  book or spec set being written, a policy library, a pile of notes used as the knowledge base.
+  Distinct from *outside research* in that the material is the user's own and therefore
+  authoritative: a claim needs no attribution, and two of your own documents disagreeing is a real
+  contradiction rather than a difference of opinion between sources. Topic pages carry the weight,
+  and a base that produces summaries and no topics is the failure mode to watch for.
+
+- **A declared root.** Part 1 of the contract now opens by naming the folder the base lives in.
+  Every skill reads that one line and resolves its `docs/…` paths against it. `docs/` remains the
+  default and the right answer for almost every project; the two that need another are a `docs/`
+  a site generator already owns (`docs/kb/`) and a project running two separate bases.
+
+  This makes an existing feature actually work. `init-docs` has always scaffolded to `docs/kb/`
+  when it found a `mkdocs.yml` or a `docusaurus.config.js`, but nothing told the rest of the
+  contract or the other four skills where the base had gone. It does now.
+
+- **Two knowledge bases in one project**, for the case where a project holds two bodies of
+  knowledge with genuinely different authority — one whose facts come from its own code, one whose
+  facts come from other people's papers. Each base is self-contained with its own root, contract,
+  preset and index; every command takes a root argument; a run never spans two bases and pages
+  never link across them. Documented as a pattern rather than a feature, with the warning that
+  matters most: do not split because a folder got large.
+
+- **A migration guide — *Changing the shape later*, in Part 2.** Sorted by what it costs. Renaming
+  page-type nouns, rewording rules and changing out-of-scope paths are free. Switching preset,
+  reorganizing within a layer, and changing link style cost a lint run. Moving the root or
+  splitting a base is real work, with the steps in order. Renaming a layer or adding a page type is
+  never. `init-docs` §8 is the operational version of the same thing, including which requests to
+  push back on.
+
+- **A recipe for writing your own preset**, since four will not cover everything: a preset may set
+  the page types table, the out-of-scope paths, and the project-specific rules. Nothing else. A
+  preset that wants a fourth page type or a renamed folder is a fork, and lint will not understand
+  it.
+
+- **Hard rule 12 in `AGENTS.md`** — never add, rename, or remove a layer, and never add a page
+  type. The vocabulary belongs in the page types table, not in the folder names.
+
+### Changed
+
+- **`lint-docs` check 15** was *Legacy layout*; it is now *Stale layout paths*. As well as
+  detecting a `1.x` `docs/sources/` folder, it now catches `sources:` values and citations that
+  point outside the declared root — which is what a root move leaves behind, and which is
+  mechanically fixable in exactly the same way. The declared root wins; lint rewrites the paths and
+  never moves a folder to make them true.
+
+- **`init-docs` states what the structure does not vary.** The interview says out loud that all
+  four presets share the same folders, page types, front matter and commands, and that the choice
+  is reversible — because a user who believes they are choosing a layout treats a cheap decision as
+  an expensive one, and a user who thinks the schema is fixed abandons the kit rather than editing
+  it. The scaffold step says the tree is the same for every project: no folder added because the
+  project seems to want one, no layer renamed to match local vocabulary, `scenarios/` kept even
+  when question 6 got no answer.
+
 ## [2.0.0] — 2026-08-30
 
 An architectural maturity release. `1.0.0` established the loop — sources in, pages out, with
@@ -200,5 +266,6 @@ Initial release.
 - Contradiction callouts, and the rule that contradictions are never silently resolved.
 - `AGENTS.md` as the entry point for any filesystem-capable agent.
 
+[2.1.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.1.0
 [2.0.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.0.0
 [1.0.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v1.0.0
