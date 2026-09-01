@@ -16,7 +16,7 @@ written using their defaults; read them as whatever Part 1 declares:
 | Written here | Declared as |
 |---|---|
 | `docs/…` | **Root** — `docs/` unless the base was scaffolded beside a published docs site. |
-| `docs/core-sources/` | **Source folder** — any folder, possibly outside the root, or `./*` for top-level project files. Immutable to you wherever it is. Part 1 may also list *read-in-place sources*, which you cite but never file. |
+| `docs/core-sources/` | **Source folder** — one folder: `docs/core-sources/`, a top-level `sources/`, or wherever the material already lives, including outside the root. Immutable to you wherever it is. Part 1 may also list *read-in-place sources*, which you cite but never file. |
 | `docs/INDEX.md` | **Index** — `docs/INDEX.md` or `docs/README.md`. |
 
 If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
@@ -164,9 +164,8 @@ else notices.
 - **It contains a page layer**, or is a page layer, or is the root itself. This makes the agent's
   own output look like source material. Report it and stop — a scan against this declaration will
   start summarizing summaries.
-- **`./*` declared with no out-of-scope globs.** Not an error on its own, but report it as a
-  WARNING with what it currently matches. A root declaration that sweeps `package.json` and
-  `Makefile` into the source layer is nearly always an unfinished setup.
+- **It is not a folder** — a glob, a single file, or the repository root. There is no glob form:
+  the declaration names one folder. Report what it names and stop.
 
 **The index:**
 

@@ -11,7 +11,7 @@ The front door. Run once per project. It produces a `docs/` folder and, more imp
 **A generic `DOCS.md` is the main way this kit fails.** The interview is not a formality — it
 is where the value is created. Do not skip it, and do not answer the questions yourself.
 
-## 1. Survey before asking
+## 1. Survey, and pick the mode
 
 Look before you interview, so your questions are specific and you never ask what you can see.
 
@@ -19,10 +19,27 @@ Look before you interview, so your questions are specific and you never ask what
   (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `composer.json`).
 - What is the top-level layout? Where does the real code live?
 - Does `docs/` already exist? If so, list what is in it and read enough to classify it.
+- Is there documentation or filed material anywhere *else* — `notes/`, `research-papers/`,
+  `contracts/`, `wiki/`, loose Markdown or PDFs at the top of the repo?
 - Is there existing agent config — `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.github/copilot-instructions.md`?
 
-Say what you found in one short paragraph before your first question. It shows the user you
-looked and it lets them correct you early.
+**Then say which of two modes this is.** Everything after this follows from it, so get it right
+and say it out loud before asking anything:
+
+| | **Fresh start** | **Merge** |
+|---|---|---|
+| When | The project has no documentation and no filed material worth keeping | There is already documentation, or a pile of material somewhere |
+| Sources | The user chooses where they will go — step 2, question 2 | Wherever the material already is. Nothing moves. |
+| Existing files | None to worry about | Classified and either pointed at or moved, never overwritten — step 4 |
+| Risk | None. Nothing exists to damage. | Someone's work is already here. This is where care is owed. |
+
+Say what you found and which mode you are in, in one short paragraph, before your first question.
+It shows the user you looked, it lets them correct you early, and *"I found 40 PDFs in
+`research-papers/`, so this is a merge"* is a far better opening than a generic question.
+
+**When in doubt, it is a merge.** Treating an existing base as a fresh start is the one mistake
+in this skill that destroys work; treating a fresh start as a merge just means you asked a
+question with an empty answer.
 
 ## 2. Interview
 
@@ -50,29 +67,45 @@ you can propose sensible defaults and let the user correct them.
    rules. A user who thinks they are choosing a layout will worry about the choice far more than
    it deserves, and will hesitate to change it later. It is a cheap decision, reversible at any
    time: see *Changing the shape later* in Part 2.
-2. **Where does the material live?** Three answers, and step 1 usually tells you which before you
-   ask:
+2. **Where will the source material live?** The mode from step 1 decides the shape of this
+   question.
 
-   | What the survey found | Declare | Ask? |
-   |---|---|---|
-   | Nothing filed yet | `docs/core-sources/` | No. Say what you are doing and move on. |
-   | Material already organized in a folder — `research-papers/`, `notes/`, `contracts/`, a published docs folder | that folder | Yes, propose it. |
-   | Loose documents at the top of the repo and little else | `./*` | Yes, and name the root files you would exclude. |
+   **Fresh start — a real choice, and the only layout decision the user makes.** Two options, and
+   nothing else. Put it to them plainly:
 
-   When there is something to point at, propose pointing rather than moving:
+   > Where should I keep the material you want documented?
+   >
+   > **A. `docs/core-sources/`** *(default)* — everything lives under `docs/`, so the whole
+   > knowledge base is one folder you can copy, move, or open in Obsidian as a vault.
+   >
+   > **B. `sources/`** — a folder at the top of the project, beside `docs/`. More visible, and
+   > easier to drag files into without going two levels down.
+   >
+   > Same behaviour either way: I read it, I never write to it. It's a one-line change later if
+   > you pick wrong.
 
-   > You already have 40 PDFs in `research-papers/`. I can point the knowledge base at that
-   > folder instead of moving them into `docs/core-sources/` — you keep filing them where you
-   > file them now, and the agent reads them there. It never writes to that folder either way.
+   Take **A** if they have no opinion. Take **B** without argument if they want it — the only
+   difference is how far down the folder sits, and someone who will actually drop files into a
+   visible folder beats a tidier tree they never fill.
 
-   Two follow-ups if they say yes. Is anything in there they would rather the agent not read? And
-   is there material that should be **cited but not filed** — a source tree, or docs published by a
-   generator — which becomes *read-in-place sources* instead.
+   **Merge — usually not a question at all.** The material is already somewhere, and the answer
+   is to point at it rather than move it. State what you are doing:
 
-   **Never ask about the root.** It is `docs/`. The one exception is decided by what you found, not
-   by the user: a `docs/` already built by a site generator means the base goes to `docs/kb/`, and
-   you say so rather than offering a choice. Asking invites a decision with no upside and a
-   migration if it is wrong.
+   > You already have 40 PDFs in `research-papers/`. I'll point the knowledge base at that folder
+   > rather than moving them — you keep filing them where you file them now, and the agent reads
+   > them there. It never writes to that folder either way.
+
+   Only ask when the survey found material in two or more places, because there is exactly one
+   source location and someone has to choose which. Say what you would pick and why.
+
+   Two follow-ups in either mode. Is anything in there they would rather the agent not read? And
+   is there material that should be **cited but not filed** — a source tree, or docs published by
+   a generator — which becomes *read-in-place sources* instead.
+
+   **Never ask about the root.** It is `docs/`, in both modes. The one exception is decided by what
+   you found rather than by the user: a `docs/` already built by a site generator means the base
+   goes to `docs/kb/`, and you say so rather than offering a choice. Asking invites a decision with
+   no upside and a migration if it goes wrong.
 3. **Who reads it?** You alone, a team, future contributors, or mostly AI agents working in
    this repo? Answers change how much context each page must restate.
 4. **What are the recurring things worth a page each?** For code: services, modules, database
@@ -100,13 +133,14 @@ docs/
   DOCS.md               written from the interview — see below
   INDEX.md              the index, empty to start — or README.md, see below
   CHANGELOG.md          the log, empty to start
-  core-sources/         empty, for raw material — omit if question 2 pointed elsewhere
+  core-sources/         empty, for raw material — omit if sources go elsewhere
   summaries/  topics/  entities/
   scenarios/questions.yaml  what this base must answer — empty to start
 ```
 
-Five files and five folders. Nothing else — the schema carries the rules, so there is no
-second guidance file to drift out of sync with it.
+Four files and five folders — one fewer folder when question 2 pointed the source layer somewhere
+else. Nothing beyond that: the schema carries the rules, so there is no second guidance file to
+drift out of sync with it.
 
 Leave the page layers flat. Subfolders are worth it past roughly thirty pages in a layer and are
 free to add later, so grouping an empty base is guessing at a shape it has not grown into yet.
@@ -126,10 +160,20 @@ here that looks like it worked.
 generator (`mkdocs.yml`, `docusaurus.config.js`, `book.toml`), in which case `docs/kb/` — see step
 4. A user who explicitly asked for a second, separate base gets the root they named.
 
-**Source folder — from question 2.** Create `core-sources/` under the root only when question 2
-came out as the default; when it pointed at an existing folder or at `./*`, create nothing and
-declare that instead. Record any read-in-place paths in Part 1 too. Never declare a folder the
-agent writes to, and never more than one location.
+**Source folder — from question 2.**
+
+| Mode and answer | Create | Declare |
+|---|---|---|
+| Fresh, option A | `docs/core-sources/`, empty | `docs/core-sources/` |
+| Fresh, option B | `sources/` at the project root, empty | `sources/` |
+| Merge | nothing | the folder the material is already in |
+
+Record any read-in-place paths in Part 1 too. Never declare a folder the agent writes to, and
+never more than one location.
+
+If you created `sources/` at the root, add a one-line `sources/README.md` saying what the folder
+is for and that the agent never writes to it. A bare empty folder at the top of someone's project
+is a puzzle three months later, and it is the one place this layout is not self-explaining.
 
 **Index — decided by a rule.** `docs/INDEX.md`. The file is an index, not a readme, and almost
 every project has a root `README.md` that a second one would compete with. Use `docs/README.md`
@@ -153,10 +197,17 @@ short section** pointing to `docs/DOCS.md` rather than replacing the file.
 If the project has a `CLAUDE.md`, add one line to it pointing at `docs/DOCS.md`. Do not move
 its contents.
 
-## 4. When docs/ already exists
+## 4. Merge mode — when documentation already exists
+
+Skip this whole section on a fresh start; there is nothing to merge.
 
 The rule is **merge and reorganize, never overwrite**. Existing documentation is someone's
 work and often the best material in the repo.
+
+Two things worth saying before you start. Material already filed in its own folder is **pointed
+at, not moved** — that is question 2, and it is settled before you get here. What this section
+handles is everything else: a `docs/` folder with a mix of explanations, specs and stray notes in
+it, where each file needs classifying one at a time.
 
 Classify every existing file, then act:
 

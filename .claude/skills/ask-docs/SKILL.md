@@ -25,7 +25,7 @@ written using their defaults; read them as whatever Part 1 declares:
 | Written here | Declared as |
 |---|---|
 | `docs/…` | **Root** — `docs/` unless the base was scaffolded beside a published docs site. |
-| `docs/core-sources/` | **Source folder** — any folder, possibly outside the root, or `./*` for top-level project files. Immutable to you wherever it is. Part 1 may also list *read-in-place sources*, which you cite but never file. |
+| `docs/core-sources/` | **Source folder** — one folder: `docs/core-sources/`, a top-level `sources/`, or wherever the material already lives, including outside the root. Immutable to you wherever it is. Part 1 may also list *read-in-place sources*, which you cite but never file. |
 | `docs/INDEX.md` | **Index** — `docs/INDEX.md` or `docs/README.md`. |
 
 If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.

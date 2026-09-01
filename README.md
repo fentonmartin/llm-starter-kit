@@ -138,11 +138,13 @@ about X" usually routes correctly on its own.
 /init-docs
 ```
 
-It reads your README, your manifest, and your layout — then asks you six questions:
+It reads your README, your manifest, and your layout, tells you whether this is a
+[fresh start or a merge](#fresh-start-or-merge), then asks:
 
 > - What is this knowledge base for: this codebase, outside research, a running system, or a
 >   library of documents?
-> - Where does the material live? *(only asked if you already file it somewhere)*
+> - Where should sources go — `docs/core-sources/` or a top-level `sources/`? *(fresh start only;
+>   on a merge it points at what you already have)*
 > - Who reads it — you, your team, or mostly agents working in this repo?
 > - What recurring things deserve a page each? *(your nouns: services, tables, endpoints…)*
 > - What must never be got wrong?
@@ -166,34 +168,52 @@ in your actual nouns, and deletes the rest.
 That means the choice is cheap and reversible. Picking wrong costs you a `DOCS.md` edit, not a
 migration — see [As the project grows](#as-the-project-grows).
 
-### What setup decides, and what it doesn't ask
+### Fresh start or merge?
 
-Only one question shapes the base: the preset. Everything else is either fixed or decided from what
-`/init-docs` finds in your repo.
+`/init-docs` starts by looking at your repo and telling you which of two situations it's in.
+Everything else follows from that.
 
-| | Who decides | What happens |
+|  | **Fresh start** | **Merge** |
 |:--|:--|:--|
-| **The preset** | **You** | The one real question. Sets your page types and starting rules. |
-| **Where sources live** | You, if there's something to point at | Default `docs/core-sources/`. If you already file material somewhere — `research-papers/`, `notes/`, loose docs at the repo root — it points there instead of moving it. |
-| **The root folder** | The agent | Always `docs/`. The single exception: if your `docs/` is built by a site generator, the base goes to `docs/kb/` and your published docs become sources. You are told, not asked. |
-| **The index filename** | A rule | `docs/INDEX.md`, because it is an index and your project already has a root `README.md`. `docs/README.md` only when the project has none. |
-| **Your root `README.md`** | The agent | Gains one section saying the base exists and which commands read it. Nothing else in it is touched, ever. If you have no root README, you get a minimal one. |
+| **When** | No documentation, nothing filed yet | You already have docs, notes, or a pile of PDFs |
+| **Sources** | **You choose** — see below | Points at wherever the material already is. **Nothing moves.** |
+| **Your files** | None to worry about | Classified, then pointed at or moved — never overwritten, never deleted, and every move shown as `old → new` first |
 
-**On sources.** Three forms are valid, and there is exactly one source location — pointing at
-material you already file beats moving it into a folder this kit invented:
+When in doubt it treats your project as a merge, because assuming a fresh start is the one mistake
+here that costs real work.
+
+**On a fresh start you pick where sources go.** Two options, and this is the only layout decision
+you make:
 
 ```
-docs/core-sources/     the default: a folder inside the base
-research-papers/       any folder, anywhere, including outside the base
-./*                    loose documents at the top of the repo, non-recursive
+A.  docs/core-sources/     everything under docs/ — one folder to copy, or open as an Obsidian vault
+B.  sources/               top level, beside docs/ — more visible, easier to drop files into
 ```
 
-Anything that should be *cited but not filed* — a source tree, generated docs — goes in
-**read-in-place sources** instead: no summary pages, and citations carry a commit hash.
+Identical behaviour either way: the agent reads it and never writes to it. It's a one-line change
+later if you pick wrong. Take **A** if you have no preference — but take **B** without guilt if
+you'll actually use it, because a visible folder you fill beats a tidy one you don't.
 
-**On the index.** It's an index, not a readme: every page, once, grouped by type. `INDEX.md` says
-that, and it stops a second README competing with your project's real one. Either name works and
-the contract treats them identically.
+**On a merge, there's usually nothing to decide.** If your material is in `research-papers/`, the
+base points at `research-papers/`. You keep filing where you file today. You're only asked when
+material is scattered across two or more places, because there's exactly one source location and
+someone has to pick.
+
+### What it never asks
+
+| | What happens |
+|:--|:--|
+| **The root folder** | Always `docs/`. One exception, decided for you: if your `docs/` is built by a site generator, the base goes to `docs/kb/` and your published docs become the sources. You're told, not asked. |
+| **The index filename** | `docs/INDEX.md` — it's an index, not a readme, and your project already has a root `README.md`. `docs/README.md` only when your project has none. |
+| **Your root `README.md`** | Gains one section saying the base exists and which commands read it. Nothing else in it is ever touched. If you have no root README, you get a minimal one. |
+| **The folder layout** | Fixed. Same five folders in every project — see [why](#why-these-names). |
+
+So the interview is really one question — the preset — plus *"where should sources go?"* on a
+fresh start.
+
+One more thing worth knowing: material that should be **cited but not filed** — a source tree,
+docs published by a generator — goes in **read-in-place sources**. No summary pages, and citations
+carry a commit hash.
 
 Out comes a `docs/` folder and a `docs/DOCS.md` **written for your project**, in your
 vocabulary.
@@ -212,9 +232,11 @@ vocabulary.
 > spend with this kit — you see exactly where the agent's judgment differs from yours, and
 > that's what the rules in `docs/DOCS.md` exist to correct.
 
-### Already have a `docs/` folder?
+### What a merge actually does
 
-`/init-docs` **merges**. It never overwrites and never deletes.
+Never overwrites, never deletes. Material already filed in its own folder is pointed at rather than
+moved; what this handles is a `docs/` folder with a mix of things in it, classified one file at a
+time.
 
 <details>
 <summary>What the merge does</summary>
@@ -403,12 +425,15 @@ correctly. Include one whose honest answer is *"nobody knows yet"*:
 ```yaml
 questions:
   - id: session-ttl
-    ask: What is the session TTL?
+    question: What is the session TTL?
+    expect_sources:
+      - docs/core-sources/260415-auth-spec.pdf
+    require_facts:
+      - "24 hours"
     expect_state: known
-    expect_sources: [docs/core-sources/260415-auth-spec.pdf]
-    must_mention: ["24 hours"]
+
   - id: revocation
-    ask: How are sessions revoked on password change?
+    question: How are sessions revoked on password change?
     expect_state: unknown        # the sources don't say. that's the point.
 ```
 
@@ -486,8 +511,9 @@ than assuming:
 > Index: docs/INDEX.md
 ```
 
-The root is not a choice — see [what setup decides](#what-setup-decides-and-what-it-doesnt-ask).
-The source location is, and the index name follows a rule.
+The root is not a choice and the index name follows a rule — see
+[what it never asks](#what-it-never-asks). The source location is the one you pick, on a
+[fresh start](#fresh-start-or-merge).
 
 ### Why these names
 

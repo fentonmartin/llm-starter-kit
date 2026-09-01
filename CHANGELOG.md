@@ -18,6 +18,23 @@ included, and subfolders are optional everywhere.
 
 ### Added
 
+- **Setup has two modes, and says which one it is in.** `/init-docs` now opens by deciding whether
+  this is a **fresh start** (no documentation, nothing filed) or a **merge** (there is already
+  material), states it, and lets everything else follow. When in doubt it is a merge — treating an
+  existing base as a fresh start is the one mistake in this skill that destroys work, while the
+  reverse just means a question with an empty answer.
+
+  This replaces a source-location question that tried to cover both cases at once and read like a
+  configuration menu. Now a fresh start gets one clear choice and a merge gets told what is
+  happening to its files.
+
+- **On a fresh start, one layout choice: `docs/core-sources/` or a top-level `sources/`.** Same
+  behaviour either way — read, never written — and a one-line change later. `core-sources/` keeps
+  the base as one copyable folder; `sources/` sits at the top of the project where it is easier to
+  drop files into, and gets a one-line README explaining what it is. Someone who will actually fill
+  a visible folder beats a tidier tree they never fill, so the second option is offered without
+  argument.
+
 - **A tutorial — *your first hour*.** Six steps ending in a working base: install, add one source,
   read the diff, ask a question, write scenarios, lint. Deliberately one source at step 2, because
   step 3 is reading the agent's judgment line by line and that is tractable for one document and
@@ -56,13 +73,15 @@ included, and subfolders are optional everywhere.
   year. Reported, never rewritten: this is the part of an upgrade that needs the owner's judgment,
   since only they know which drift was deliberate.
 
-- **`./*` as a source location**, for a repo whose loose top-level documents are the material.
-  Non-recursive by design, and lint warns when it is declared with no out-of-scope globs, because
-  a root declaration that sweeps `package.json` into the source layer is an unfinished setup.
-
 ### Changed
 
-- **Setup asks less.** One question shapes the base — the preset. The root is no longer a
+- **The source declaration is always a folder.** An earlier draft of this release allowed a `./*`
+  glob for top-level documents; it is gone. A declaration that can sweep a repository puts
+  `package.json` and every stray file into the provenance chain and extends the immutability rule
+  over half the project, which is a lot of hazard for a case a plain `sources/` folder covers.
+
+- **Setup asks less.** One question shapes the base — the preset, plus where sources go on a fresh
+  start. The root is no longer a
   question at all: it is `docs/`, and the one exception (a `docs/` a site generator owns →
   `docs/kb/`) is decided from what the survey found and announced rather than offered. Asking
   invited a decision with no upside and a migration if it went wrong. The source location is asked

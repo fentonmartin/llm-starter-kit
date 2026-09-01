@@ -71,14 +71,13 @@ Three constraints on the declaration:
 
   | Declaration | Means |
   |---|---|
-  | `docs/core-sources/` | The default. A folder inside the base, which the agent reads and never writes. |
-  | any other folder path | That folder, wherever it is, including outside the root. Subfolders inside it are read. |
-  | `./*` | Documents at the top level of the project only, not recursive. For a repo whose loose Markdown files at the root *are* the material. |
+  | `docs/core-sources/` | The default. Inside the base, so the whole knowledge base is one folder to copy or open as a vault. |
+  | `sources/` | At the top of the project, beside `docs/`. More visible, easier to drop files into. Chosen at setup; identical in every other respect. |
+  | any other folder path | A folder that already holds the material, wherever it is, including outside the root. Subfolders inside it are read. |
 
-  `./*` is the one that needs care: it is non-recursive by design, because `./**` would pull in
-  every file in the project. Pair it with out-of-scope globs for anything at the root that is not
-  material — `README.md` and `CHANGELOG.md` usually are material, `package.json` and `Makefile`
-  usually are not.
+  It must be a folder. There is no glob form and no way to declare "the project root" — a
+  declaration that swept the whole repository would put `package.json` and every stray file into
+  the provenance chain, and the immutability rule would then cover half the project.
 - **It must not overlap a page layer.** A source folder that contains `summaries/`, `topics/`, or
   `entities/` makes the agent's own output look like source material, and there is no recovering
   from that automatically.
@@ -760,10 +759,10 @@ place the root is declared, and every skill reads this file before it reads anyt
 | Situation | Source folder | Why |
 |---|---|---|
 | Normal | `docs/core-sources/` | Filed inside the base, so the whole thing copies as one folder. |
+| A fresh start where the user wants the folder visible | `sources/` | The only difference is how far down it sits. Someone who will actually drop files into a top-level folder beats a tidier tree they never fill. |
 | The material already lives somewhere the project cares about — `research-papers/`, `contracts/`, `notes/` | that folder | Moving material people already file by hand, into a folder the kit invented, is a cost with no return. Point at it instead. |
 | The base was scaffolded beside a published docs site (`docs/kb/`) | `docs/` | The published pages *are* the material. They stay where the generator expects them and are cited at their real paths. |
 | The material is your own writing, and the repo is the writing | that folder | A document library's corpus is usually already organized. Declare it; do not refile it. |
-| The material is loose documents at the top of the repo | `./*` | Non-recursive by design. Pair it with out-of-scope globs for the root files that are not material. |
 
 Two things this is not for. It is not a way to point the agent at a folder it also writes to —
 declaring a folder as the source layer makes it forbidden to write to, and pointing it at

@@ -15,8 +15,9 @@ Part 1 for convenience, not a substitute for reading it.
 
 **The declarations.** Part 1 of the contract opens with three paths, and every path below is
 written using their defaults. Read `docs/…` as whatever **Root** names, `docs/core-sources/` as
-whatever **Source folder** names — any folder, possibly outside the root, or `./*` for top-level
-project files — and the index as whatever **Index** names, `docs/INDEX.md` or `docs/README.md`.
+whatever **Source folder** names — one folder: `docs/core-sources/`, a top-level `sources/`, or
+wherever the material already lives — and the index as whatever **Index** names, `docs/INDEX.md`
+or `docs/README.md`.
 
 **Page layers may have subfolders.** `docs/topics/auth/session-management.md` is a topic page like
 any other; the layer folder decides what a page is, however deep. Slugs are unique across a whole
