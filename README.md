@@ -10,6 +10,13 @@ knowledge is marked as obsolete.
 
 `init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `test-docs`
 
+[![version](https://img.shields.io/badge/version-2.1.0-blue?style=flat-square)](CHANGELOG.md)
+[![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
+
+**Latest: `2.1.0`** — one structure for every use case, a fourth preset for document-only
+projects, and a documented path for reshaping a base as it grows.
+[What changed](CHANGELOG.md#210--2026-09-01) · [Upgrading](#already-using-an-older-version)
+
 [**Quick start**](#quick-start) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-human-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
 
 </div>
