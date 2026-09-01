@@ -8,17 +8,21 @@ description: Read new or changed files in docs/core-sources/ and fold them into 
 Turn raw material in the source folder into linked pages in `docs/`. This is the only operation
 that creates summary pages.
 
-**The root and the source folder.** Every path in this skill is written as `docs/…`, and the
-source layer as `docs/core-sources/`. Both are declarations in `docs/DOCS.md` Part 1, not
-constants:
+**The declarations.** Part 1 of `docs/DOCS.md` opens with three paths. Every path in this skill is
+written using their defaults; read them as whatever Part 1 declares:
 
-- If Part 1 names a root other than `docs/`, read every `docs/…` path below as that folder.
-- If it names a source folder other than `docs/core-sources/`, read every `docs/core-sources/`
-  below as that folder — including when it sits outside the root. It is immutable to you wherever
-  it is, and Part 1 may also list *read-in-place sources*, which you cite but never file.
-- If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
+| Written here | Declared as |
+|---|---|
+| `docs/…` | **Root** — `docs/` unless the base was scaffolded beside a published docs site. |
+| `docs/core-sources/` | **Source folder** — any folder, possibly outside the root, or `./*` for top-level project files. Immutable to you wherever it is. Part 1 may also list *read-in-place sources*, which you cite but never file. |
+| `docs/INDEX.md` | **Index** — `docs/INDEX.md` or `docs/README.md`. |
 
-The layers, their names, and their rules never change with either declaration.
+If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
+
+**Page layers may have subfolders.** `docs/topics/auth/session-management.md` is a topic page like
+any other: the layer folder decides what a page is, however deep it sits. Slugs are unique across a
+whole layer, so a wikilink resolves by slug and does not care about the path. The layers, their
+names, and their rules never change with any declaration.
 
 ## Before you start
 
@@ -26,7 +30,7 @@ The layers, their names, and their rules never change with either declaration.
    here: page types, slugs, front matter, claim types, provenance, link style, security
    exclusions, and any project-specific rules at the end. Part 2 is examples and rationale,
    read on demand.
-2. Read `docs/README.md` to learn what already exists. Never create a page without checking
+2. Read the index to learn what already exists. Never create a page without checking
    the index for one that covers the same ground.
 3. Determine the work set:
    - Explicit file(s) named by the user, or
@@ -139,7 +143,7 @@ For each linked topic and entity:
   One passing mention is a link to a page you leave unwritten; `lint-docs` surfaces it later.
   **Name it for the thing, not the source or the question**: `session-management`, not
   `auth-spec-sessions` or `how-sessions-work`. Prefer the noun the sources themselves use, and
-  check `docs/README.md` for an existing page under a near-synonym before inventing a slug —
+  check the index for an existing page under a near-synonym before inventing a slug —
   two agents naming the same subject differently is the most common way this knowledge base
   grows duplicates.
 - Bump `updated` on every page you touch. Leave `status: active` unless the page is genuinely
@@ -150,7 +154,22 @@ For each linked topic and entity:
 
 ### 6. Update the index
 
-`docs/README.md` gets a line for any new page, in the right group.
+The index gets a line for any new page, in the right group.
+
+**Where a new page goes.** Follow the shape the layer already has. A flat layer stays flat — do not
+introduce subfolders on your own initiative. A layer already grouped into subfolders gets the new
+page in the subfolder its subject belongs to, or at the layer root if none fits; never create a new
+subfolder for a single page. A summary always mirrors its source's path: a source at
+`core-sources/vendor/acme-spec.pdf` produces `summaries/vendor/acme-spec.md`, creating that
+subfolder if needed, because lint pairs the two by path.
+
+Check the slug is unused anywhere in the layer, subfolders included, before you write the file. Two
+pages sharing a slug make every wikilink to it ambiguous, and that is an ERROR someone has to
+resolve by hand.
+
+If a flat layer has grown past roughly thirty pages, say so in your report and suggest grouping it.
+Do not do it in a scan — regrouping a layer is a change to the base's shape, and it belongs in its
+own commit rather than buried in a run that also wrote pages.
 
 ## After the work set
 
@@ -160,7 +179,7 @@ Append one entry to the top of `docs/CHANGELOG.md`:
 ## 2026-08-30 — scan
 - Scanned: docs/core-sources/260415-attention-is-all-you-need.pdf
 - Created: docs/summaries/260415-attention-is-all-you-need.md, docs/topics/attention.md
-- Updated: docs/entities/transformer.md, docs/README.md
+- Updated: docs/entities/transformer.md, docs/INDEX.md
 - Flagged: contradiction on parameter count between [[attention]] and [[scaling-laws]]
 - Skipped: docs/core-sources/.env.backup (security exclusion)
 ```

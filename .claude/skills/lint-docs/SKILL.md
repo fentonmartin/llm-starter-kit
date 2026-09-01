@@ -10,17 +10,21 @@ A knowledge base rots quietly. This is the sweep that catches it.
 Read `docs/DOCS.md` **Part 1** first — it defines every rule you are checking against, and it is
 complete on its own. Part 2 is examples and rationale, read on demand.
 
-**The root and the source folder.** Every path in this skill is written as `docs/…`, and the
-source layer as `docs/core-sources/`. Both are declarations in `docs/DOCS.md` Part 1, not
-constants:
+**The declarations.** Part 1 of `docs/DOCS.md` opens with three paths. Every path in this skill is
+written using their defaults; read them as whatever Part 1 declares:
 
-- If Part 1 names a root other than `docs/`, read every `docs/…` path below as that folder.
-- If it names a source folder other than `docs/core-sources/`, read every `docs/core-sources/`
-  below as that folder — including when it sits outside the root. It is immutable to you wherever
-  it is, and Part 1 may also list *read-in-place sources*, which you cite but never file.
-- If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
+| Written here | Declared as |
+|---|---|
+| `docs/…` | **Root** — `docs/` unless the base was scaffolded beside a published docs site. |
+| `docs/core-sources/` | **Source folder** — any folder, possibly outside the root, or `./*` for top-level project files. Immutable to you wherever it is. Part 1 may also list *read-in-place sources*, which you cite but never file. |
+| `docs/INDEX.md` | **Index** — `docs/INDEX.md` or `docs/README.md`. |
 
-The layers, their names, and their rules never change with either declaration.
+If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
+
+**Page layers may have subfolders.** `docs/topics/auth/session-management.md` is a topic page like
+any other: the layer folder decides what a page is, however deep it sits. Slugs are unique across a
+whole layer, so a wikilink resolves by slug and does not care about the path. The layers, their
+names, and their rules never change with any declaration.
 
 ## Scope
 
@@ -56,16 +60,17 @@ lint, gate on ERROR only.
 | 4 | **Agent-set human values** | WARNING | `claim_type: decision` or `status: superseded` on a page with no human ruling recorded and no sign of one in `docs/CHANGELOG.md` or git history. |
 | 5 | **Broken citations** | ERROR | A citation naming a source path that does not exist. Also a code citation whose line range now runs past the end of the file. |
 | 6 | **Uncited claims** | INFO | Substantive claims in topic and entity pages with no citation. Definitions and connective prose are exempt. |
-| 7 | **Schema and naming** | WARNING | Wrong page type for its folder, non-kebab-case slugs, summaries with more or fewer than one `sources:` entry, nested YAML where `docs/DOCS.md` requires flat. Any date in a file name must be `YYMMDD`, and a summary's date prefix must match its source's. |
+| 7 | **Schema and naming** | WARNING | Wrong page type for its layer, non-kebab-case slugs or subfolder names, summaries with more or fewer than one `sources:` entry, nested YAML where `docs/DOCS.md` requires flat. Any date in a file name must be `YYMMDD`, and a summary's date prefix must match its source's. Subfolders are fine at any depth; the layer folder decides the type. |
 | 8 | **Staleness** | WARNING | Summary pages whose source file is newer than the page's `updated`. Topic and entity pages whose `updated` predates a source they cite. |
-| 9 | **Orphans** | WARNING | Pages absent from `docs/README.md`, or present in the index but with no inbound wikilink from any other page. |
+| 9 | **Orphans** | WARNING | Pages absent from the index, or present in it but with no inbound wikilink from any other page. |
 | 10 | **Gaps** | INFO | Wikilinks pointing at pages that do not exist. Group by how many pages link to each — a target with five inbound links is a real hole. |
 | 11 | **Contradictions** | INFO | Existing contradiction callouts still open. Plus new ones: claims across pages that conflict on the same fact. |
 | 12 | **Duplicates** | INFO | Pages with heavily overlapping titles or subject matter. |
 | 13 | **Unread sources** | WARNING | Files in the declared source folder with no summary page. Read-in-place paths are skipped — they produce no summaries by design. |
 | 14 | **Excluded material** | ERROR | Anything in the declared source folder matching the security exclusions in `docs/DOCS.md`, and any page that quotes from one. |
 | 15 | **Stale layout paths** | WARNING | A `docs/sources/` folder, or `sources:` values and citations pointing at `docs/sources/` — the base predates the 2.0 rename. Also any `sources:` value or citation that does not match the root and source folder declared in `docs/DOCS.md` Part 1, which means one of them moved and the paths have not caught up. See below. |
-| 16 | **Source declaration** | ERROR | Part 1 declares a source folder that does not exist, declares more than one, or declares one that overlaps `summaries/`, `topics/`, or `entities/`. See below. |
+| 16 | **Declarations** | ERROR | A declared source location that does not exist, more than one declared, or one overlapping a page layer. Also an index declaration naming a file that does not exist, or both `README.md` and `INDEX.md` present in the base and serving as indexes. See below. |
+| 17 | **Slug collisions** | ERROR | Two pages in the same layer with the same slug in different subfolders. `[[slug]]` resolves to whichever was seen first, so every inbound link to one of them is silently wrong. Report both paths; the fix is a rename or a merge, and it is a human decision. |
 
 ### Check 1 in detail — do not crash on bad YAML
 
@@ -142,30 +147,56 @@ them to the declared paths is equally mechanical. Rewrite them and say how many.
 folder to make the paths true; the declaration wins, and if the user declared it by mistake that
 is a one-line fix in `DOCS.md`, not a repository move.
 
-### Check 16 in detail — the source declaration
+### Check 16 in detail — the declarations
 
-This one is worth an ERROR because everything downstream is silently wrong when it is broken, and
-nothing else notices.
+Worth an ERROR because everything downstream is silently wrong when one is broken, and nothing
+else notices.
 
-- **The folder does not exist.** Usually a typo, sometimes a folder that was moved without
-  updating Part 1. Report the declared path and what you found near it; do not create the folder
-  and do not guess which one was meant.
-- **More than one folder declared.** Report both and stop. One summary page per source file is
-  the backbone of provenance, and you cannot maintain it across two folders once a file name
+**The source location:**
+
+- **It does not exist.** Usually a typo, sometimes a folder moved without updating Part 1. Report
+  the declared path and what you found near it; do not create the folder and do not guess which
+  one was meant.
+- **More than one declared.** Report both and stop. One summary page per source file is the
+  backbone of provenance, and you cannot maintain it across two locations once a file name
   repeats. The fix is a human decision: file everything into one, or move the extra to
   *read-in-place sources*.
-- **The declared folder contains a page layer**, or is a page layer, or is the root itself. This
-  makes the agent's own output look like source material. Report it and stop — a scan run against
-  this declaration will start summarizing summaries.
+- **It contains a page layer**, or is a page layer, or is the root itself. This makes the agent's
+  own output look like source material. Report it and stop — a scan against this declaration will
+  start summarizing summaries.
+- **`./*` declared with no out-of-scope globs.** Not an error on its own, but report it as a
+  WARNING with what it currently matches. A root declaration that sweeps `package.json` and
+  `Makefile` into the source layer is nearly always an unfinished setup.
 
-Never fix any of these silently. Each one means the contract says something its author did not
-intend, and writing to the base before that is settled makes it worse.
+**The index:**
+
+- **The declared index does not exist.** Report it; do not create one silently, because writing a
+  fresh index over a base whose real index is at the other name loses the grouping someone chose.
+- **Both `README.md` and `INDEX.md` exist and both list pages.** Report both and stop. Two indexes
+  drift, and an agent reading the wrong one silently cannot see half the base. If one is a genuine
+  readme — prose for people, not a page list — that is fine and not a finding; say which you
+  judged to be which.
+
+Never fix any of these silently. Each means the contract says something its author did not intend,
+and writing to the base before that is settled makes it worse.
+
+### Check 17 in detail — slug collisions
+
+Only possible once a layer uses subfolders, and worth an ERROR because the damage is invisible.
+Wikilinks resolve by slug, so `topics/auth/tokens.md` and `topics/billing/tokens.md` make every
+`[[tokens]]` in the base point at one of them arbitrarily — and the other's inbound links are
+wrong without any broken-link symptom.
+
+Report both paths and their titles, and say how many inbound links each has. Do not rename either:
+two pages that want the same slug are usually one page that got written twice, and merging is a
+human call. Compare their `sources:` first — the same sources on both is strong evidence of a
+duplicate rather than two things needing better names.
 
 ## What to fix, what to report
 
 Fix without asking — mechanical, reversible, no judgment:
 
-- Add missing pages to `docs/README.md`; remove index lines pointing at deleted files.
+- Add missing pages to the index; remove index lines pointing at deleted files.
 - Add `status: active` and a defaulted `claim_type` to pages that predate those fields
   (`fact` on a summary, `open-question` on a topic or entity you cannot classify). **Never
   default to `decision`.**

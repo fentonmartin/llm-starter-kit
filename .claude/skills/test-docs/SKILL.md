@@ -12,17 +12,21 @@ was built to answer — a source gets superseded, a page goes stale, a merge dro
 Read `docs/DOCS.md` **Part 1** first — it is the complete rules. Part 2 is examples and
 rationale, read on demand.
 
-**The root and the source folder.** Every path in this skill is written as `docs/…`, and the
-source layer as `docs/core-sources/`. Both are declarations in `docs/DOCS.md` Part 1, not
-constants:
+**The declarations.** Part 1 of `docs/DOCS.md` opens with three paths. Every path in this skill is
+written using their defaults; read them as whatever Part 1 declares:
 
-- If Part 1 names a root other than `docs/`, read every `docs/…` path below as that folder.
-- If it names a source folder other than `docs/core-sources/`, read every `docs/core-sources/`
-  below as that folder — including when it sits outside the root. It is immutable to you wherever
-  it is, and Part 1 may also list *read-in-place sources*, which you cite but never file.
-- If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
+| Written here | Declared as |
+|---|---|
+| `docs/…` | **Root** — `docs/` unless the base was scaffolded beside a published docs site. |
+| `docs/core-sources/` | **Source folder** — any folder, possibly outside the root, or `./*` for top-level project files. Immutable to you wherever it is. Part 1 may also list *read-in-place sources*, which you cite but never file. |
+| `docs/INDEX.md` | **Index** — `docs/INDEX.md` or `docs/README.md`. |
 
-The layers, their names, and their rules never change with either declaration.
+If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
+
+**Page layers may have subfolders.** `docs/topics/auth/session-management.md` is a topic page like
+any other: the layer folder decides what a page is, however deep it sits. Slugs are unique across a
+whole layer, so a wikilink resolves by slug and does not care about the path. The layers, their
+names, and their rules never change with any declaration.
 
 ## Honest scope
 

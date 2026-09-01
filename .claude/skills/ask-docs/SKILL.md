@@ -15,28 +15,32 @@ evidence**. The procedure below exists to prevent both.
 
 ### 1. Read the contract
 
-Read `docs/DOCS.md` **Part 1** in full, and `docs/README.md`. Part 2 is examples and rationale —
+Read `docs/DOCS.md` **Part 1** in full, and the index. Part 2 is examples and rationale —
 read it only if you need it. `DOCS.md` overrides anything here: page types, link style,
 retrieval scope, security exclusions, and the project's own rules.
 
-**The root and the source folder.** Every path in this skill is written as `docs/…`, and the
-source layer as `docs/core-sources/`. Both are declarations in `docs/DOCS.md` Part 1, not
-constants:
+**The declarations.** Part 1 of `docs/DOCS.md` opens with three paths. Every path in this skill is
+written using their defaults; read them as whatever Part 1 declares:
 
-- If Part 1 names a root other than `docs/`, read every `docs/…` path below as that folder.
-- If it names a source folder other than `docs/core-sources/`, read every `docs/core-sources/`
-  below as that folder — including when it sits outside the root. It is immutable to you wherever
-  it is, and Part 1 may also list *read-in-place sources*, which you cite but never file.
-- If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
+| Written here | Declared as |
+|---|---|
+| `docs/…` | **Root** — `docs/` unless the base was scaffolded beside a published docs site. |
+| `docs/core-sources/` | **Source folder** — any folder, possibly outside the root, or `./*` for top-level project files. Immutable to you wherever it is. Part 1 may also list *read-in-place sources*, which you cite but never file. |
+| `docs/INDEX.md` | **Index** — `docs/INDEX.md` or `docs/README.md`. |
 
-The layers, their names, and their rules never change with either declaration.
+If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
+
+**Page layers may have subfolders.** `docs/topics/auth/session-management.md` is a topic page like
+any other: the layer folder decides what a page is, however deep it sits. Slugs are unique across a
+whole layer, so a wikilink resolves by slug and does not care about the path. The layers, their
+names, and their rules never change with any declaration.
 
 ### 2. Select candidates — never load the whole base
 
 Selection is by index and links. **Do not read every page, and do not glob `docs/**/*.md`.**
 A knowledge base is expected to outgrow your context; behave as though it already has.
 
-1. Match the question against titles and descriptions in `docs/README.md`.
+1. Match the question against titles and descriptions in the index.
 2. Read those entry-point pages.
 3. Follow their wikilinks one hop out. Two hops only if the question is broad.
 4. Stop. If the answer is not in reach after two hops, that is a finding — report the gap
