@@ -7,6 +7,63 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning is [semantic](https://semver.org/spec/v2.0.0.html), applied to the schema and the
 command surface: a breaking change is one that invalidates an existing knowledge base.
 
+## [2.2.0] — 2026-09-01
+
+Point the base at the material where it already is.
+
+`2.1.0` let a base live somewhere other than `docs/`. This does the same for the layer that
+matters most: the source folder is now a declaration in Part 1, defaulting to
+`docs/core-sources/`, and it may name any folder — including one outside the root.
+
+**Nothing breaks.** The default is what every existing base already uses, and a `DOCS.md` with no
+source declaration behaves exactly as it did.
+
+### Added
+
+- **A declared source folder.** Projects that already file their material — `research-papers/`,
+  `notes/`, `contracts/` — can point the base at it rather than moving it into a folder the kit
+  invented. The folder stays human-owned and immutable to the agent wherever it sits; the
+  declaration is what establishes that, not the folder's name or location.
+
+  Three constraints, and they are the reason this is a declaration rather than a free-for-all:
+  exactly one folder, because one summary page per source file is the backbone of provenance and
+  two folders make that ambiguous the first time a file name repeats; no overlap with a page
+  layer, because a source folder containing `topics/` makes the agent's own output look like
+  source material; and it must be a folder the agent never authors in.
+
+- **Read-in-place sources.** An explicit home for material that is cited but not filed — a source
+  tree that changes every commit, or a published docs folder the base was scaffolded beside. They
+  produce no summary pages, are skipped by the unread-source and excluded-material checks, and
+  their citations record the commit they were read at. This existed informally as a line in the
+  codebase preset (*"treat `src/**` as sources"*); it is now part of the contract, which is where
+  the distinction between curated and merely-present material belongs.
+
+- **`lint-docs` check 16, the source declaration.** ERROR, because everything downstream is
+  silently wrong when it is broken and nothing else notices: a declared folder that does not
+  exist, more than one declared, or one that overlaps a page layer. Never fixed silently — each
+  means the contract says something its author did not intend.
+
+- **An interview question about where material lives**, asked only when the survey found material
+  already organized somewhere. A new project gets `docs/core-sources/` and no question.
+
+### Changed
+
+- **The `docs/kb/` case now declares its sources too.** Scaffolding beside a published docs site
+  sets the root to `docs/kb/` and the source folder to `docs/`. The published pages are the
+  material: they stay where the generator expects them and are cited at their real paths, and
+  `docs/kb/core-sources/` is not created at all.
+
+- **`lint-docs` check 15** also catches citations left behind by a moved source folder, alongside
+  the moved-root and `1.x` cases it already covered.
+
+- **Hard rule 1 in `AGENTS.md`** and the never-write rules in `scan-docs` and `lint-docs` now name
+  the declared source folder rather than the literal path, and cover read-in-place paths too.
+
+- **"Why core" says the name is a default and the role is not.** A project calling it `sources/`
+  or `notes/` loses nothing, so long as one folder holds the curated material and the agent never
+  writes there. Keeping `core-sources/` is still the recommendation: a reader who has seen the kit
+  before knows what it is on sight.
+
 ## [2.1.0] — 2026-09-01
 
 One structure, more use cases. `2.0.0` fixed what a page must contain; `2.1.0` answers the
@@ -266,6 +323,7 @@ Initial release.
 - Contradiction callouts, and the rule that contradictions are never silently resolved.
 - `AGENTS.md` as the entry point for any filesystem-capable agent.
 
+[2.2.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.2.0
 [2.1.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.1.0
 [2.0.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.0.0
 [1.0.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v1.0.0
