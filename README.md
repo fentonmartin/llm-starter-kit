@@ -133,7 +133,8 @@ about X" usually routes correctly on its own.
 
 It reads your README, your manifest, and your layout — then asks you six questions:
 
-> - What is this knowledge base for: this codebase, outside research, or both?
+> - What is this knowledge base for: this codebase, outside research, a running system, or a
+>   library of documents?
 > - Who reads it — you, your team, or mostly agents working in this repo?
 > - What recurring things deserve a page each? *(your nouns: services, tables, endpoints…)*
 > - What must never be got wrong?
@@ -147,10 +148,15 @@ The first answer picks a **preset** — the starting shape for your page types a
 | this codebase | **codebase** | module · decision or flow · service, table, endpoint, env var |
 | papers, articles, vendor docs | **outside research** | paper · question or debate · person, lab, model, dataset |
 | a running system, incidents, on-call | **operations** | incident or runbook · procedure or failure mode · service, alert, config key |
+| documents that *are* the project — a book, a spec set, a policy library, your notes | **document library** | document · subject or theme · person, org, product, term |
 
-Same contract for all three — same schema, same claim types, same lifecycle. They differ only in
-what a page is *about* and which project rules come pre-written. `/init-docs` starts from one,
-swaps in your actual nouns, and deletes the rest.
+**Same structure for all four.** Same folders, same three page types, same front matter, same
+claim types, same lifecycle, same five commands. A preset is not a layout — it supplies the
+starting nouns and a handful of pre-written rules, and nothing else. `/init-docs` takes one, swaps
+in your actual nouns, and deletes the rest.
+
+That means the choice is cheap and reversible. Picking wrong costs you a `DOCS.md` edit, not a
+migration — see [As the project grows](#as-the-project-grows).
 
 Out comes a `docs/` folder and a `docs/DOCS.md` **written for your project**, in your
 vocabulary.
@@ -199,8 +205,8 @@ proper pages — **nothing is lost by that default**. It shows you every move as
 before touching a thing, then fixes inbound links across the repo.
 
 If your `docs/` is built by a site generator (`mkdocs.yml`, `docusaurus.config.js`,
-`book.toml`), it won't rearrange anything — it scaffolds at `docs/kb/` and treats your published
-docs as sources.
+`book.toml`), it won't rearrange anything — it scaffolds at `docs/kb/`, points the schema's root
+line there, and treats your published docs as sources.
 
 </details>
 
@@ -209,7 +215,7 @@ docs as sources.
 Commit first, then paste this into your agent:
 
 ```
-Upgrade the llm-starter-kit installation in this project to 2.0.
+Upgrade the llm-starter-kit installation in this project to 2.1.
 
 1. Clone https://github.com/fentonmartin/llm-starter-kit into a temp folder
    outside this repo.
@@ -234,6 +240,11 @@ ambiguous rather than guessing.
 
 **Installed as a plugin?** Run `/plugin update llm-starter-kit` first, then paste the same prompt
 with steps 1 and 3 removed — the plugin has already replaced the kit files for you.
+
+**Already on 2.0?** There's nothing to migrate. Replace the kit files and you're done — your
+`docs/` is already correct, since the root defaults to the folder your base is already in. The
+2.1 additions (a fourth preset, the migration guide, two-base support) are all in the kit, waiting
+for the day you want them.
 
 **Why the prompt is that specific about `docs/DOCS.md`:** it's the only file in this kit you
 authored — written from your `init-docs` interview. 2.0 adds about a dozen governance sections,
@@ -274,13 +285,16 @@ repo"* runs `init-docs`.
 /ask-docs where is Redis used? --entity redis
 ```
 
+Every command also takes a **root**, for the rare project with more than one knowledge base —
+`/scan-docs research/`. With no root, it's `docs/`. See [As the project grows](#as-the-project-grows).
+
 ---
 
 ## Directory structure
 
 ```
 README.md                you are here
-AGENTS.md                agent entry point — 11 hard rules, and a pointer to the schema
+AGENTS.md                agent entry point — 12 hard rules, and a pointer to the schema
 CHANGELOG.md             this kit's release history
 LICENSE
 docs/
@@ -300,9 +314,87 @@ examples/example-project/  a complete worked example, five minutes to read
 
 The `docs/` folder here is the template. `/init-docs` reproduces it inside your project.
 
+**Every project gets this same tree**, whichever preset it picked — a codebase, a reading pile, a
+runbook set and a library of documents are laid out identically. One shape means one thing to
+learn, one set of habits, and a base you can lift into another project intact. What varies between
+use cases is what a page is *about*, and that lives in the page types table in your `DOCS.md`.
+
 Everything sits under `docs/` so the knowledge base is one self-contained folder you can copy
 anywhere. `docs/core-sources/` is nested for filing only — it stays read-only to the agent and
 exempt from every page rule.
+
+The root folder is the one part of the layout you choose. `docs/DOCS.md` Part 1 opens by declaring
+it, every skill reads that one line, and `docs/` is the default. Two situations want something
+else: a `docs/` that a site generator already owns (→ `docs/kb/`), and a project that needs
+[two separate bases](#as-the-project-grows).
+
+---
+
+## As the project grows
+
+The layout is fixed so that adjusting it stays cheap. Almost everything you'll want to change is a
+`DOCS.md` edit, not a migration.
+
+**Free — edit `docs/DOCS.md`, carry on.** No migration, no lint run, existing pages stay valid.
+
+- Rename the nouns in your page types table: *one page per module* → *one page per service*.
+- Add, remove, or reword project-specific rules.
+- Add or remove out-of-scope paths.
+
+**Cheap — edit `DOCS.md`, run `/lint-docs`, commit the diff.**
+
+- **Switched preset**, because the base turned out to be about something else. Existing pages keep
+  their front matter and provenance and get reshaped as they're next touched — nothing is
+  bulk-rewritten, because those pages were true when they were written.
+- **Split an overgrown topic page** into three, or promote a section to its own entity page. Lint
+  finds the inbound wikilinks that need repointing.
+- **Switched link style** between wikilinks and relative Markdown.
+
+**Real work — one commit, lint straight after.** Moving the root (`docs/` → `docs/kb/`): move the
+folder whole, change the root line in Part 1, run `/lint-docs` — check 15 rewrites every citation
+still pointing at the old root — then grep the repo for the old path, since `CLAUDE.md` and CI
+config don't fix themselves. The exact commands are in
+[Part 2](docs/DOCS.md#changing-the-shape-later), including the staging step git needs to move a
+folder into a subfolder of itself. Splitting one base into two, or merging two into one, is the
+same idea: move the folders, port the rules, lint both.
+
+**Never.** Renaming or adding a folder, adding a fourth page type, changing the front-matter
+schema. Those are what `lint-docs` and `test-docs` check against — change them locally and every
+future version of this kit fights your base.
+
+<details>
+<summary>Two knowledge bases in one project</summary>
+
+<br>
+
+Worth it when a project has two bodies of knowledge with **different authority** — one whose facts
+come from your own code, one whose facts come from other people's papers. Keeping them apart is the
+point: a vendor's claim must never settle a question about your own system.
+
+```
+docs/         ← the codebase base.  preset: codebase
+research/     ← the reading pile.   preset: outside research
+```
+
+Each is fully self-contained: its own `DOCS.md` with its own root line and its own preset, its own
+five folders, its own index and changelog. Run `/init-docs` once per base — the interview runs
+again, which is the whole point, since the second base gets its own page types and rules.
+
+Every command takes the root:
+
+```
+/scan-docs research/
+/lint-docs research/
+/ask-docs --root research/ what does the field think about X?
+```
+
+With no argument, the root is `docs/`. A run never spans two bases, and pages never wikilink across
+roots — if you keep asking questions that need both, they were one base. Merge them.
+
+**Don't split because a folder got large.** A big base is what success looks like, and `ask-docs`
+selects candidates by index rather than reading everything.
+
+</details>
 
 ---
 
