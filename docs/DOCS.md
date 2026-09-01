@@ -23,22 +23,31 @@ page is *about*, not where it lives. That is deliberate: the checks in `lint-doc
 order in `ask-docs`, and every rule below are written against these paths, and one shape means
 one contract to learn, one set of habits, and a base you can move between projects.
 
-Two paths are declared rather than assumed. **These two sentences are the declarations** — edit
-them to move the base, and every rule in this file and every path in the agent's skills follows.
+Three paths are declared rather than assumed. **This block is the declaration** — every rule in
+this file and every path in the agent's skills resolves against it.
 
 > **Root: `docs/`**
 > **Source folder: `docs/core-sources/`**
+> **Index: `docs/INDEX.md`**
 
-Every path written below, and in every skill, uses those two defaults. If the root says anything
-else, read each `docs/…` path as that folder — `docs/topics/` means `<root>/topics/`, and a check
-that skips the source folder skips it at its declared location. If the source folder says anything
-else, read each `docs/core-sources/` as that folder, including when it sits outside the root.
-Nothing else changes: the layers, their names, and their rules are the same at any path.
+Every path written below, and in every skill, uses those defaults. If a declaration names
+something else, read the corresponding path that way throughout — `docs/topics/` means
+`<root>/topics/`, a check that skips the source folder skips it wherever it is declared, and the
+index is whichever file the third line names. Nothing else changes: the layers, their names, and
+their rules are the same at any path.
 
-`docs/` and `docs/core-sources/` are the right answer for almost every project. Part 2's *Choosing
-a different root* and *Choosing the source folder* cover the cases that want otherwise — the
-commonest being material the project already files somewhere, which is worth pointing at rather
-than moving.
+**Only one of the three is a choice.**
+
+- **The root is not configured.** It is `docs/`. The single exception is a project whose `docs/`
+  is already built by a site generator, where the base is scaffolded at `docs/kb/` and the root
+  declaration records that — a fallback the agent applies on its own, never a question put to the
+  user. Do not offer a root, and do not ask for one.
+- **The source folder is the one real choice**, because material is often already filed somewhere.
+  See *Choosing the source folder* in Part 2. With nothing configured it is
+  `docs/core-sources/`.
+- **The index name follows a rule, not a preference** — `docs/INDEX.md` unless the project has no
+  root `README.md` of its own and nothing else claims the name, in which case `docs/README.md`
+  reads more naturally. See *The index* below.
 
 Everything else lives under the root, and the layers are strictly separate.
 
@@ -47,7 +56,7 @@ Everything else lives under the root, and the layers are strictly separate.
 | Core sources | `docs/core-sources/` — or wherever the declaration above points | **Humans only.** Immutable. The agent reads it, never edits, renames, or deletes. |
 | Pages | `docs/summaries/`, `docs/topics/`, `docs/entities/` | **Agent only.** Every file derives from a source or an explicit instruction. |
 | Scenarios | `docs/scenarios/` | **Humans.** Questions the knowledge base must answer correctly. |
-| Bookkeeping | `docs/README.md`, `docs/CHANGELOG.md` | **Agent only.** Index and log. |
+| Bookkeeping | the index, `docs/CHANGELOG.md` | **Agent only.** Index and log. |
 | Guidance | `docs/DOCS.md` | **Humans.** This file. |
 
 The source folder is exempt from every page rule below — front matter, slugs, wikilinks, page
@@ -55,9 +64,21 @@ types. Only the `YYMMDD` file-name rule applies there. Checks that sweep `docs/`
 
 Three constraints on the declaration:
 
-- **Exactly one folder.** One summary page per source file is the backbone of provenance, and two
-  source folders make that mapping ambiguous the first time a file name repeats. Material that
-  lives in several places gets filed into one folder, or read in place — see below.
+- **Exactly one location.** One summary page per source file is the backbone of provenance, and
+  two source folders make that mapping ambiguous the first time a file name repeats. Material that
+  lives in several places gets filed into one folder, or read in place — see below. Three forms
+  are valid:
+
+  | Declaration | Means |
+  |---|---|
+  | `docs/core-sources/` | The default. A folder inside the base, which the agent reads and never writes. |
+  | any other folder path | That folder, wherever it is, including outside the root. Subfolders inside it are read. |
+  | `./*` | Documents at the top level of the project only, not recursive. For a repo whose loose Markdown files at the root *are* the material. |
+
+  `./*` is the one that needs care: it is non-recursive by design, because `./**` would pull in
+  every file in the project. Pair it with out-of-scope globs for anything at the root that is not
+  material — `README.md` and `CHANGELOG.md` usually are material, `package.json` and `Makefile`
+  usually are not.
 - **It must not overlap a page layer.** A source folder that contains `summaries/`, `topics/`, or
   `entities/` makes the agent's own output look like source material, and there is no recovering
   from that automatically.
@@ -89,24 +110,19 @@ weight than the same claim from the source folder.
 
 ### Why "core"
 
-The prefix names a **role**, not a file type. `docs/core-sources/` is the root of the provenance
-chain: every page in the knowledge base is reproducible from it, and nothing else is. Deleting a
-page loses work; deleting from here loses the truth.
-
-It also removes a genuine ambiguity. A knowledge base has two kinds of source — the curated,
-immutable material here, and read-in-place paths like `src/**`, which change every commit. Calling
-both "sources" blurred the immutability rule precisely where it mattered most. And "source" is
-already overloaded across the `sources:` field, the citation format, and source code; the folder
-has a name that means one thing.
-
-The practical payoff is that the hard rule reads as a boundary rather than a category:
-*never write to the source folder*.
+The prefix names a **role**, not a file type: the root of the provenance chain, the one layer every
+page is reproducible from. Deleting a page loses work; deleting from here loses the truth. The
+practical payoff is that the hard rule reads as a boundary rather than a category — *never write to
+the source folder*.
 
 **The name is a default, the role is not.** A project that calls it `sources/` or `notes/` or
-`research-papers/` loses nothing, as long as one folder holds the curated material and the agent
-never writes there. What cannot vary is that the role exists and that exactly one folder fills it.
-Keep `core-sources/` unless the project has a reason; a reader who has seen the kit before will
-know what it is on sight.
+`research-papers/` loses nothing, as long as one location holds the curated material and the agent
+never writes there. What cannot vary is that the role exists and that exactly one location fills
+it. Keep `core-sources/` unless the project has a reason; a reader who has seen the kit before
+knows what it is on sight.
+
+Part 2's *Why the structure is shaped this way* has the rest — what every layer's name is doing,
+why the layers are separate, and how an agent reads the base without reading all of it.
 
 ## Authority
 
@@ -130,6 +146,33 @@ The agent's background knowledge    ← none; must be labelled if used at all
 | Summary | `docs/summaries/<source-slug>.md` | source file | Faithful condensation of one source. The only page allowed to paraphrase at length. |
 | Topic | `docs/topics/<slug>.md` | idea, question, theme | Synthesis across sources. Where contradictions surface. |
 | Entity | `docs/entities/<slug>.md` | person, org, product, place, dataset | Stable facts about one thing, plus where it appears. |
+
+### Subfolders
+
+**Group with subfolders once a layer passes roughly thirty pages.** A path like
+`docs/topics/auth/session-management.md` reads better than forty files in one directory, and it
+gives a reader an outline before they open anything. Below thirty, a flat layer is easier to scan
+than a shallow tree.
+
+Rules that make grouping safe:
+
+- **Group by subject, never by type or date.** `topics/auth/`, `entities/services/`,
+  `summaries/vendor-docs/`. Never `topics/2026/`, and never a subfolder that re-states the layer.
+- **The layer folder stays the layer.** A subfolder never changes what a page *is*: everything
+  under `docs/topics/` is a topic page with `type: topic`, however deep. Never nest one layer
+  inside another.
+- **Two levels is the practical limit.** Deeper and the path becomes the taxonomy, which is a
+  filing system nobody maintains. If two levels are not enough, the pages are too small — merge
+  them.
+- **Slugs stay globally unique within a layer**, not merely unique within their subfolder.
+  `topics/auth/tokens.md` and `topics/billing/tokens.md` are a wikilink ambiguity, and Obsidian
+  resolves `[[tokens]]` to whichever it saw first. Two pages that want the same slug are usually
+  one page, or want more specific names.
+- **A summary's path mirrors its source's.** A source at `core-sources/vendor/acme-spec.pdf` gets
+  `summaries/vendor/acme-spec.md`. That is what lets lint pair the two, and how a moved source
+  is detected rather than silently orphaned.
+- **Moving a page between subfolders is free** — the slug and the wikilinks do not change, so
+  nothing breaks. Regroup whenever the shape stops fitting; the index is rebuilt either way.
 
 ## Front matter
 
@@ -272,7 +315,7 @@ stays open until a human rules. → [Human review](#human-review)
 
 `ask-docs` must never load the whole knowledge base.
 
-**Selection:** match the question against `docs/README.md` titles and descriptions, read those
+**Selection:** match the question against the index titles and descriptions, read those
 pages, then follow their wikilinks one hop out — two if the question is broad. Then stop. Drop to
 `docs/core-sources/` only when the pages are thin, a verbatim quote is needed, or a page is suspected
 stale, and say so. Scope may be constrained with `--topic`, `--entity`, `--source`.
@@ -312,14 +355,15 @@ wrote Y; it does not know which is true.
 
 **An agent never auto-resolves a conflict in `docs/topics/`, `docs/entities/`, or
 `docs/summaries/`.** Surface both sides and stop. Two exceptions, because neither carries meaning:
-`docs/CHANGELOG.md` (keep both, date order) and `docs/README.md` (keep the union, re-sort).
+`docs/CHANGELOG.md` (keep both, date order) and the index (keep the union, re-sort).
 
 If a conflict is genuinely two claims about the same thing, the resolution is a contradiction
 callout, not a choice.
 
 ## Naming and dates
 
-- Slugs are lowercase kebab-case ASCII. `docs/entities/vector-database.md`.
+- Slugs are lowercase kebab-case ASCII. `docs/entities/vector-database.md`. Subfolder names follow
+  the same rule, and a slug must be unique across its whole layer, subfolders included.
 - **Any date in a file name is `YYMMDD`** — no separators, no exceptions. Only genuinely dated
   files get one; evergreen topic and entity pages get none. A summary inherits its source's
   prefix verbatim.
@@ -327,9 +371,38 @@ callout, not a choice.
 
 ## Bookkeeping
 
-- `docs/README.md` — the index. Every page listed exactly once, grouped by type, one line each.
-  Updated in the same pass that creates or removes a page.
+- The index, at whatever name the declaration gives it — `docs/INDEX.md` by default. Every page listed
+  exactly once, grouped by type, one line each. Updated in the same pass that creates or removes
+  a page.
 - `docs/CHANGELOG.md` — append-only, newest first. One entry per run. Never rewrite an entry.
+
+### The index
+
+The index is the entry point. `ask-docs` reads it before it reads any page, and it is how a base
+stays answerable as it outgrows anyone's context: selection is by index and links, never by
+reading everything. A page missing from it is invisible in practice, which is why an omission is
+a lint finding rather than a matter of tidiness.
+
+**`INDEX.md` unless `README.md` is clearly better.** The file is an index and has never been a
+readme, and two cases make the accurate name the necessary one:
+
+- The project's own root `README.md` is the front door for the whole repository, and a second
+  README one level down reads as competing with it. `INDEX.md` says what the file is, and no
+  reader has to work out which README is authoritative.
+- A `README.md` already exists in the base and *is* a readme — an introduction to the folder,
+  written for people, not a list of pages. Do not convert it; declare `INDEX.md` and leave it
+  alone.
+
+Since almost every project has a root README, `INDEX.md` is the usual outcome. `README.md` is
+still valid and is what bases built before `2.3` use: either name works, the declaration settles
+which, and nothing in this contract treats them differently. There is no reason to rename an
+existing one except preference.
+
+**The project's own root `README.md` is not part of the knowledge base**, and the agent does not
+maintain it. It is the repository's front door, and a knowledge base is a thing the front door
+should point *at*: one line saying the base exists, what it covers, and which commands read it.
+`init-docs` adds that line, or writes a minimal root README if the project has none, and touches
+nothing else in it.
 
 ## Style
 
@@ -367,6 +440,56 @@ interview; **if it still reads like the text below, that interview never happene
 # Part 2 — Reference
 
 Worked examples, workflows, and rationale. No new rules.
+
+## Why the structure is shaped this way
+
+Worth reading once. Every folder name here is doing a job, and the jobs are what the rules in
+Part 1 protect.
+
+### How an agent actually reads this base
+
+Not by reading it. That is the whole design:
+
+```
+DOCS.md          →  the rules, every run, in full
+index            →  what exists, and where
+2–8 pages        →  selected by index and wikilinks
+source folder    →  only when the pages are thin or a quote is needed
+```
+
+An agent that globs `docs/**/*.md` has already failed, because a base that is working outgrows any
+context window. So the structure is optimized for *selection*: the index says what exists in one
+screen, wikilinks say what is related without reading either page, front matter says whether a
+page is worth opening (`status`, `claim_type`, `updated`) before its body is loaded, and citations
+say where to go when the pages are not enough. Every one of those is a way to *avoid* reading.
+
+That is also why front matter holds no knowledge. Knowledge in YAML cannot be linked, quoted, or
+contradicted — only parsed. The body is for what the base knows; the front matter is for deciding
+whether to read the body.
+
+### Why each layer is named what it is
+
+| Name | Why not something else |
+|---|---|
+| `core-sources/` | Not `sources/`, because "source" is already three things here: the `sources:` field, the citation, and source code. The `core-` prefix names a **role** — the root of the provenance chain, the one layer everything else is reproducible from. It also separates curated material from read-in-place paths, which is exactly where the immutability rule has to be sharp. |
+| `summaries/` | Not `notes/` or `digests/`. A summary has one job and one source, and the name says both. It is the only page type allowed to paraphrase at length, because faithfulness to one document is what it is *for*. |
+| `topics/` | Not `concepts/` or `articles/`. A topic is a question or theme that outlives any one source, and it is where sources are compared — so it is the only layer where a contradiction can exist. `articles/` would suggest prose written for its own sake. |
+| `entities/` | Not `glossary/` or `things/`. An entity is one thing with stable facts and many mentions: a service, a person, a table, a term. `glossary/` implies definitions only, and the point of the layer is the *backlinks* — every place the thing appears. |
+| `scenarios/` | Not `tests/`. Nothing here executes, and calling it tests promises a green tick this kit cannot give. A scenario is a question the base must answer correctly, checked by reading. |
+| the index | Not a generated file. It is the entry point an agent reads before anything else, so it is maintained in the same pass that changes a page — a stale index is a base that has quietly lost pages. |
+
+### Why the layers are separate at all
+
+Because who may write to a file is the only durable way to keep provenance honest. Sources are
+human-owned and immutable; pages are agent-maintained and derived; scenarios are human-owned and
+never edited by the agent; bookkeeping is agent-owned. Merge any two and the question *"where did
+this claim come from?"* stops having an answer — which is the failure this whole structure exists
+to prevent.
+
+The three page types are separate for a different reason: they fail differently. A wrong summary
+misreads one document. A wrong topic page draws a false conclusion from several. A wrong entity
+page spreads one bad fact everywhere it is linked. Keeping them apart is what makes a lint finding
+specific enough to act on.
 
 ## Marking claims inside a page
 
@@ -640,6 +763,7 @@ place the root is declared, and every skill reads this file before it reads anyt
 | The material already lives somewhere the project cares about — `research-papers/`, `contracts/`, `notes/` | that folder | Moving material people already file by hand, into a folder the kit invented, is a cost with no return. Point at it instead. |
 | The base was scaffolded beside a published docs site (`docs/kb/`) | `docs/` | The published pages *are* the material. They stay where the generator expects them and are cited at their real paths. |
 | The material is your own writing, and the repo is the writing | that folder | A document library's corpus is usually already organized. Declare it; do not refile it. |
+| The material is loose documents at the top of the repo | `./*` | Non-recursive by design. Pair it with out-of-scope globs for the root files that are not material. |
 
 Two things this is not for. It is not a way to point the agent at a folder it also writes to —
 declaring a folder as the source layer makes it forbidden to write to, and pointing it at
@@ -661,7 +785,7 @@ Mixing them is what the split prevents: a vendor claim must never settle a quest
 system.
 
 - Each base is **completely self-contained**: its own root, its own `DOCS.md` with its own
-  `Root:` and `Source folder:` declarations and its own preset, its own five folders, its own `README.md` index and
+  own declarations and its own preset, its own five folders, its own index and
   `CHANGELOG.md`.
 - Run `/init-docs` once per base, telling it which root. The interview runs again — the second
   base gets its own page types and its own rules, which is the entire point.
@@ -696,6 +820,11 @@ the schema. Note the change in `docs/CHANGELOG.md` so the next reader knows when
 - **Reorganizing within a layer** — splitting one overgrown topic page into three, promoting a
   section to its own entity page. Leave a redirect line in the page you emptied, and lint will
   catch the inbound wikilinks that need repointing.
+- **Grouping a layer into subfolders**, or regrouping one. Free in the sense that matters —
+  wikilinks resolve by slug, so moving a page between subfolders breaks no link — but the index
+  needs rebuilding, so lint and commit. Summary pages move with their sources, not independently.
+- **Renaming the index** between `README.md` and `INDEX.md`. `git mv` it, change the declaration,
+  and lint: it rebuilds the index and repoints anything that linked to the old name.
 - **Changing link style** (wikilinks ↔ relative Markdown). Change the *Links* section, then tell
   the agent to migrate; the skills read this file for link style rather than assuming one.
 - **Promoting read-in-place paths to filed sources, or the reverse.** Change the declaration, then

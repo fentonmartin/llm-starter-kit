@@ -13,12 +13,17 @@ Part 1 for convenience, not a substitute for reading it.
 
 `docs/` is a knowledge base, not an application. There is no build and nothing to run here.
 
-**The root and the source folder.** Every path below is written as `docs/…`, and the source layer
-as `docs/core-sources/`. Part 1 of the contract declares both. If it names another root — `docs/kb/`,
-say — read every `docs/…` path here as that folder; if it names another source folder, read every
-`docs/core-sources/` here as that one, including when it sits outside the root. The layers and
-their rules never change with either, and the layout is the same in every project regardless of
-what it documents.
+**The declarations.** Part 1 of the contract opens with three paths, and every path below is
+written using their defaults. Read `docs/…` as whatever **Root** names, `docs/core-sources/` as
+whatever **Source folder** names — any folder, possibly outside the root, or `./*` for top-level
+project files — and the index as whatever **Index** names, `docs/INDEX.md` or `docs/README.md`.
+
+**Page layers may have subfolders.** `docs/topics/auth/session-management.md` is a topic page like
+any other; the layer folder decides what a page is, however deep. Slugs are unique across a whole
+layer, so wikilinks resolve by slug and ignore the path.
+
+The layers and their rules never change with any declaration, and the layout is the same in every
+project regardless of what it documents.
 
 ## The one idea
 
@@ -57,12 +62,14 @@ That is why the rules below constrain what you may assert rather than what you m
 8. **Never auto-resolve a git conflict in `docs/summaries/`, `docs/topics/`, or
    `docs/entities/`.** Git can tell you two people wrote different text. It cannot tell you
    which is true. Surface both sides and stop. `docs/CHANGELOG.md` (keep both, date order) and
-   `docs/README.md` (keep the union, re-sort) are the only exceptions.
+   the index (keep the union, re-sort) are the only exceptions.
 9. **`docs/CHANGELOG.md` is append-only.** Add at the top; never rewrite or delete an entry.
-10. **`docs/README.md` lists every generated page exactly once.** Update it in the same pass
+10. **The index lists every generated page exactly once.** Update it in the same pass
     that creates or removes a page.
 11. **Dates in file names are `YYMMDD`. Dates inside files are `YYYY-MM-DD`.** Slugs are
-    lowercase kebab-case. A summary page carries its source's file name, minus the extension.
+    lowercase kebab-case, and unique across a whole layer even when subfolders are used — two
+    pages with one slug make every wikilink to it point at one of them arbitrarily. A summary page
+    carries its source's file name, minus the extension, and mirrors its source's subfolder path.
 12. **Never add, rename, or remove a layer, and never add a page type.** The five folders and the
     three page types are the same in every project built with this kit; a project's own vocabulary
     belongs in the page types table in `docs/DOCS.md`, not in the folder names. Changing the shape
