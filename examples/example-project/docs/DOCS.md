@@ -14,6 +14,8 @@ lifecycle, citations and provenance, contradictions, retrieval and context, secu
 conflicts, naming and dates — applies here unchanged. Read it in
 [`../../../docs/DOCS.md`](../../../docs/DOCS.md).**
 
+**This knowledge base is rooted at `docs/`** — the default, and what almost every project uses.
+
 Below are the only three sections `/init-docs` rewrites per project.
 
 ## Page types

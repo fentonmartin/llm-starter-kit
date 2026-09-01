@@ -13,6 +13,11 @@ Part 1 for convenience, not a substitute for reading it.
 
 `docs/` is a knowledge base, not an application. There is no build and nothing to run here.
 
+**The root.** Every path below is written as `docs/…`. Part 1 of the contract opens by declaring
+the knowledge base root; if it names anything else — `docs/kb/`, say — read every `docs/…` path
+here as that folder instead. The layers and their rules never change with the root, and the layout
+is the same in every project regardless of what it documents.
+
 ## The one idea
 
 The repository is the durable knowledge layer. You are not.
@@ -54,6 +59,11 @@ That is why the rules below constrain what you may assert rather than what you m
     that creates or removes a page.
 11. **Dates in file names are `YYMMDD`. Dates inside files are `YYYY-MM-DD`.** Slugs are
     lowercase kebab-case. A summary page carries its source's file name, minus the extension.
+12. **Never add, rename, or remove a layer, and never add a page type.** The five folders and the
+    three page types are the same in every project built with this kit; a project's own vocabulary
+    belongs in the page types table in `docs/DOCS.md`, not in the folder names. Changing the shape
+    is a human decision, documented in `docs/CHANGELOG.md` — see *Changing the shape later* in
+    Part 2.
 
 ## Operations
 

@@ -16,7 +16,23 @@ Nothing in Part 2 adds a rule. If the two ever disagree, Part 1 wins and Part 2 
 
 ## Layers
 
-Everything lives under `docs/`, but the layers are strictly separate.
+**Every knowledge base built with this kit has the same shape: one root folder, five layers,
+three page types.** It does not vary by what you are documenting. A codebase, a reading pile, a
+runbook set, and a library of documents all get the identical structure — what changes is what a
+page is *about*, not where it lives. That is deliberate: the checks in `lint-docs`, the retrieval
+order in `ask-docs`, and every rule below are written against these paths, and one shape means
+one contract to learn, one set of habits, and a base you can move between projects.
+
+**This knowledge base is rooted at `docs/`.** Every path in this file and in the agent's skills
+is written with that prefix. If the sentence in bold above names a folder other than `docs/`,
+read every `docs/…` path in this file *and in every skill* as that folder instead: `docs/topics/`
+means `<root>/topics/`, and a check that skips `docs/core-sources/` skips `<root>/core-sources/`.
+Nothing else changes.
+The root is the only part of the layout that is yours to choose, and `docs/` is the default and
+the right answer for almost every project — see *Choosing a different root* in Part 2 for the two
+cases that need another.
+
+Everything lives under the root, but the layers are strictly separate.
 
 | Layer | Path | Who writes it |
 |---|---|---|
@@ -30,6 +46,11 @@ Everything lives under `docs/`, but the layers are strictly separate.
 types. Only the `YYMMDD` file-name rule applies there. Checks that sweep `docs/` skip it.
 
 **If a fact is not traceable to a source or to a human instruction, it does not belong in a page.**
+
+**The agent never adds, renames, or removes a layer, and never adds a page type.** This project's
+own vocabulary belongs in *Page types* below, not in folder names. Changing the shape is a human
+decision, recorded in `docs/CHANGELOG.md` — Part 2's *Changing the shape later* says what each
+kind of change costs.
 
 ### Why "core"
 
@@ -420,9 +441,10 @@ ambiguous.
 
 ## Presets
 
-Three starting shapes. `/init-docs` picks one from what you say the knowledge base is for, then
+Four starting shapes. `/init-docs` picks one from what you say the knowledge base is for, then
 rewrites the page types, out-of-scope paths, and project rules in Part 1 to match. They differ
-only in those three sections — the contract itself is identical for all of them.
+only in those three sections — **the structure and the contract are identical for all of them.**
+A preset is not a different layout; it is a different vocabulary poured into the same one.
 
 Pick the one whose nouns match yours. If none do, take the closest and rename its page types.
 
@@ -478,6 +500,35 @@ Rules worth adding for outside material:
 - Capture the date you read a web source. Pages change silently and the citation is all you will
   have.
 
+### Preset: a document library
+
+For a project whose documents *are* the project — a book or spec set being written, a policy
+library, a pile of notes used as the knowledge base. There is little or no code, and the material
+is the user's own rather than something read from outside.
+
+| Type | Path | One page per | Purpose |
+|---|---|---|---|
+| Summary | `docs/summaries/<source-slug>.md` | document, chapter, note file | What this document says, condensed, with its own structure preserved. |
+| Topic | `docs/topics/<slug>.md` | subject, question, theme | The synthesis layer, and where the real value is: what the library says about one subject, across every document that touches it. |
+| Entity | `docs/entities/<slug>.md` | person, org, product, term, place | Stable facts about one thing, plus every document that mentions it. |
+
+Rules worth adding for a document library:
+
+- **Topics carry the weight.** A library is navigated by subject, not by file name. If a scan
+  produces summaries and almost no topic pages, the base is a filing cabinet, not a knowledge
+  base — that is the failure mode to watch for here.
+- **The documents are authoritative, not third-party.** Unlike outside research, a claim does not
+  need attributing to whoever made it; the freshness and authority rules apply to the documents
+  directly. When two of your own documents disagree, it is a real contradiction needing a human
+  ruling, not a difference of opinion between sources.
+- **A term with a specific local meaning is an entity, not a glossary line.** Libraries drift on
+  vocabulary before they drift on facts.
+- **Undated documents are the norm here.** The `YYMMDD` prefix applies to anything with a
+  meaningful date — a dated memo, a meeting note, a revision. Evergreen documents carry no
+  prefix, and that is not a lint finding.
+- Out of scope: build output of whatever renders these documents — `site/**`, `_build/**`,
+  `.obsidian/**`, `*.docx` lock files.
+
 ### Preset: operations and runbooks
 
 For how a running system is actually operated — incidents, procedures, configuration, on-call
@@ -502,3 +553,110 @@ Rules worth adding for operations:
   not only in front matter, because the person reading it at 3am is scrolling, not auditing.
 - Incidents are dated sources and keep their `YYMMDD` prefix. Procedures are evergreen and carry
   no date.
+
+### Writing your own preset
+
+If none of the four fit, write a fifth. A preset may set exactly three things, and they are the
+same three `/init-docs` rewrites from an interview:
+
+1. the **page types** table — the nouns, one row per page type
+2. the **out of scope** paths
+3. the **project-specific rules** — four to six, each one checkable
+
+It may set nothing else. The layers, the three page types themselves, front matter, claim types,
+authority, lifecycle, provenance, links, citations, contradictions, retrieval, and the security
+rules are the contract, and they are what make a base lintable and testable. A preset that wants
+a fourth page type or a renamed folder is not a preset — it is a fork, and `lint-docs` and
+`test-docs` will not understand it.
+
+Write it as a `### Preset: <name>` section here, in the same shape as the four above. `/init-docs`
+deletes all of Part 2 including the preset it used, so a preset lives in the kit, never in a
+project's own contract.
+
+## Choosing a different root
+
+`docs/` is the default and the right answer for almost every project. Two cases need another:
+
+| Situation | Root | Why |
+|---|---|---|
+| The project's `docs/` is a published site (`mkdocs.yml`, `docusaurus.config.js`, `book.toml`) | `docs/kb/` | Rearranging a folder a generator builds from breaks the build. The published docs become sources. |
+| The project needs two bases that must not mix | `docs/` and a second root, e.g. `research/` | See below. |
+
+Whatever you choose, say it in the root-binding line at the top of Part 1. That line is the only
+place the root is declared, and every skill reads this file before it reads anything else.
+
+### Two knowledge bases in one project
+
+Legitimate when a project has two bodies of knowledge with different authority — a codebase base
+whose facts come from the code, and a research base whose facts come from other people's papers.
+Mixing them is what the split prevents: a vendor claim must never settle a question about your own
+system.
+
+- Each base is **completely self-contained**: its own root, its own `DOCS.md` with its own
+  root-binding line and its own preset, its own five folders, its own `README.md` index and
+  `CHANGELOG.md`.
+- Run `/init-docs` once per base, telling it which root. The interview runs again — the second
+  base gets its own page types and its own rules, which is the entire point.
+- Every command takes the root as an argument: `/scan-docs research/`, `/lint-docs research/`,
+  `/ask-docs --root research/ what does the field think about X?`. With no argument, the root is
+  `docs/`.
+- **A run never spans two bases.** An answer cites pages from one base. Do not wikilink across
+  roots — a link out of a base is a citation to material the other base's contract does not
+  govern, and lint will read it as a gap forever.
+- If you find yourself asking questions that need both bases, they are one base. Merge them.
+
+## Changing the shape later
+
+A knowledge base that grows will need adjusting, and the layout is designed so that most
+adjustments are free. Sorted by cost:
+
+**Free — change `DOCS.md` and carry on. No migration, no lint run needed.**
+
+- Rename the nouns in the page types table. "one page per module" → "one page per service".
+- Add, remove, or reword project-specific rules.
+- Add or remove out-of-scope paths.
+
+New pages follow the new wording; existing pages are still valid, because none of these change
+the schema. Note the change in `docs/CHANGELOG.md` so the next reader knows when the rule started.
+
+**Cheap — change `DOCS.md`, then run `/lint-docs` and commit the diff.**
+
+- **Switching preset** (the base turned out to be about something else). Replace the three
+  sections from the new preset, then lint: existing pages keep their front matter and their
+  provenance, and get reclassified as they are next touched. Do not bulk-rewrite pages to match a
+  new preset — the pages were true when written, and the rules govern what happens next.
+- **Reorganizing within a layer** — splitting one overgrown topic page into three, promoting a
+  section to its own entity page. Leave a redirect line in the page you emptied, and lint will
+  catch the inbound wikilinks that need repointing.
+- **Changing link style** (wikilinks ↔ relative Markdown). Change the *Links* section, then tell
+  the agent to migrate; the skills read this file for link style rather than assuming one.
+
+**Real work — plan it, do it in one commit, lint immediately after.**
+
+- **Moving the root** (`docs/` → `docs/kb/`, say):
+  1. Move the folder whole; never lift one layer out from under the others. A move *into* a
+     subfolder of itself needs a staging step, because git will not do it in one:
+
+     ```bash
+     mkdir kb-tmp && git mv docs/* kb-tmp/
+     mkdir -p docs && git mv kb-tmp docs/kb
+     ```
+
+     Any other move is the one-liner you would expect: `git mv docs wiki`.
+  2. Change the root-binding line in Part 1 to the new root. This one line is the entire
+     re-pointing of the contract and the skills.
+  3. Run `/lint-docs`. Check 15 rewrites every `sources:` value and every citation that still
+     points at the old root, and reports the ones it cannot.
+  4. Grep the rest of the repo for the old path — `CLAUDE.md`, `AGENTS.md`, CI config, and README
+     links do not fix themselves.
+- **Splitting one base into two.** Decide the boundary first, by authority — which facts come
+  from where — never by volume or by folder size. Then `/init-docs` the second root, `git mv` the
+  pages that belong to it, and lint both. Cross-base wikilinks broken by the split must be
+  resolved by duplicating the fact with its own citation in the new base, not by linking across.
+- **Merging two bases into one.** `git mv` the second base's four layers into the first, port its
+  project-specific rules into the survivor's Part 1 (they were written for a reason), then lint.
+  Expect duplicate findings — two bases that were worth merging were covering the same ground.
+
+**Never.** Renaming or adding a layer, adding a fourth page type, changing the front-matter
+schema, or moving `core-sources/` out from under the root. These are what the skills check
+against. Changing them locally means every future version of the kit fights your base.
