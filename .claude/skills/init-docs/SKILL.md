@@ -1,6 +1,6 @@
 ---
 name: init-docs
-description: Set up the knowledge base in a project — interview the user about what they are documenting, scaffold docs/, and write a DOCS.md schema tailored to this project. Handles a docs/ folder that already exists by merging and reorganizing rather than overwriting. Use when the user says init docs, set up the knowledge base, install this kit here, build docs for this project, or start documenting this repo.
+description: Set up the knowledge base in a project — interview the user about what they are documenting, scaffold docs/, and write a DOCS.md schema tailored to this project. Handles a docs/ folder that already exists by merging and reorganizing rather than overwriting, upgrades an older install, and restructures a base that has grown. Use when the user says init docs, set up the knowledge base, install this kit here, build docs for this project, start documenting this repo, upgrade the kit, change the schema or presets, move or rename the docs root, or split the knowledge base in two.
 ---
 
 # Init docs
@@ -30,18 +30,26 @@ Ask these. Batch them — do not drip one question at a time. Accept short answe
 you can propose sensible defaults and let the user correct them.
 
 1. **What is this knowledge base for?** Documenting this codebase, collecting outside research,
-   operating a running system, or a mix? This determines everything else — it selects the preset
-   in `docs/DOCS.md` Part 2 that you will build Part 1 from:
+   operating a running system, holding a library of documents, or a mix? This determines
+   everything else — it selects the preset in `docs/DOCS.md` Part 2 that you will build Part 1
+   from:
 
    | Answer | Preset |
    |---|---|
    | This codebase | *Preset: documenting a codebase* |
    | Outside research, a reading pile | *Preset: outside research* |
    | Running a system — incidents, runbooks, on-call | *Preset: operations and runbooks* |
+   | The documents *are* the project — a book, a spec set, a policy library, a pile of notes | *Preset: a document library* |
    | A mix | Take the closest and rename its page types. Do not merge two presets. |
 
    Say which preset you are proposing and why, before asking question 2. It is the cheapest
    correction the user will ever make, and getting it wrong means every page is shaped wrong.
+
+   **Tell them what the preset does not change.** The folders, the page types, the front matter,
+   and every command are identical for all four — the preset only supplies the starting nouns and
+   rules. A user who thinks they are choosing a layout will worry about the choice far more than
+   it deserves, and will hesitate to change it later. It is a cheap decision, reversible at any
+   time: see *Changing the shape later* in Part 2.
 2. **Who reads it?** You alone, a team, future contributors, or mostly AI agents working in
    this repo? Answers change how much context each page must restate.
 3. **What are the recurring things worth a page each?** For code: services, modules, database
@@ -77,6 +85,25 @@ docs/
 Five files and five folders. Nothing else — the schema carries the rules, so there is no
 second guidance file to drift out of sync with it.
 
+**This is the tree for every project, whatever the preset.** Do not add a folder because the
+project seems to want one, do not drop `scenarios/` because the user had no answer to question 6,
+and do not rename a layer to match the project's vocabulary — the vocabulary goes in the page
+types table, where it is meant to. Say this to the user when you show them the tree: the shape is
+fixed, the words in it are theirs.
+
+**The root.** Scaffold at `docs/` unless one of these applies:
+
+| Situation | Root |
+|---|---|
+| Normal — anything else | `docs/` |
+| The project's `docs/` is built by a site generator (`mkdocs.yml`, `docusaurus.config.js`, `book.toml`) | `docs/kb/` — see step 4 |
+| The user asked for a second, separate knowledge base in this project | the root they named |
+
+If you scaffold anywhere other than `docs/`, **set the root-binding line at the top of Part 1 of
+the new `DOCS.md` to that root** and say so in your report. That line is the only place the root
+is declared; without it every path in the contract and in the four other skills still points at
+`docs/`, and nothing will work.
+
 Also copy the kit's root `AGENTS.md` if the project has none. If it already has one, **append a
 short section** pointing to `docs/DOCS.md` rather than replacing the file.
 
@@ -110,7 +137,10 @@ Rules while reorganizing:
 - If the project's `docs/` is large or clearly load-bearing (a published site, a docs
   generator with a config file like `mkdocs.yml`, `docusaurus.config.js`, `book.toml`), do
   **not** rearrange it. Scaffold the knowledge base at `docs/kb/` instead, say why, and treat
-  the existing docs as sources.
+  the existing docs as sources. **Then set the root-binding line in `docs/kb/DOCS.md` to
+  `docs/kb/`** — the whole contract and all four other skills read that one line to find the base.
+  The published pages stay where they are and are cited as sources, at their real paths; they are
+  not copied into `docs/kb/core-sources/`.
 
 ## 5. Write DOCS.md
 
@@ -126,9 +156,15 @@ three parts of Part 1 with what you learned:
 - **Out of scope** — list the paths from question 5, plus the preset's. Append this project's
   sensitive paths to the security exclusion list rather than replacing what is already there.
 
-Then **delete every preset section from Part 2**, including the one you used. They are a menu for
-`init-docs`, not documentation for the project — leaving two unused presets in a project's
-contract is three page-type tables competing to be the real one.
+Then **delete the whole `## Presets` section from Part 2**, including the preset you used and
+*Writing your own preset*. It is a menu for `init-docs`, not documentation for the project —
+leaving three unused presets in a project's contract is four page-type tables competing to be the
+real one.
+
+**Keep the rest of Part 2**, and *Choosing a different root* and *Changing the shape later* in
+particular. Those two are how the project's owner adjusts the base later without guessing, and
+Part 1 links to them. A contract that explains only how to use the base and not how to change it
+is how a knowledge base gets abandoned instead of edited.
 
 **Keep everything else exactly as shipped** — layers, authority, front matter, claim types,
 lifecycle, provenance, freshness, links, citations, contradictions, human review, retrieval and
@@ -161,6 +197,10 @@ For a codebase, a good starting shape:
      while it is cheap
 3. Tell them what to do next: put material in `docs/core-sources/`, then run `/scan-docs`. If you
    moved existing files into `docs/core-sources/`, say that a scan will turn them into pages.
+4. Say in one line that the rules are theirs to change at any time and that most changes cost
+   nothing — `docs/DOCS.md` Part 2, *Changing the shape later*, says which are free and which need
+   a migration. The most common way this kit is abandoned is a user who decides the schema was
+   wrong and does not know they were allowed to edit it.
 
 Do not run a scan yourself. Init sets up; scan is a separate decision.
 
@@ -178,7 +218,17 @@ Stop at any point they want to review.
 |---|---|
 | No `Part 1` / `Part 2` headings, front matter without `status` and `claim_type` | `1.x` |
 | `docs/sources/` still in the layers table | `1.x` |
-| `Part 1 — The contract` present | `2.0` — already current |
+| `Part 1 — The contract` present, no root-binding line under `## Layers` | `2.0` |
+| A root-binding line under `## Layers` | `2.1` — already current |
+
+**From `2.0` to `2.1` there is nothing to migrate.** Replace the kit files (step 1) and stop.
+Their `docs/` is already correct: the root defaults to `docs/`, which is where their base already
+is. Offer, and do not do unasked, two optional touches: add the root-binding line to their Part 1
+so the declaration is explicit, and mention that `Changing the shape later` and the fourth preset
+now exist in the kit's Part 2 if they ever want to reshape the base. Skip steps 2, 3 and 4
+entirely — there is no folder to rename and no lint sweep to run.
+
+The steps below are the `1.x` → current path.
 
 ### Step 1 — kit files
 
@@ -238,11 +288,72 @@ the template and say it is theirs to fill in.
 Append one `docs/CHANGELOG.md` entry recording the upgrade, then report: the version they moved
 from, the three sections you ported, the page count lint touched, and anything left open.
 
+## 8. Restructuring a base that has grown
+
+A base that is being used will need adjusting, and most adjustments are not a restructure at all.
+Find out which kind this is before touching anything. `docs/DOCS.md` Part 2, *Changing the shape
+later*, is the reference; this is what to do when a user asks.
+
+**First, check it is not free.** Renaming the nouns in the page types table, rewording or adding
+project-specific rules, and changing out-of-scope paths need no migration and no lint run — edit
+Part 1, note it in `docs/CHANGELOG.md`, done. Say so plainly rather than proposing a project.
+Users routinely ask for a restructure when they want a rule changed.
+
+**Switching preset.** The base turned out to be about something else. Take the three sections from
+the new preset in the kit's Part 2, rewrite them with the project's nouns as in step 5, then run
+`/lint-docs`. **Do not bulk-rewrite existing pages to match.** They were true when written and
+their provenance is intact; the new rules govern what happens next, and pages get reshaped as they
+are next touched. A migration that rewrites the whole base loses the thing the base is for.
+
+**Moving the root.** In this order, in one commit:
+
+1. Move the folder whole — never lift one layer out from under the others. Most moves are
+   `git mv docs wiki`; moving a folder *into* a subfolder of itself needs a staging step, because
+   git refuses it in one:
+
+   ```bash
+   mkdir kb-tmp && git mv docs/* kb-tmp/
+   mkdir -p docs && git mv kb-tmp docs/kb
+   ```
+2. Change the root-binding line in Part 1 to the new root.
+3. Run `/lint-docs`. Check 15 rewrites the `sources:` values and citations still pointing at the
+   old root and reports what it cannot.
+4. Grep the whole repo for the old path. `CLAUDE.md`, `AGENTS.md`, CI config, and README links do
+   not fix themselves, and lint does not look outside the base.
+
+Show the user steps 1 and 2 before running them, and say how many files step 3 will touch.
+
+**Splitting into two bases.** Only when the two halves have genuinely different authority — facts
+that come from the project itself versus facts that come from other people's material. Never split
+because a folder got large; a large base is what success looks like, and `ask-docs` selects by
+index rather than reading everything.
+
+If it is a real split: decide the boundary first and say it out loud, `/init-docs` the second root
+(a full interview — the second base gets its own preset and its own rules), `git mv` the pages that
+belong to it, then lint both. Wikilinks broken by the split are resolved by restating the fact in
+the new base with its own citation, **not** by linking across roots.
+
+**Merging two bases.** `git mv` the second base's four layers into the first, port its
+project-specific rules into the survivor's Part 1 rather than discarding them, then lint. Expect
+duplicate findings: two bases worth merging were covering the same ground.
+
+**Refuse these**, and say why in one sentence: renaming or adding a layer, adding a fourth page
+type, changing the front-matter schema, moving `core-sources/` out from under the root. They are
+what `lint-docs` and `test-docs` check against, and a local change to them means every future
+version of the kit fights this base. If the user insists after hearing that, do it, note it
+prominently in `docs/CHANGELOG.md`, and tell them which checks will now misfire.
+
+Whatever you do here, append one `docs/CHANGELOG.md` entry recording the before and after shape.
+A base whose structure changed without a log entry is one a future reader cannot make sense of.
+
 ## Rules
 
 - Never delete a file. Move, or leave alone.
 - Never overwrite an existing `DOCS.md`, `AGENTS.md`, or `CLAUDE.md` — merge or append.
 - Never rearrange a docs folder that a site generator builds from.
+- Never invent, rename, or omit a layer. Every base gets the same five folders and the same three
+  page types; only the nouns and the rules are project-specific.
+- If you scaffold anywhere other than `docs/`, set the root-binding line in Part 1 to match.
 - If the project already has a `docs/DOCS.md`, the kit is installed. **Do not init — follow
   step 7, Upgrading an existing install.** Never re-interview a project that already has a
   schema, and never overwrite the three sections its owner authored.
