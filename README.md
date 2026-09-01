@@ -10,12 +10,11 @@ knowledge is marked as obsolete.
 
 `init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `test-docs`
 
-[![version](https://img.shields.io/badge/version-2.1.0-blue?style=flat-square)](CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-2.2.0-blue?style=flat-square)](CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-**Latest: `2.1.0`** — one structure for every use case, a fourth preset for document-only
-projects, and a documented path for reshaping a base as it grows.
-[What changed](CHANGELOG.md#210--2026-09-01) · [Upgrading](#already-using-an-older-version)
+**Latest: `2.2.0`** — point the base at source material you already file somewhere, instead of
+moving it. [What changed](CHANGELOG.md#220--2026-09-01) · [Upgrading](#already-using-an-older-version)
 
 [**Quick start**](#quick-start) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-human-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
 
@@ -142,6 +141,7 @@ It reads your README, your manifest, and your layout — then asks you six quest
 
 > - What is this knowledge base for: this codebase, outside research, a running system, or a
 >   library of documents?
+> - Where does the material live? *(only asked if you already file it somewhere)*
 > - Who reads it — you, your team, or mostly agents working in this repo?
 > - What recurring things deserve a page each? *(your nouns: services, tables, endpoints…)*
 > - What must never be got wrong?
@@ -222,7 +222,7 @@ line there, and treats your published docs as sources.
 Commit first, then paste this into your agent:
 
 ```
-Upgrade the llm-starter-kit installation in this project to 2.1.
+Upgrade the llm-starter-kit installation in this project to 2.2.
 
 1. Clone https://github.com/fentonmartin/llm-starter-kit into a temp folder
    outside this repo.
@@ -248,10 +248,11 @@ ambiguous rather than guessing.
 **Installed as a plugin?** Run `/plugin update llm-starter-kit` first, then paste the same prompt
 with steps 1 and 3 removed — the plugin has already replaced the kit files for you.
 
-**Already on 2.0?** There's nothing to migrate. Replace the kit files and you're done — your
-`docs/` is already correct, since the root defaults to the folder your base is already in. The
-2.1 additions (a fourth preset, the migration guide, two-base support) are all in the kit, waiting
-for the day you want them.
+**Already on 2.0 or 2.1?** There's nothing to migrate. Replace the kit files and you're done — your
+`docs/` is already correct, since both the root and the source folder default to where your base
+already keeps things. What the newer versions added (a fourth preset, the migration guide,
+two-base support, pointing the base at material you already file elsewhere) is in the kit, waiting
+for the day you want it.
 
 **Why the prompt is that specific about `docs/DOCS.md`:** it's the only file in this kit you
 authored — written from your `init-docs` interview. 2.0 adds about a dozen governance sections,
@@ -274,7 +275,7 @@ Prefer to drive it yourself? The manual steps are in [CHANGELOG.md](CHANGELOG.md
 | **`/init-docs`** | Surveys the project, interviews you, scaffolds `docs/`, writes a schema for *this* codebase | Once, at the start |
 | **`/scan-docs`** | Reads new sources in full, writes a summary each, updates every topic and entity they touch, types the claims, flags contradictions | When material piles up |
 | **`/ask-docs`** | Answers from the pages within a context budget, with citations and an explicit known / inferred / contradicted / unknown split | Instead of digging |
-| **`/lint-docs`** | 15 checks at three severities — schema, citations, staleness, orphans, gaps, contradictions. Fixes the mechanical, escalates the rest | Every few scans |
+| **`/lint-docs`** | 16 checks at three severities — schema, citations, staleness, orphans, gaps, contradictions. Fixes the mechanical, escalates the rest | Every few scans |
 | **`/test-docs`** | Runs `docs/scenarios/questions.yaml` and reports what the base no longer answers correctly | After big changes |
 
 `/init` `/scan` `/ask` `/lint` `/test` work as short aliases. The long names are canonical
@@ -330,10 +331,19 @@ Everything sits under `docs/` so the knowledge base is one self-contained folder
 anywhere. `docs/core-sources/` is nested for filing only — it stays read-only to the agent and
 exempt from every page rule.
 
-The root folder is the one part of the layout you choose. `docs/DOCS.md` Part 1 opens by declaring
-it, every skill reads that one line, and `docs/` is the default. Two situations want something
-else: a `docs/` that a site generator already owns (→ `docs/kb/`), and a project that needs
+Two paths are yours to choose, and `docs/DOCS.md` Part 1 declares both — every skill reads those
+two lines rather than assuming a path.
+
+**The root.** `docs/` by default. Two situations want otherwise: a `docs/` that a site generator
+already owns (→ `docs/kb/`), and a project that needs
 [two separate bases](#as-the-project-grows).
+
+**The source folder.** `docs/core-sources/` by default. If you already keep the material somewhere
+— `research-papers/`, `notes/`, `contracts/`, a published docs folder — point the base at it
+instead of moving it. You keep filing where you file today; the agent reads it there and still
+never writes to it. It can sit outside the root, and there is exactly one of it: anything else
+worth citing but not filing (a source tree, generated docs) goes in **read-in-place sources**,
+which are cited with a commit hash and produce no summary pages.
 
 ---
 
@@ -356,9 +366,11 @@ The layout is fixed so that adjusting it stays cheap. Almost everything you'll w
 - **Split an overgrown topic page** into three, or promote a section to its own entity page. Lint
   finds the inbound wikilinks that need repointing.
 - **Switched link style** between wikilinks and relative Markdown.
+- **Repointed the source folder** at material you already file elsewhere. Nothing moves — lint
+  then reports every file in it as unread, which is a scan queue, not breakage.
 
 **Real work — one commit, lint straight after.** Moving the root (`docs/` → `docs/kb/`): move the
-folder whole, change the root line in Part 1, run `/lint-docs` — check 15 rewrites every citation
+folder whole, change the `Root:` declaration in Part 1, run `/lint-docs` — check 15 rewrites every citation
 still pointing at the old root — then grep the repo for the old path, since `CLAUDE.md` and CI
 config don't fix themselves. The exact commands are in
 [Part 2](docs/DOCS.md#changing-the-shape-later), including the staging step git needs to move a
@@ -383,7 +395,7 @@ docs/         ← the codebase base.  preset: codebase
 research/     ← the reading pile.   preset: outside research
 ```
 
-Each is fully self-contained: its own `DOCS.md` with its own root line and its own preset, its own
+Each is fully self-contained: its own `DOCS.md` with its own declarations and its own preset, its own
 five folders, its own index and changelog. Run `/init-docs` once per base — the interview runs
 again, which is the whole point, since the second base gets its own page types and rules.
 
@@ -625,7 +637,7 @@ the only exceptions, because neither carries meaning.
 
 ## Linting
 
-`/lint-docs` runs 15 checks at three severities.
+`/lint-docs` runs 16 checks at three severities.
 
 | Severity | Reserved for | Examples |
 |:--|:--|:--|
