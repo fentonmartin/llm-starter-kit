@@ -7,6 +7,78 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning is [semantic](https://semver.org/spec/v2.0.0.html), applied to the schema and the
 command surface: a breaking change is one that invalidates an existing knowledge base.
 
+## [2.3.0] — 2026-09-01
+
+A usability release. `2.1` and `2.2` added flexibility; this one makes the kit teachable — fewer
+questions at setup, a tutorial that produces a real base, and the reasoning behind the structure
+written down where it can be read.
+
+**Nothing breaks.** Every declaration still defaults to what existing bases use, `docs/README.md`
+included, and subfolders are optional everywhere.
+
+### Added
+
+- **A tutorial — *your first hour*.** Six steps ending in a working base: install, add one source,
+  read the diff, ask a question, write scenarios, lint. Deliberately one source at step 2, because
+  step 3 is reading the agent's judgment line by line and that is tractable for one document and
+  not for ten. The step that matters is turning each disagreement into a checkable rule and
+  re-running the scan to watch it take effect.
+
+- **Why the structure is shaped this way**, in Part 2 of the contract and condensed in the README.
+  What job each folder name is doing and what it is deliberately not called, why the layers are
+  separated by write-ownership, why the three page types are separate (they fail differently), and
+  how an agent reads a base without reading all of it. Part 1's *Why "core"* is trimmed to a few
+  lines and points here, since rationale does not belong in a file read in full every run.
+
+- **Subfolders in the page layers.** Recommended past roughly thirty pages in a layer, grouped by
+  subject, two levels at most. The layer folder still decides what a page is, however deep it
+  sits, and wikilinks resolve by slug — so regrouping breaks nothing and is free to do later. A
+  summary mirrors its source's path, which is what lets lint keep pairing them.
+
+- **`lint-docs` check 17, slug collisions.** ERROR, and only possible once subfolders exist:
+  `topics/auth/tokens.md` and `topics/billing/tokens.md` make every `[[tokens]]` resolve to one of
+  them arbitrarily, with no broken-link symptom on the other. Reported with inbound link counts,
+  never auto-renamed — two pages wanting one slug are usually one page written twice.
+
+- **A declared index, and `INDEX.md`.** The index is an index, not a readme, and in a project with
+  its own root `README.md` a second one a level down competes with it. `docs/INDEX.md` is now the
+  common outcome of setup; `docs/README.md` stays valid and is still the default. Either name
+  works and the contract treats them identically.
+
+- **The project's root `README.md` gets a section.** One short block: what the base covers, where
+  it lives, which commands read it. If the project has no root README, `init-docs` writes a
+  minimal one. Nothing else in that file is ever touched — it is the most-read file in the
+  repository and it is not the agent's.
+
+- **Step 0 of an upgrade: does the base still describe what it is for?** Every upgrade now re-reads
+  the page types and project rules against what the repository has become — page types naming
+  things that no longer exist, a preset that stopped fitting, rules nothing has violated in a
+  year. Reported, never rewritten: this is the part of an upgrade that needs the owner's judgment,
+  since only they know which drift was deliberate.
+
+- **`./*` as a source location**, for a repo whose loose top-level documents are the material.
+  Non-recursive by design, and lint warns when it is declared with no out-of-scope globs, because
+  a root declaration that sweeps `package.json` into the source layer is an unfinished setup.
+
+### Changed
+
+- **Setup asks less.** One question shapes the base — the preset. The root is no longer a
+  question at all: it is `docs/`, and the one exception (a `docs/` a site generator owns →
+  `docs/kb/`) is decided from what the survey found and announced rather than offered. Asking
+  invited a decision with no upside and a migration if it went wrong. The source location is asked
+  only when there is something to point at; a new project gets the default and no question.
+
+- **The README leads with what setup decides**, in a table separating what you choose from what is
+  fixed and what is inferred — after which the folder-naming rationale and subfolder rules follow
+  in the structure section.
+
+- **`lint-docs` check 16 covers the index too**: a declared index that does not exist, or both
+  `README.md` and `INDEX.md` present and both serving as page lists. Two indexes drift, and an
+  agent reading the wrong one silently cannot see half the base.
+
+- **Check 7** accepts subfolders at any depth and now also checks subfolder naming; **check 9**
+  reads the index at whatever name it is declared under.
+
 ## [2.2.0] — 2026-09-01
 
 Point the base at the material where it already is.
@@ -323,6 +395,7 @@ Initial release.
 - Contradiction callouts, and the rule that contradictions are never silently resolved.
 - `AGENTS.md` as the entry point for any filesystem-capable agent.
 
+[2.3.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.3.0
 [2.2.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.2.0
 [2.1.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.1.0
 [2.0.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.0.0
