@@ -327,7 +327,7 @@ Part 1 links to them. A contract that explains only how to use the base and not 
 is how a knowledge base gets abandoned instead of edited.
 
 **Keep everything else exactly as shipped** — layers, authority, front matter, claim types,
-lifecycle, provenance, freshness, links, citations, contradictions, human review, retrieval and
+lifecycle, provenance, freshness, links, citations, contradictions, review and ruling, retrieval and
 context, answer states, security, git conflicts, dates. Those sections are the governance
 contract, they are what make the kit work, and they are not the place for local taste. If a
 project genuinely needs one changed, change it deliberately and note it in
@@ -360,7 +360,19 @@ For a codebase, a good starting shape:
 3. Tell them what to do next: put material in the source folder, then run `/scan-docs`. If you
    moved existing files into it, or declared a folder that already had material in it, say that a
    scan will turn them into pages — and roughly how many files that is.
-4. **Offer the one setting.** Commits are `none` — you write files, they review and commit. Put
+4. **Ask what to call them.** Run `git config user.name`. If it returns something, offer it; if it
+   returns nothing, ask plainly. One question, and take the answer as given:
+
+   > Git has you as **Fenton Martin** — shall I call you Fenton, or something else?
+
+   Write the answer into the `Address:` declaration verbatim. If they decline, do not press: leave
+   it `(not set)` and use *"you"* from then on. Never take a name from a commit log or an email
+   address without asking — a repository's authors are frequently not the person in front of you.
+
+   Ask this here, at the end, rather than opening with it. A form of address is not knowledge
+   about the project, and leading with it makes the first minute of a setup about you instead of
+   their work.
+5. **Offer the one setting.** Commits are `none` — you write files, they review and commit. Put
    the alternatives in two lines and take whatever they say:
 
    > I've set commits to `none`: I'll write files and leave them for you to review. I'd keep it
@@ -370,7 +382,7 @@ For a codebase, a good starting shape:
 
    Change the declaration if they ask for something else, and do not argue past one sentence. It
    is their repository.
-5. Say in one line that the rules are theirs to change at any time and that most changes cost
+6. Say in one line that the rules are theirs to change at any time and that most changes cost
    nothing — `docs/DOCS.md` Part 2, *Changing the shape later*, says which are free and which need
    a migration. The most common way this kit is abandoned is a user who decides the schema was
    wrong and does not know they were allowed to edit it.
@@ -391,29 +403,27 @@ Stop at any point they want to review.
 |---|---|
 | No `Part 1` / `Part 2` headings, front matter without `status` and `claim_type` | `1.x` |
 | `docs/sources/` still in the layers table | `1.x` |
-| `Part 1 — The contract` present, no `Root:` declaration under `## Layers` | `2.0` |
-| A `Root:` declaration but no `Source folder:` one | `2.1` |
-| `Root:` and `Source folder:` but no `Index:` | `2.2` |
-| All three declarations, no `## Commits` section | `2.3` early |
-| All three declarations and a `## Commits` section | `2.3` — already current |
+| `Part 1 — The contract` present, no declarations block under `## Layers` | `2.0` |
+| A declarations block and a `## Commits` section | `2.1` — already current |
 
-**From `2.x` to current there is nothing to migrate.** Replace the kit files (step 1) and stop.
+**From `2.0` to `2.1` there is nothing to migrate.** Replace the kit files (step 1) and stop.
 Their `docs/` is already correct: every declaration defaults to exactly where their base already
 keeps things, `docs/README.md` included. Skip steps 2, 4 and 5 — there is no folder to rename and
-no lint sweep to run. Then do step 3, which is the part that matters for a `2.x` upgrade, and offer
-these without doing them unasked:
+no lint sweep to run. Then do step 3, which is the part that matters here, and offer these without
+doing them unasked:
 
-- add the missing declaration lines to Part 1, so all three are explicit;
-- **add the `Commits` section if their Part 1 has none, set to `none`, and put the choice to them
-  once.** It is new, it changes what the agent does to their repository, and defaulting it
-  silently is the wrong way to introduce that. Same two lines as an init: `none` writes files for
-  them to review, `per-run` and `per-file` are a one-line change later.
+- add the declarations block to Part 1 — root, source folder, index — set to where their base
+  actually keeps things;
+- **add the `Commits` section, set to `none`, and put the choice to them once.** It is new, it
+  changes what the agent does to their repository, and defaulting it silently is the wrong way to
+  introduce that. Same two lines as an init: `none` writes files for them to review, `per-run` and
+  `per-file` are a one-line change later;
+- **ask what to call them**, as in step 6 of an init, and add the `Address:` declaration;
 - add the knowledge-base section to the project's root `README.md` if it has none;
 - rename the index to `INDEX.md` if the project has a root README that competes with
   `docs/README.md` — a `git mv`, a declaration change, and a lint run;
-- name what the newer versions added, in case they want it: the fourth preset and *Changing the
-  shape later* in `2.1`, pointing the base at material they already file elsewhere in `2.2`,
-  subfolder grouping and the structure rationale in `2.3`.
+- name what is new in case they want it: a fourth preset, subfolder grouping, `/all-docs` and
+  `/help-docs`, and *Changing the shape later* in Part 2 for reshaping the base.
 
 ### Step 0 — does the base still describe what it is for?
 
@@ -482,7 +492,7 @@ too and say you did. Do not assume the shipped text is what they want back.
 
 It rewrites the `sources:` values and citations still pointing at `docs/sources/` (check 15),
 adds `status: active` and a defaulted `claim_type` to every page that predates those fields
-(check 2), and reports what needs a human.
+(check 2), and reports what needs the owner.
 
 Expect a large diff and a lot of WARNINGs on a base of any size. That is the upgrade landing, not
 breakage.

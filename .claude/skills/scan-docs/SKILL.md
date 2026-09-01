@@ -74,11 +74,69 @@ source is worse than an un-scanned one.
 ### 1. Read it fully
 
 "Scan" is the name of the command, not the depth of the reading — never skim. Do not summarize
-from the first page. For long PDFs, read in ranges until you reach the end. For a URL in
-`docs/core-sources/*.url` or a link file, fetch it.
+from the first page. For long PDFs, read in ranges until you reach the end.
 
 Note the anchors as you go — page numbers, section headings, timestamps, line ranges. You
 cannot reconstruct them afterwards, and you must never guess them.
+
+#### When a source will not fit
+
+Some sources are larger than you can hold — a 400-page manual, a full day of transcripts. Reading
+in ranges works right up until the point where you cannot keep the earlier ranges in mind while
+reading the later ones, and past that point you are no longer summarizing the document. You are
+summarizing the part you still remember, in a page that will look exactly as complete as any
+other. **That is the failure this kit exists to prevent, in the one command that writes the
+provenance chain.**
+
+Estimate before you start. File size is enough: roughly 400 words per 1k of plain text, and PDFs
+vary but a page is rarely under 300 words. If the source plainly exceeds what you can hold, **do
+not start**. Report it and offer the options:
+
+```
+docs/core-sources/260415-platform-manual.pdf is ~380 pages, past what I can
+read in one pass and still summarize faithfully. I have not written anything.
+
+Three ways forward:
+
+  a) Split it. If you cut it into chapters — 260415-platform-manual-01-auth.pdf,
+     -02-billing.pdf — each becomes its own source with its own summary, and the
+     provenance stays exact. Best option if the document has natural parts.
+
+  b) Name a range. /scan-docs 260415-platform-manual.pdf --pages 1-60 summarizes
+     that range and says so in the page: partial, with the range recorded, and
+     the rest flagged unread.
+
+  c) Skip it. I will leave it, and lint will keep reporting it as an unread source.
+
+Which?
+```
+
+Rules for this case, and none of them bend:
+
+- **Never write a summary you know is partial without saying so on the page.** A partial summary
+  carries `status: draft`, a first line naming exactly what was read, and an *Open questions*
+  entry for what was not.
+- **Never silently stop early.** Running out of room mid-source is a report, not a completed run.
+- **Never lower the ambition to fit.** "Summarize the key points" of a document you cannot read is
+  a guess wearing a citation.
+- A source split into parts is several sources. Do not fake it by writing one summary that cites a
+  file you only partly read.
+
+#### When a source cannot be read at all
+
+Not everything in the folder is readable, and a filename is not evidence of anything:
+
+| What you find | Do this |
+|---|---|
+| A PDF with no text layer — a scan or photographs of pages | Report it as unreadable and say why. Suggest running it through OCR. **Never summarize a scanned document from its filename.** |
+| An image, audio file, or video | If you can genuinely read or transcribe it, do, and say which you did. If not, report it. |
+| A spreadsheet or dataset | Summarize its shape — columns, row count, what a row is — not its contents. A summary of 40,000 rows is a fiction. |
+| A `.url` or link file | Fetch it if you can. **If you have no network access, say so** rather than answering from memory of that page. What you remember of a URL is not a citation. |
+| A format you cannot open at all | Report it. Name the file and the reason. |
+
+An unreadable source produces **no summary page**. It stays unread, lint keeps reporting it, and
+that is correct — an unread source is a known gap, while an invented summary is a false one that
+nothing downstream can detect.
 
 ### 2. Write the summary page
 
@@ -114,12 +172,12 @@ Mark individual claims in the body with the callouts from `docs/DOCS.md`:
 | The source says | Write it as |
 |---|---|
 | Something is the case | Plain cited prose |
-| A human chose something for this project | `> [!check] Decision` — and only if a human actually decided it |
+| The owner chose something for this project | `> [!check] Decision` — and only if they actually decided it |
 | Something is taken as true but unevidenced | `> [!note] Assumption` |
 | Nobody knows yet | `> [!question] Open question` |
 | Two sources disagree | `> [!warning] Contradiction` |
 
-**Never set `claim_type: decision` in front matter.** That is a human act, and the only claim
+**Never set `claim_type: decision` in front matter.** That is the owner's act, and the only claim
 value reserved to one. A source describing a decision is evidence that one was made — record it
 as a `[!check] Decision` callout citing the source, and leave the page's front matter as `fact`,
 or as `open-question` if you cannot tell whether the decision still stands.
@@ -154,7 +212,7 @@ For each linked topic and entity:
 - Bump `updated` on every page you touch. Leave `status: active` unless the page is genuinely
   incomplete, in which case `draft`.
 - **Never change a `status` of `superseded`**, and never edit the
-  Decision or Rationale section of a page a human has ruled on. Add your new evidence under
+  Decision or Rationale section of a page the owner has ruled on. Add your new evidence under
   Evidence and flag it in your report.
 
 ### 6. Update the index
@@ -190,7 +248,7 @@ Append one entry to the top of `docs/CHANGELOG.md`:
 ```
 
 Then report to the user: what came in, what pages moved, and anything that needs their
-judgment. Lead with what only a human can settle:
+judgment. Lead with what only the owner can settle:
 
 - contradictions you opened, and what each one turns on
 - decisions the source describes that you recorded as evidence rather than as project decisions
@@ -202,10 +260,10 @@ Contradictions and low-confidence claims go in the report, not just in the files
 ## Rules
 
 - Never edit, rename, or delete anything under the declared source folder, or any read-in-place
-  path. Both are human-owned; the declaration does not change that, it is what establishes it.
+  path. Both belong to the owner; the declaration does not change that, it is what establishes it.
 - Never read a path excluded by the security section of `docs/DOCS.md`.
 - Never assert something the source does not support. `confidence: low` is a valid answer.
 - Never invent provenance — no unseen page numbers, no unverified line ranges, no guessed
   commit hashes.
-- Never resolve a contradiction, and never overwrite a human ruling.
+- Never resolve a contradiction, and never overwrite the owner's ruling.
 - Prefer touching many pages lightly over rewriting one page heavily.

@@ -46,7 +46,7 @@ Treat test output as a considered review, not as a test suite exit code.
 
 ## Input
 
-`docs/scenarios/questions.yaml`. Humans write it; you never edit it. Each case:
+`docs/scenarios/questions.yaml`. The owner writes it; you never edit it. Each case:
 
 ```yaml
 - id: session-ttl
@@ -151,18 +151,18 @@ Then append to `docs/CHANGELOG.md`:
 
 Report failures, then stop. **Do not fix the knowledge base to make a scenario pass.** Editing a
 page so its question scores green is how an scenario suite becomes decoration. Say what failed and
-what would fix it — `/scan-docs` on a stale source, a human ruling on a contradiction, a
+what would fix it — `/scan-docs` on a stale source, a ruling on a contradiction, a
 citation added — and let the user decide.
 
 If a case fails because the *expectation* is wrong rather than the base, say so. Sources change
-and yesterday's required fact becomes today's superseded one. But `docs/scenarios/` is human-owned:
+and yesterday's required fact becomes today's superseded one. But `docs/scenarios/` is the owner's:
 propose the edit, never make it.
 
 ## Rules
 
 - Never edit `docs/scenarios/questions.yaml`.
 - Never edit pages during a test run. Findings go in the report; fixes belong to `scan-docs`,
-  `lint-docs`, or a human.
+  `lint-docs`, or the owner.
 - Never look at a case's expectations before answering its question.
 - Never report a semantic finding as a structural one.
 - Never claim a case passed on a technicality — an answer that contains `"24 hours"` inside a

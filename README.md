@@ -10,14 +10,14 @@ knowledge is marked as obsolete.
 
 `init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `test-docs` · `help-docs` · `all-docs`
 
-[![version](https://img.shields.io/badge/version-2.3.0-blue?style=flat-square)](CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-2.1.0-blue?style=flat-square)](CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-**Latest: `2.3.0`** — a tutorial, `/all-docs` and `/help-docs`, a commit setting, fewer setup
-questions, subfolder grouping, and the reasoning behind every folder name.
-[What changed](CHANGELOG.md#230--2026-09-01) · [Tutorial](#tutorial-your-first-hour) · [Upgrading](#already-using-an-older-version)
+**Latest: `2.1.0`** — one structure for every use case, a tutorial, `/all-docs` and `/help-docs`,
+a commit setting, and the reasoning behind every folder name.
+[What changed](CHANGELOG.md#210--2026-09-01) · [Tutorial](#tutorial-your-first-hour) · [Upgrading](#already-using-an-older-version)
 
-[**Quick start**](#quick-start) · [**Tutorial**](#tutorial-your-first-hour) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-human-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
+[**Quick start**](#quick-start) · [**Tutorial**](#tutorial-your-first-hour) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
 
 </div>
 
@@ -55,14 +55,14 @@ leaves the hard half untouched:
 | Retrieval alone gives you | It does not give you |
 |---|---|
 | Relevant chunks | Whether the chunk is a fact, a proposal, or somebody's assumption |
-| A similarity score | Whether a human ever approved it |
+| A similarity score | Whether you ever approved it |
 | The nearest match | Whether two sources disagree, or which one you got |
 | An answer | Whether the source changed after the answer was written |
 | Embeddings | Anything you can read, review in a pull request, or fix by hand |
 
 A retriever asked *"what is the session TTL?"* returns the more relevant of two conflicting
 documents and answers confidently. **The confidence is the bug.** This kit records both values,
-marks the page `claim_type: contradiction`, and says a human has not ruled.
+marks the page `claim_type: contradiction`, and says nobody has ruled.
 
 The trade-off is honest: scanning costs time and tokens up front, and there is more structure to
 learn. What you get back survives. A vector index is not something you can read.
@@ -223,7 +223,15 @@ someone has to pick.
 | **Your root `README.md`** | Gains one section saying the base exists and which commands read it. Nothing else in it is ever touched. If you have no root README, you get a minimal one. |
 | **The folder layout** | Fixed. Same five folders in every project — see [why](#why-these-names). |
 
-One setting *is* offered, at the end rather than in the interview — **commits**:
+Two things *are* asked at the end, once setup is done and neither can crowd out a question that
+shapes the base.
+
+**What to call you.** It reads `git config user.name` and offers it — *"Git has you as Fenton
+Martin — shall I call you Fenton, or something else?"* Whatever you answer is used from then on;
+decline and it says *"you"* and never asks again. It won't take a name from a commit log without
+asking, since a repo's authors often aren't the person sitting there.
+
+**Commits:**
 
 ```
 Commits: none        the default. files are written, you review and commit
@@ -304,7 +312,7 @@ line there, and treats your published docs as sources.
 Commit first, then paste this into your agent:
 
 ```
-Upgrade the llm-starter-kit installation in this project to 2.3.
+Upgrade the llm-starter-kit installation in this project to 2.1.
 
 1. Clone https://github.com/fentonmartin/llm-starter-kit into a temp folder
    outside this repo.
@@ -330,11 +338,10 @@ ambiguous rather than guessing.
 **Installed as a plugin?** Run `/plugin update llm-starter-kit` first, then paste the same prompt
 with steps 1 and 3 removed — the plugin has already replaced the kit files for you.
 
-**Already on 2.0 or 2.1?** There's nothing to migrate. Replace the kit files and you're done — your
-`docs/` is already correct, since both the root and the source folder default to where your base
-already keeps things. What the newer versions added (a fourth preset, the migration guide,
-two-base support, pointing the base at material you already file elsewhere) is in the kit, waiting
-for the day you want it.
+**Already on 2.0?** There's nothing to migrate. Replace the kit files and you're done — your
+`docs/` is already correct, since every declaration defaults to where your base already keeps
+things. What 2.1 adds (a fourth preset, `/all-docs`, `/help-docs`, a commit setting, subfolder
+grouping, the migration guide) is in the kit, waiting for the day you want it.
 
 **Why the prompt is that specific about `docs/DOCS.md`:** it's the only file in this kit you
 authored — written from your `init-docs` interview. 2.0 adds about a dozen governance sections,
@@ -406,8 +413,8 @@ Ran:  scan 3 sources · lint 0 errors 4 warnings · test 4/5 pass
 ```
 
 It orchestrates the real commands rather than reimplementing them, and it gains no authority by
-running them together: contradictions and human-decision fields are as untouchable in a pass as
-anywhere. It never runs `/ask-docs` — a question is a human act.
+running them together: contradictions and your-decision-only fields are as untouchable in a pass as
+anywhere. It never runs `/ask-docs` — a question is yours to ask.
 
 These are [Agent Skills](.claude/skills/), so plain description works too: *"document this
 repo"* runs `init-docs`.
@@ -452,6 +459,12 @@ agent's judgment line by line, and that's tractable for one source and not for t
 
 Name it with a date prefix if it has a meaningful date — `260415-auth-spec.pdf`. The kit uses
 `YYMMDD` so files sort chronologically in any file browser.
+
+Two things it will refuse rather than fake, and both are the system working: a source **too large
+to hold** gets reported with options — split it, name a page range, or leave it — instead of a
+summary of the part it managed to read; and a source it **can't read at all**, like a scanned PDF
+with no text layer, produces no page and stays flagged as unread. An unread source is a known gap.
+An invented summary is a false one nothing downstream can catch.
 
 ```
 /scan-docs
@@ -607,8 +620,8 @@ Every folder name is doing a job, and the jobs are what the rules protect:
 | the index | Not generated. It's the entry point an agent reads before anything else, maintained in the same pass that changes a page. |
 
 **And why they're separate at all:** who may write to a file is the only durable way to keep
-provenance honest. Sources are human-owned and immutable, pages are agent-maintained and derived,
-scenarios are human-owned, bookkeeping is agent-owned. Merge any two and *"where did this claim come
+provenance honest. Sources are yours and immutable, pages are agent-maintained and derived,
+scenarios are yours, bookkeeping is agent-owned. Merge any two and *"where did this claim come
 from?"* stops having an answer. The three page types are separate for a different reason — they fail
 differently, and keeping them apart is what makes a lint finding specific enough to act on.
 
@@ -731,7 +744,7 @@ starts lying.** These are not interchangeable:
 | Sentence | `claim_type` | Who can establish it |
 |:--|:--|:--|
 | Authentication uses Redis. | `fact` | Evidence |
-| The team chose Redis for sessions. | `decision` | **Human only** |
+| The team chose Redis for sessions. | `decision` | **Yours only** |
 | We believe Redis is required here. | `assumption` | Either, if labelled |
 
 Plus `open-question` (nobody knows yet) and `contradiction` (sources disagree).
@@ -754,14 +767,14 @@ grep cleanly:
 ### Authority
 
 ```
-Human decision recorded in a page   ← highest
+Your decision, recorded in a page    ← highest
 Source material in docs/core-sources/
 Agent-generated page content
 The agent's background knowledge    ← none; must be labelled if used at all
 ```
 
 **The agent discovers, summarizes, classifies, links, flags, and proposes. It does not decide.**
-It may never set `claim_type: decision` or `status: superseded` — those two values are human
+It may never set `claim_type: decision` or `status: superseded` — those two values are yours
 acts, and they are the only two. An agent that thinks a decision was made writes `open-question`
 and asks.
 
@@ -885,7 +898,7 @@ regardless of whether it is right.
 
 ---
 
-## Contradictions and human review
+## Contradictions and review
 
 **Contradictions are never silently resolved.** Two sources disagreeing is a finding, not a bug —
 and surfacing it is the main thing this kit offers over plain retrieval.
@@ -900,10 +913,10 @@ and surfacing it is the main thing this kit offers over plain retrieval.
 The agent must not close this by reasoning that one source looks newer, more official, or more
 detailed. Recency decides only when `docs/DOCS.md` says so — for example, a project rule reading
 *"the runbook supersedes the spec for operational values."* Absent such a rule, it stays open
-until a human rules. `lint-docs` reports open contradictions as **INFO, never ERROR**: an open
+until you rule. `lint-docs` reports open contradictions as **INFO, never ERROR**: an open
 contradiction is the system working.
 
-**Human review is the documented path out**, and the evidence is preserved rather than
+**Your ruling is the documented path out**, and the evidence is preserved rather than
 overwritten. The page is rewritten with the ruling on top and the history intact underneath —
 `## Decision`, then `## Rationale`, then `## Evidence` listing both sources including the one
 that lost. `claim_type` becomes `decision`, `status` becomes `active`, and the commit gives the
@@ -914,14 +927,14 @@ Deleting the losing side destroys the reason the decision exists.
 
 ### Git conflicts
 
-A merge conflict inside `docs/` is a **semantic** conflict. Git can tell you a human wrote X and
+A merge conflict inside `docs/` is a **semantic** conflict. Git can tell you someone wrote X and
 an agent wrote Y in the same place. It cannot tell you which is true.
 
 **Agents never auto-resolve a conflict in `summaries/`, `topics/`, or `entities/`.** They surface
 both sides and stop:
 
 ```
-conflict → human reads both sides → checks the sources → resolves the Markdown
+conflict → you read both sides → check the sources → resolve the Markdown
         → /lint-docs → commit
 ```
 
@@ -938,7 +951,7 @@ the only exceptions, because neither carries meaning.
 |:--|:--|:--|
 | **ERROR** | Mechanically certain and factually wrong | Unparseable front matter, a citation to a file that does not exist, `superseded` with no `superseded_by`, a secret in `core-sources/` |
 | **WARNING** | Certain but tolerable | Missing `status`, an orphan, a stale page, a malformed slug |
-| **INFO** | Needs a human | An open contradiction, a gap with five inbound links, a probable duplicate |
+| **INFO** | Needs you | An open contradiction, a gap with five inbound links, a probable duplicate |
 
 If you gate a merge on lint, gate on ERROR.
 
@@ -948,7 +961,7 @@ outran the page, and wikilinks broken by a rename confirmable from the changelog
 
 It **reports and never fixes** anything needing judgment: contradictions, duplicates worth
 merging, gaps, uncited claims, broken citations, unparseable front matter, and anything claiming
-human authority it may not have.
+authority it may not have.
 
 **Malformed YAML is handled as a finding, not a failure.** One unparseable file is one ERROR; the
 sweep continues over every other page. Partial metadata from a block that failed to parse is
@@ -963,7 +976,7 @@ corrected block and lets you write it.
 right.** A base can pass every schema check and quietly stop answering the questions it was built
 to answer.
 
-Cases live in `docs/scenarios/questions.yaml`. Humans write it; the agent never edits it:
+Cases live in `docs/scenarios/questions.yaml`. You write it; the agent never edits it:
 
 ```yaml
 questions:
@@ -1010,7 +1023,7 @@ continue — the secret is already in the agent's context, and a partial summary
 leak.
 
 Pages may carry an optional `sensitivity: public | internal | confidential` marker. It is
-documentation, not enforcement: it tells a human what they are about to share.
+documentation, not enforcement: it tells you what you are about to share.
 
 > [!IMPORTANT]
 > These exclusions are **instructions, not enforcement.** Nothing written in a Markdown file can
@@ -1186,7 +1199,7 @@ searching, because the connection was made when the material came in.
 | Summaries are shallow | Agent skimmed a long PDF | Scan that source alone, and say *"read it in full"* |
 | Too many dangling links | Normal and healthy | That's your reading list, not a bug |
 | `ask-docs` keeps refusing on budget | Question too broad, or the index is thin | Use `--topic` / `--source`; check the index descriptions are specific |
-| A contradiction won't go away | It is genuinely unresolved | That's the point. Rule on it — see [Human review](#contradictions-and-human-review) |
+| A contradiction won't go away | It is genuinely unresolved | That's the point. Rule on it — see [Contradictions and review](#contradictions-and-review) |
 
 </details>
 
@@ -1297,7 +1310,7 @@ deeper YAML.
 <summary><b>Why <code>confidence</code> is not authority</b></summary>
 
 Confidence describes how well evidence supports a claim. Authority is about who decided. An
-agent can be highly confident about something no human ever approved, which is precisely the
+agent can be highly confident about something nobody ever approved, which is precisely the
 case the two fields have to keep apart.
 
 </details>
@@ -1370,8 +1383,8 @@ the migration.
 - **Merges** with documentation that already exists instead of demanding a clean slate.
 - **An epistemic model, not just a format.** Facts, decisions, assumptions, hypotheses, open
   questions and contradictions are different things, and the schema keeps them apart.
-- **An explicit authority model.** The agent proposes; the human decides. Six metadata values
-  are reserved to humans.
+- **An explicit authority model.** The agent proposes; you decide. Six metadata values
+  are reserved to you.
 - **Retrieval with a stated budget and a graceful failure**, rather than an unbounded read.
 - **Provenance with real anchors** and a standing prohibition on inventing them.
 - Agent-agnostic by construction: plain-Markdown skills and one root `AGENTS.md`.

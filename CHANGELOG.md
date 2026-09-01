@@ -7,16 +7,123 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning is [semantic](https://semver.org/spec/v2.0.0.html), applied to the schema and the
 command surface: a breaking change is one that invalidates an existing knowledge base.
 
-## [2.3.0] — 2026-09-01
+## [2.1.0] — 2026-09-01
 
-A usability release. `2.1` and `2.2` added flexibility; this one makes the kit teachable — fewer
-questions at setup, a tutorial that produces a real base, and the reasoning behind the structure
-written down where it can be read.
+One structure for every use case, and a kit you can actually be shown how to use.
 
-**Nothing breaks.** Every declaration still defaults to what existing bases use, `docs/README.md`
-included, and subfolders are optional everywhere.
+`2.0.0` made a page auditable. This release answers the question that follows — *what if my
+project isn't a codebase?* — without giving each kind of project its own layout, and then fills
+in what was missing for someone meeting the kit for the first time: a tutorial, a way to ask what
+state things are in, a single command that does the whole pass, and the reasoning behind every
+folder name written down where it can be read.
 
-### Added
+**Nothing breaks.** No folder, field, command or check was renamed or removed. Every declaration
+defaults to what an existing base already uses — `docs/`, `docs/core-sources/`, `docs/README.md`
+— so a `2.0` base is current as it stands, and subfolders are optional everywhere.
+
+### Added — shape and setup
+
+
+- **A fourth preset: *a document library*.** For a project whose documents *are* the project — a
+  book or spec set being written, a policy library, a pile of notes used as the knowledge base.
+  Distinct from *outside research* in that the material is the user's own and therefore
+  authoritative: a claim needs no attribution, and two of your own documents disagreeing is a real
+  contradiction rather than a difference of opinion between sources. Topic pages carry the weight,
+  and a base that produces summaries and no topics is the failure mode to watch for.
+
+- **A declared root.** Part 1 of the contract now opens by naming the folder the base lives in.
+  Every skill reads that one line and resolves its `docs/…` paths against it. `docs/` remains the
+  default and the right answer for almost every project; the two that need another are a `docs/`
+  a site generator already owns (`docs/kb/`) and a project running two separate bases.
+
+  This makes an existing feature actually work. `init-docs` has always scaffolded to `docs/kb/`
+  when it found a `mkdocs.yml` or a `docusaurus.config.js`, but nothing told the rest of the
+  contract or the other four skills where the base had gone. It does now.
+
+- **Two knowledge bases in one project**, for the case where a project holds two bodies of
+  knowledge with genuinely different authority — one whose facts come from its own code, one whose
+  facts come from other people's papers. Each base is self-contained with its own root, contract,
+  preset and index; every command takes a root argument; a run never spans two bases and pages
+  never link across them. Documented as a pattern rather than a feature, with the warning that
+  matters most: do not split because a folder got large.
+
+- **A migration guide — *Changing the shape later*, in Part 2.** Sorted by what it costs. Renaming
+  page-type nouns, rewording rules and changing out-of-scope paths are free. Switching preset,
+  reorganizing within a layer, and changing link style cost a lint run. Moving the root or
+  splitting a base is real work, with the steps in order. Renaming a layer or adding a page type is
+  never. `init-docs` §8 is the operational version of the same thing, including which requests to
+  push back on.
+
+- **A recipe for writing your own preset**, since four will not cover everything: a preset may set
+  the page types table, the out-of-scope paths, and the project-specific rules. Nothing else. A
+  preset that wants a fourth page type or a renamed folder is a fork, and lint will not understand
+  it.
+
+- **Hard rule 12 in `AGENTS.md`** — never add, rename, or remove a layer, and never add a page
+  type. The vocabulary belongs in the page types table, not in the folder names.
+
+
+### Added — where things live
+
+
+- **A declared source folder.** Projects that already file their material — `research-papers/`,
+  `notes/`, `contracts/` — can point the base at it rather than moving it into a folder the kit
+  invented. The folder stays human-owned and immutable to the agent wherever it sits; the
+  declaration is what establishes that, not the folder's name or location.
+
+  Three constraints, and they are the reason this is a declaration rather than a free-for-all:
+  exactly one folder, because one summary page per source file is the backbone of provenance and
+  two folders make that ambiguous the first time a file name repeats; no overlap with a page
+  layer, because a source folder containing `topics/` makes the agent's own output look like
+  source material; and it must be a folder the agent never authors in.
+
+- **Read-in-place sources.** An explicit home for material that is cited but not filed — a source
+  tree that changes every commit, or a published docs folder the base was scaffolded beside. They
+  produce no summary pages, are skipped by the unread-source and excluded-material checks, and
+  their citations record the commit they were read at. This existed informally as a line in the
+  codebase preset (*"treat `src/**` as sources"*); it is now part of the contract, which is where
+  the distinction between curated and merely-present material belongs.
+
+- **`lint-docs` check 16, the source declaration.** ERROR, because everything downstream is
+  silently wrong when it is broken and nothing else notices: a declared folder that does not
+  exist, more than one declared, or one that overlaps a page layer. Never fixed silently — each
+  means the contract says something its author did not intend.
+
+- **An interview question about where material lives**, asked only when the survey found material
+  already organized somewhere. A new project gets `docs/core-sources/` and no question.
+
+
+### Added — safety and voice
+
+- **A protocol for a source too large to read.** Previously `scan-docs` said *"read in ranges until
+  you reach the end"* and stopped there, while `AGENTS.md` rule 6 forbids silent truncation — so
+  the contract banned exactly what the procedure would drift into, in the one command that writes
+  the provenance chain. A source past what the agent can hold now produces **no page and a
+  report**, with three options: split the file into parts that each become their own source, name
+  a page range summarized as an explicit partial, or leave it unread. A partial summary is always
+  marked as one — `status: draft`, the range in the first line, the remainder an open question.
+
+- **A protocol for a source that cannot be read at all.** Scanned PDFs with no text layer, formats
+  the agent cannot open, `.url` files with no network to fetch them. Each is reported and produces
+  no page. Spreadsheets get their shape summarized — columns, row count, what a row is — never
+  their contents. The rule underneath: an unread source is a known gap, an invented summary is a
+  false one, and nothing downstream can tell the difference.
+
+- **Guidance on keeping the repository usable.** The source layer fills with things git handles
+  badly, and unlike pages, sources never get smaller. Prefer text to binary where there is a
+  choice; Git LFS is the normal answer at scale and changes no paths; gitignoring the source
+  folder is allowed and costs you provenance nobody else can verify. Whatever you choose, the
+  paths in `sources:` and citations must stay stable.
+
+- **A form of address, asked once.** `init-docs` reads `git config user.name` and offers it —
+  *"Git has you as Fenton Martin — shall I call you Fenton, or something else?"* — recording the
+  answer verbatim in an `Address:` declaration. Decline and it is `(not set)`, which means *"you"*
+  and no further asking. It never takes a name from a commit log or an email address without
+  asking, because a repository's authors are frequently not the person in front of it. Asked at
+  the end, not the start: a form of address is not knowledge about the project.
+
+### Added — using it
+
 
 - **Setup has two modes, and says which one it is in.** `/init-docs` now opens by deciding whether
   this is a **fresh start** (no documentation, nothing filed) or a **merge** (there is already
@@ -144,75 +251,24 @@ included, and subfolders are optional everywhere.
   year. Reported, never rewritten: this is the part of an upgrade that needs the owner's judgment,
   since only they know which drift was deliberate.
 
-### Changed
-
-- **The source declaration is always a folder.** An earlier draft of this release allowed a `./*`
-  glob for top-level documents; it is gone. A declaration that can sweep a repository puts
-  `package.json` and every stray file into the provenance chain and extends the immutability rule
-  over half the project, which is a lot of hazard for a case a plain `sources/` folder covers.
-
-- **Setup asks less.** One question shapes the base — the preset, plus where sources go on a fresh
-  start. The root is no longer a
-  question at all: it is `docs/`, and the one exception (a `docs/` a site generator owns →
-  `docs/kb/`) is decided from what the survey found and announced rather than offered. Asking
-  invited a decision with no upside and a migration if it went wrong. The source location is asked
-  only when there is something to point at; a new project gets the default and no question.
-
-- **The README leads with what setup decides**, in a table separating what you choose from what is
-  fixed and what is inferred — after which the folder-naming rationale and subfolder rules follow
-  in the structure section.
-
-- **The slash-command descriptions no longer hardcode `docs/core-sources/`.** `/scan-docs` reads
-  the source folder, which has not necessarily been that path since the source declaration
-  landed earlier in this release.
-
-- **`lint-docs` check 16 covers the index too**: a declared index that does not exist, or both
-  `README.md` and `INDEX.md` present and both serving as page lists. Two indexes drift, and an
-  agent reading the wrong one silently cannot see half the base.
-
-- **Check 7** accepts subfolders at any depth and now also checks subfolder naming; **check 9**
-  reads the index at whatever name it is declared under.
-
-## [2.2.0] — 2026-09-01
-
-Point the base at the material where it already is.
-
-`2.1.0` let a base live somewhere other than `docs/`. This does the same for the layer that
-matters most: the source folder is now a declaration in Part 1, defaulting to
-`docs/core-sources/`, and it may name any folder — including one outside the root.
-
-**Nothing breaks.** The default is what every existing base already uses, and a `DOCS.md` with no
-source declaration behaves exactly as it did.
-
-### Added
-
-- **A declared source folder.** Projects that already file their material — `research-papers/`,
-  `notes/`, `contracts/` — can point the base at it rather than moving it into a folder the kit
-  invented. The folder stays human-owned and immutable to the agent wherever it sits; the
-  declaration is what establishes that, not the folder's name or location.
-
-  Three constraints, and they are the reason this is a declaration rather than a free-for-all:
-  exactly one folder, because one summary page per source file is the backbone of provenance and
-  two folders make that ambiguous the first time a file name repeats; no overlap with a page
-  layer, because a source folder containing `topics/` makes the agent's own output look like
-  source material; and it must be a folder the agent never authors in.
-
-- **Read-in-place sources.** An explicit home for material that is cited but not filed — a source
-  tree that changes every commit, or a published docs folder the base was scaffolded beside. They
-  produce no summary pages, are skipped by the unread-source and excluded-material checks, and
-  their citations record the commit they were read at. This existed informally as a line in the
-  codebase preset (*"treat `src/**` as sources"*); it is now part of the contract, which is where
-  the distinction between curated and merely-present material belongs.
-
-- **`lint-docs` check 16, the source declaration.** ERROR, because everything downstream is
-  silently wrong when it is broken and nothing else notices: a declared folder that does not
-  exist, more than one declared, or one that overlaps a page layer. Never fixed silently — each
-  means the contract says something its author did not intend.
-
-- **An interview question about where material lives**, asked only when the survey found material
-  already organized somewhere. A new project gets `docs/core-sources/` and no question.
 
 ### Changed
+
+
+- **`lint-docs` check 15** was *Legacy layout*; it is now *Stale layout paths*. As well as
+  detecting a `1.x` `docs/sources/` folder, it now catches `sources:` values and citations that
+  point outside the declared root — which is what a root move leaves behind, and which is
+  mechanically fixable in exactly the same way. The declared root wins; lint rewrites the paths and
+  never moves a folder to make them true.
+
+- **`init-docs` states what the structure does not vary.** The interview says out loud that all
+  four presets share the same folders, page types, front matter and commands, and that the choice
+  is reversible — because a user who believes they are choosing a layout treats a cheap decision as
+  an expensive one, and a user who thinks the schema is fixed abandons the kit rather than editing
+  it. The scaffold step says the tree is the same for every project: no folder added because the
+  project seems to want one, no layer renamed to match local vocabulary, `scenarios/` kept even
+  when question 6 got no answer.
+
 
 - **The `docs/kb/` case now declares its sources too.** Scaffolding beside a published docs site
   sets the root to `docs/kb/` and the source folder to `docs/`. The published pages are the
@@ -230,71 +286,40 @@ source declaration behaves exactly as it did.
   writes there. Keeping `core-sources/` is still the recommendation: a reader who has seen the kit
   before knows what it is on sight.
 
-## [2.1.0] — 2026-09-01
 
-One structure, more use cases. `2.0.0` fixed what a page must contain; `2.1.0` answers the
-question that follows — *what if my project isn't a codebase?* — without giving each use case its
-own layout.
+- **The source declaration is always a folder.** There is no glob form, and no way to declare "the
+  project root". A declaration that can sweep a repository puts
+  `package.json` and every stray file into the provenance chain and extends the immutability rule
+  over half the project, which is a lot of hazard for a case a plain `sources/` folder covers.
 
-**Nothing breaks.** No folder, field, command, or check was renamed or removed. Existing bases are
-current as they stand: the root defaults to `docs/`, and a `DOCS.md` with no root line behaves
-exactly as before.
+- **Setup asks less.** One question shapes the base — the preset, plus where sources go on a fresh
+  start. The root is no longer a
+  question at all: it is `docs/`, and the one exception (a `docs/` a site generator owns →
+  `docs/kb/`) is decided from what the survey found and announced rather than offered. Asking
+  invited a decision with no upside and a migration if it went wrong. The source location is asked
+  only when there is something to point at; a new project gets the default and no question.
 
-### Added
+- **The README leads with what setup decides**, in a table separating what you choose from what is
+  fixed and what is inferred — after which the folder-naming rationale and subfolder rules follow
+  in the structure section.
 
-- **A fourth preset: *a document library*.** For a project whose documents *are* the project — a
-  book or spec set being written, a policy library, a pile of notes used as the knowledge base.
-  Distinct from *outside research* in that the material is the user's own and therefore
-  authoritative: a claim needs no attribution, and two of your own documents disagreeing is a real
-  contradiction rather than a difference of opinion between sources. Topic pages carry the weight,
-  and a base that produces summaries and no topics is the failure mode to watch for.
+- **The slash-command descriptions no longer hardcode `docs/core-sources/`.** `/scan-docs` reads
+  the source folder, which is now a declaration and not necessarily that path.
 
-- **A declared root.** Part 1 of the contract now opens by naming the folder the base lives in.
-  Every skill reads that one line and resolves its `docs/…` paths against it. `docs/` remains the
-  default and the right answer for almost every project; the two that need another are a `docs/`
-  a site generator already owns (`docs/kb/`) and a project running two separate bases.
+- **`lint-docs` check 16 covers the index too**: a declared index that does not exist, or both
+  `README.md` and `INDEX.md` present and both serving as page lists. Two indexes drift, and an
+  agent reading the wrong one silently cannot see half the base.
 
-  This makes an existing feature actually work. `init-docs` has always scaffolded to `docs/kb/`
-  when it found a `mkdocs.yml` or a `docusaurus.config.js`, but nothing told the rest of the
-  contract or the other four skills where the base had gone. It does now.
+- **Check 7** accepts subfolders at any depth and now also checks subfolder naming; **check 9**
+  reads the index at whatever name it is declared under.
 
-- **Two knowledge bases in one project**, for the case where a project holds two bodies of
-  knowledge with genuinely different authority — one whose facts come from its own code, one whose
-  facts come from other people's papers. Each base is self-contained with its own root, contract,
-  preset and index; every command takes a root argument; a run never spans two bases and pages
-  never link across them. Documented as a pattern rather than a feature, with the warning that
-  matters most: do not split because a folder got large.
+- **The word "human" is gone from everything the kit says.** The rules now name **the owner** where
+  authority matters — who may write to a layer, who rules on a contradiction, whose decision
+  `claim_type: decision` records — and address you as *you* everywhere else. *Human review* is now
+  *Review and ruling*; *"needs a human"* is *"needs you"*. The authority model is unchanged; it
+  reads like an assistant talking to the person it works for rather than a specification
+  distinguishing two species.
 
-- **A migration guide — *Changing the shape later*, in Part 2.** Sorted by what it costs. Renaming
-  page-type nouns, rewording rules and changing out-of-scope paths are free. Switching preset,
-  reorganizing within a layer, and changing link style cost a lint run. Moving the root or
-  splitting a base is real work, with the steps in order. Renaming a layer or adding a page type is
-  never. `init-docs` §8 is the operational version of the same thing, including which requests to
-  push back on.
-
-- **A recipe for writing your own preset**, since four will not cover everything: a preset may set
-  the page types table, the out-of-scope paths, and the project-specific rules. Nothing else. A
-  preset that wants a fourth page type or a renamed folder is a fork, and lint will not understand
-  it.
-
-- **Hard rule 12 in `AGENTS.md`** — never add, rename, or remove a layer, and never add a page
-  type. The vocabulary belongs in the page types table, not in the folder names.
-
-### Changed
-
-- **`lint-docs` check 15** was *Legacy layout*; it is now *Stale layout paths*. As well as
-  detecting a `1.x` `docs/sources/` folder, it now catches `sources:` values and citations that
-  point outside the declared root — which is what a root move leaves behind, and which is
-  mechanically fixable in exactly the same way. The declared root wins; lint rewrites the paths and
-  never moves a folder to make them true.
-
-- **`init-docs` states what the structure does not vary.** The interview says out loud that all
-  four presets share the same folders, page types, front matter and commands, and that the choice
-  is reversible — because a user who believes they are choosing a layout treats a cheap decision as
-  an expensive one, and a user who thinks the schema is fixed abandons the kit rather than editing
-  it. The scaffold step says the tree is the same for every project: no folder added because the
-  project seems to want one, no layer renamed to match local vocabulary, `scenarios/` kept even
-  when question 6 got no answer.
 
 ## [2.0.0] — 2026-08-30
 
@@ -489,8 +514,6 @@ Initial release.
 - Contradiction callouts, and the rule that contradictions are never silently resolved.
 - `AGENTS.md` as the entry point for any filesystem-capable agent.
 
-[2.3.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.3.0
-[2.2.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.2.0
 [2.1.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.1.0
 [2.0.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.0.0
 [1.0.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v1.0.0

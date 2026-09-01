@@ -53,11 +53,11 @@ Everything else lives under the root, and the layers are strictly separate.
 
 | Layer | Path | Who writes it |
 |---|---|---|
-| Core sources | `docs/core-sources/` — or wherever the declaration above points | **Humans only.** Immutable. The agent reads it, never edits, renames, or deletes. |
+| Core sources | `docs/core-sources/` — or wherever the declaration above points | **Yours only.** Immutable. The agent reads it, never edits, renames, or deletes. |
 | Pages | `docs/summaries/`, `docs/topics/`, `docs/entities/` | **Agent only.** Every file derives from a source or an explicit instruction. |
-| Scenarios | `docs/scenarios/` | **Humans.** Questions the knowledge base must answer correctly. |
+| Scenarios | `docs/scenarios/` | **Yours.** Questions the knowledge base must answer correctly. |
 | Bookkeeping | the index, `docs/CHANGELOG.md` | **Agent only.** Index and log. |
-| Guidance | `docs/DOCS.md` | **Humans.** This file. |
+| Guidance | `docs/DOCS.md` | **Yours.** This file. |
 
 The source folder is exempt from every page rule below — front matter, slugs, wikilinks, page
 types. Only the `YYMMDD` file-name rule applies there. Checks that sweep `docs/` skip it.
@@ -81,16 +81,45 @@ Three constraints on the declaration:
 - **It must not overlap a page layer.** A source folder that contains `summaries/`, `topics/`, or
   `entities/` makes the agent's own output look like source material, and there is no recovering
   from that automatically.
-- **It stays human-owned wherever it is.** Declaring a folder as the source layer does not make it
+- **It stays yours wherever it is.** Declaring a folder as the source layer does not make it
   safer to write to; it makes it forbidden to write to. Point the declaration at a folder the
   agent should never author in, never at one it maintains.
 
-**If a fact is not traceable to a source or to a human instruction, it does not belong in a page.**
+**If a fact is not traceable to a source or to an instruction from you, it does not belong in a page.**
 
 **The agent never adds, renames, or removes a layer, and never adds a page type.** This project's
-own vocabulary belongs in *Page types* below, not in folder names. Changing the shape is a human
+own vocabulary belongs in *Page types* below, not in folder names. Changing the shape is your
 decision, recorded in `docs/CHANGELOG.md` — Part 2's *Changing the shape later* says what each
 kind of change costs.
+
+### Sources that will not fit, and sources that cannot be read
+
+A source larger than the agent can hold is **not** summarized from the part it managed to read.
+It reports, and you choose: split the file into parts that each become their own source, name a
+range to summarize as an explicit partial, or leave it unread. A partial summary is always marked
+as one — `status: draft`, the range named in the first line, the remainder an open question.
+
+A source that cannot be read at all — a scanned PDF with no text layer, a format the agent cannot
+open, a link it cannot fetch — produces **no page**. It stays unread and lint keeps reporting it.
+An unread source is a known gap; an invented summary is a false one, and nothing downstream can
+tell the difference.
+
+### Keeping the repository usable
+
+The source layer fills with things git is bad at. A few hundred PDFs is a repository nobody
+enjoys cloning, and unlike pages, sources never get smaller.
+
+- **Text beats binary** where you have the choice. A Markdown export of a spec diffs, greps and
+  reviews; the PDF of the same spec does none of that.
+- **Git LFS is the normal answer** once binaries are large or numerous, and it changes nothing
+  here: paths stay the same, so citations stay valid.
+- **Gitignoring the source folder is allowed, and it has a price.** The base still works for you,
+  but every citation now points at a file nobody else can open — provenance that cannot be
+  checked by anyone but you. If you do it, say so at the top of the source folder's README, and
+  keep the material somewhere it can be produced on request.
+- Whatever you choose, **the paths in `sources:` and in citations must stay stable**. Provenance
+  is path-based; moving material to satisfy a storage decision breaks every page that cited it,
+  and repairing that is a lint run you did not need to have.
 
 ### Read-in-place sources
 
@@ -126,7 +155,7 @@ why the layers are separate, and how an agent reads the base without reading all
 ## Authority
 
 ```
-Human decision recorded in a page   ← highest
+Your decision, recorded in a page    ← highest
 Source material in docs/core-sources/
 Agent-generated page content
 The agent's background knowledge    ← none; must be labelled if used at all
@@ -135,7 +164,7 @@ The agent's background knowledge    ← none; must be labelled if used at all
 - **The agent discovers, summarizes, classifies, links, flags, and proposes. It does not decide.**
 - **`confidence` is not authority.** It describes how well evidence supports a claim.
 - **A summary is not a source.** Cite the source a summary came from, never the summary.
-- An agent that believes a human decision is wrong records an open question. It does not edit
+- An agent that believes one of your decisions is wrong records an open question. It does not edit
   the decision.
 
 ## Page types
@@ -183,7 +212,7 @@ Six required fields:
 ```yaml
 ---
 type: summary | topic | entity
-title: Human readable title
+title: Readable title
 status: draft | active | stale | superseded
 claim_type: fact | decision | assumption | open-question | contradiction
 updated: YYYY-MM-DD
@@ -197,7 +226,7 @@ Four optional fields, added only when they carry information:
 created: YYYY-MM-DD
 confidence: high | medium | low                    # evidential support. Not authority.
 superseded_by: docs/topics/authentication-v2.md    # required when status is superseded
-sensitivity: public | internal | confidential      # a label for humans, not enforcement
+sensitivity: public | internal | confidential      # a label for people, not enforcement
 ```
 
 - **Flat scalars and flat lists only.** No nested maps, no lists of maps, no anchors. Structure
@@ -217,7 +246,7 @@ summary, `open-question` on a topic or entity that cannot be classified. **Never
 | `claim_type` | Means | Established by |
 |---|---|---|
 | `fact` | The sources support this as true of the world. | Evidence |
-| `decision` | A human chose this for this project. | **Human only** |
+| `decision` | You chose this for this project. | **Yours only** |
 | `assumption` | Taken as true to make progress; not evidenced. Covers untested proposals too. | Either, if labelled |
 | `open-question` | Nobody knows yet. Evidence is missing. | Either |
 | `contradiction` | Sources disagree and it is unresolved. | Either |
@@ -226,7 +255,7 @@ summary, `open-question` on a topic or entity that cannot be classified. **Never
 three different claims. Storing them identically is how a knowledge base starts lying.
 
 **An agent may never set `claim_type: decision`.** One that thinks a decision was made writes
-`open-question` and asks. That is the only claim value reserved to humans.
+`open-question` and asks. That is the only claim value reserved to you.
 
 Mark individual claims in the body with callouts: `[!check]` decision, `[!note]` assumption,
 `[!question]` open question, `[!warning]` contradiction. Unmarked prose is a `fact` and must be
@@ -241,13 +270,13 @@ unenforced home for it.
 
 | `status` | Means | Who sets it |
 |---|---|---|
-| `draft` | Being written; incomplete. | Agent or human |
-| `active` | Current and believed accurate. | Agent or human |
+| `draft` | Being written; incomplete. | Agent or you |
+| `active` | Current and believed accurate. | Agent or you |
 | `stale` | A source it depends on changed after `updated`. Unverified, not wrong. | Agent |
-| `superseded` | Replaced by another page. **Requires `superseded_by`.** | **Human only** |
+| `superseded` | Replaced by another page. **Requires `superseded_by`.** | **Yours only** |
 
 - **An agent may set only `draft`, `active`, and `stale`.** `superseded` is the one status
-  reserved to humans, because retiring a page is a judgment about the project.
+  reserved to you, because retiring a page is a judgment about the project.
 - A `superseded` page keeps its content. It is not emptied and not deleted.
 - `ask-docs` retrieves `active` and `stale` pages, labels the stale ones, and excludes
   `superseded` unless asked for history.
@@ -308,7 +337,7 @@ question, and set `claim_type: contradiction` while it stands:
 
 The agent must not close a contradiction by reasoning that one source looks newer, more official,
 or more detailed. Recency decides only when a project rule below says so. Absent such a rule, it
-stays open until a human rules. → [Human review](#human-review)
+stays open until you rule. → [Review and ruling](#review-and-ruling)
 
 ## Retrieval and context
 
@@ -347,6 +376,29 @@ secret is already in context, and a partial summary normalizes the leak.
 These exclusions are instructions, not enforcement. Nothing in a Markdown file can stop an agent
 from reading a path.
 
+## Who you are working with
+
+This base has one **owner**: the person who decides what it says. The rules throughout this file
+say *the owner* where authority matters — who may write to a layer, who rules on a contradiction,
+whose decision `claim_type: decision` records.
+
+When you speak to them, use their name rather than a role:
+
+> **Address: (not set)**
+
+- `init-docs` asks once, offering whatever `git config user.name` reports. Whatever they answer
+  goes here verbatim, including a form of address they choose for themselves.
+- **If it is `(not set)`, use "you" and nothing else.** Never guess a name from a git log, an
+  email address, or a commit author — that is a stranger's name as often as it is theirs — and
+  never invent a form of address.
+- Use it where a person would: greeting a report, asking for a ruling, flagging something that
+  needs them. Not on every line. A name repeated in every sentence reads worse than no name at
+  all.
+
+It changes nothing about authority. A name is how you address the owner, not evidence of who
+they are, and it never appears in a page — pages record what the sources say and what the owner
+ruled, and a ruling is attributed from git, where it can be checked.
+
 ## Commits
 
 Whether the agent commits its own work, declared here and nowhere else:
@@ -369,20 +421,20 @@ Rules that hold at every setting:
 - **Stage only what the run wrote.** Named paths, never `git add -A` or `git add .`. A knowledge
   base run must never sweep up unrelated work in progress, and someone with a half-finished branch
   open is the normal case, not the exception.
-- **Never push.** Committing is local and reversible; pushing is neither. Pushing is always a human
+- **Never push.** Committing is local and reversible; pushing is neither. Pushing is always your
   act, whatever this setting says.
 - **Never commit when a security exclusion fired.** If a run finds excluded material in the source
   layer, it stops and reports rather than committing anything from that run.
 - **Never commit a conflict.** Unresolved conflict markers are reported, never staged.
 - **One line, then the detail.** `docs(kb): scan — 3 sources, 7 pages` on the subject line; what
-  needs a human in the body. The changelog entry is still written either way — a commit message is
+  needs your judgment in the body. The changelog entry is still written either way — a commit message is
   not a substitute for it, since one lives in git and the other lives in the base.
 - **The setting never suppresses a report.** Whatever gets committed, the run still says what it
   did and what needs judgment. A commit is not a substitute for telling someone.
 
 ## Git conflicts
 
-A merge conflict inside `docs/` is a **semantic** conflict. Git knows a human wrote X and an agent
+A merge conflict inside `docs/` is a **semantic** conflict. Git knows someone wrote X and an agent
 wrote Y; it does not know which is true.
 
 **An agent never auto-resolves a conflict in `docs/topics/`, `docs/entities/`, or
@@ -513,7 +565,7 @@ whether to read the body.
 ### Why the layers are separate at all
 
 Because who may write to a file is the only durable way to keep provenance honest. Sources are
-human-owned and immutable; pages are agent-maintained and derived; scenarios are human-owned and
+yours and immutable; pages are agent-maintained and derived; scenarios are yours and
 never edited by the agent; bookkeeping is agent-owned. Merge any two and the question *"where did
 this claim come from?"* stops having an answer — which is the failure this whole structure exists
 to prevent.
@@ -542,13 +594,13 @@ Sessions expire after 30 minutes ([[docs/core-sources/260415-auth-spec|260415-au
 > Nothing in the sources describes session revocation on password change.
 ```
 
-## Human review
+## Review and ruling
 
 The path out of `contradiction` and `open-question`. **The evidence is preserved, never
 overwritten.**
 
-1. A human reads both sides and the underlying sources.
-2. They rule.
+1. You read both sides and the underlying sources.
+2. You rule.
 3. The page is rewritten to the shape below — ruling on top, history intact underneath.
 4. `claim_type` becomes `decision` (a project choice) or `fact` (the evidence settled it).
    `status` becomes `active`.
@@ -719,7 +771,7 @@ Rules worth adding for a document library:
   base — that is the failure mode to watch for here.
 - **The documents are authoritative, not third-party.** Unlike outside research, a claim does not
   need attributing to whoever made it; the freshness and authority rules apply to the documents
-  directly. When two of your own documents disagree, it is a real contradiction needing a human
+  directly. When two of your own documents disagree, it is a real contradiction needing your
   ruling, not a difference of opinion between sources.
 - **A term with a specific local meaning is an entity, not a glossary line.** Libraries drift on
   vocabulary before they drift on facts.
@@ -803,7 +855,7 @@ declaring a folder as the source layer makes it forbidden to write to, and point
 source folders: exactly one folder holds filed material, and anything else that needs citing goes
 in *Read-in-place sources*.
 
-**Filed or read in place?** File it if a human chose to put it there and it will not change on its
+**Filed or read in place?** File it if someone chose to put it there and it will not change on its
 own — a PDF, a spec, an exported transcript. Read it in place if it changes without anyone
 deciding it should, like a source tree, or if it is already published somewhere with its own
 lifecycle. Filed material gets a summary page and is swept for staleness; read-in-place material

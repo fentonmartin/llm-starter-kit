@@ -20,7 +20,7 @@ Selected from the index: docs/topics/session-management.md (entry point),
 then one hop: docs/entities/redis.md.
 Budget: 4 pages, ~3.2k tokens. Within budget.
 
-Contradicted — the sources disagree on the absolute TTL, and no human has ruled.
+Contradicted — the sources disagree on the absolute TTL, and nobody has ruled.
 
   30 minutes from issue, no refresh
     ([[docs/core-sources/260415-auth-spec|260415-auth-spec]], §4.2)
@@ -38,7 +38,7 @@ Known — the idle timeout is 15 minutes, and both sources agree
 Consulted: docs/topics/session-management.md, docs/entities/redis.md
 Not consulted: the summaries — the topic page carried the answer and its citations.
 
-To resolve this, see Human review in docs/DOCS.md. It needs a person.
+To resolve this, see Review and ruling in docs/DOCS.md. It needs your call.
 ```
 
 **What to notice.** It refuses to pick, it says *why* the tempting answer is tempting, and it
@@ -57,7 +57,7 @@ INFO     1
 INFO  contradictions (1)
       docs/topics/session-management.md — absolute session TTL
       260415-auth-spec §4.2 says 30 minutes; 260710-ops-runbook says 24 hours.
-      Open since 2026-08-30. Needs a human ruling, not a scan.
+      Open since 2026-08-30. Needs your ruling, not a scan.
 
 Checked: 4 pages, 2 core sources, 3 scenarios.
   front matter parses and carries all six required fields on every page
@@ -133,4 +133,4 @@ the source. Stale means unverified, not wrong.
 **Force a scenario failure.** In `docs/scenarios/questions.yaml`, change `session-ttl` to
 `expect_state: known`. `/test-docs` should FAIL it — the base is contradicted and correctly says
 so, and the expectation is what is wrong. It should say that, and propose the edit rather than
-making it, because `docs/scenarios/` is human-owned.
+making it, because `docs/scenarios/` is yours.

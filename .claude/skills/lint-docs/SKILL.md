@@ -49,7 +49,7 @@ Every finding carries one:
 |---|---|---|
 | **ERROR** | Mechanically certain and factually wrong. No judgment involved. | Unparseable front matter, citation to a file that does not exist, `superseded` without `superseded_by`. |
 | **WARNING** | Certain, but tolerable, or a schema field that post-dates the page. | Missing `status`, an orphan page, a stale page. |
-| **INFO** | Worth knowing, needs a human. | An open contradiction, a gap with five inbound links, a possible duplicate. |
+| **INFO** | Worth knowing, needs the owner. | An open contradiction, a gap with five inbound links, a possible duplicate. |
 
 ERROR is reserved for things that are true regardless of who reads the file. **An open
 contradiction is never an ERROR** — it is the system working. If this project gates a merge on
@@ -62,7 +62,7 @@ lint, gate on ERROR only.
 | 1 | **Malformed front matter** | ERROR | Front matter that does not parse: unclosed `---`, tabs used for indentation, unquoted `:` in a value, a broken list. See below — this check must not crash you. |
 | 2 | **Missing required fields** | ERROR / WARNING | `type`, `title`, `updated`, `sources` missing → ERROR. `status` or `claim_type` missing → WARNING (the page predates them). |
 | 3 | **Invalid field values** | ERROR | A `type`, `status`, or `claim_type` outside the sets in `docs/DOCS.md`. `status: superseded` with no `superseded_by`, or pointing at a file that does not exist. |
-| 4 | **Agent-set human values** | WARNING | `claim_type: decision` or `status: superseded` on a page with no human ruling recorded and no sign of one in `docs/CHANGELOG.md` or git history. |
+| 4 | **Agent-set owner-only values** | WARNING | `claim_type: decision` or `status: superseded` on a page with no ruling recorded and no sign of one in `docs/CHANGELOG.md` or git history. |
 | 5 | **Broken citations** | ERROR | A citation naming a source path that does not exist. Also a code citation whose line range now runs past the end of the file. |
 | 6 | **Uncited claims** | INFO | Substantive claims in topic and entity pages with no citation. Definitions and connective prose are exempt. |
 | 7 | **Schema and naming** | WARNING | Wrong page type for its layer, non-kebab-case slugs or subfolder names, summaries with more or fewer than one `sources:` entry, nested YAML where `docs/DOCS.md` requires flat. Any date in a file name must be `YYMMDD`, and a summary's date prefix must match its source's. Subfolders are fine at any depth; the layer folder decides the type. |
@@ -75,11 +75,11 @@ lint, gate on ERROR only.
 | 14 | **Excluded material** | ERROR | Anything in the declared source folder matching the security exclusions in `docs/DOCS.md`, and any page that quotes from one. |
 | 15 | **Stale layout paths** | WARNING | A `docs/sources/` folder, or `sources:` values and citations pointing at `docs/sources/` — the base predates the 2.0 rename. Also any `sources:` value or citation that does not match the root and source folder declared in `docs/DOCS.md` Part 1, which means one of them moved and the paths have not caught up. See below. |
 | 16 | **Declarations** | ERROR | A declared source location that does not exist, more than one declared, or one overlapping a page layer. Also an index declaration naming a file that does not exist, or both `README.md` and `INDEX.md` present in the base and serving as indexes. See below. |
-| 17 | **Slug collisions** | ERROR | Two pages in the same layer with the same slug in different subfolders. `[[slug]]` resolves to whichever was seen first, so every inbound link to one of them is silently wrong. Report both paths; the fix is a rename or a merge, and it is a human decision. |
+| 17 | **Slug collisions** | ERROR | Two pages in the same layer with the same slug in different subfolders. `[[slug]]` resolves to whichever was seen first, so every inbound link to one of them is silently wrong. Report both paths; the fix is a rename or a merge, and it is the owner's decision. |
 
 ### Check 1 in detail — do not crash on bad YAML
 
-Malformed front matter is common: agents and humans both break it. Handle it as a finding, not
+Malformed front matter is common; everyone breaks it sooner or later. Handle it as a finding, not
 as a failure.
 
 ```markdown
@@ -139,11 +139,11 @@ WARNING  legacy layout
 ```
 
 **Do the folder move only when the user asks** — it is a rename in their repository, and
-`docs/sources/` is human-owned regardless of what it is called. Rewriting the *paths inside
+`docs/sources/` belongs to the owner regardless of what it is called. Rewriting the *paths inside
 pages* after the folder has moved is mechanical, and belongs in the fix-silently list below.
 
 If both `docs/sources/` and `docs/core-sources/` exist, do not merge them. Report it and stop:
-a half-finished migration needs a human to say which file wins.
+a half-finished migration needs the owner to say which file wins.
 
 **The same check catches a moved root or source folder.** If Part 1 declares a root other than
 `docs/` — `docs/kb/`, say — or a source folder other than `docs/core-sources/`, then `sources:`
@@ -164,7 +164,7 @@ else notices.
   one was meant.
 - **More than one declared.** Report both and stop. One summary page per source file is the
   backbone of provenance, and you cannot maintain it across two locations once a file name
-  repeats. The fix is a human decision: file everything into one, or move the extra to
+  repeats. The fix is the owner's decision: file everything into one, or move the extra to
   *read-in-place sources*.
 - **It contains a page layer**, or is a page layer, or is the root itself. This makes the agent's
   own output look like source material. Report it and stop — a scan against this declaration will
@@ -193,7 +193,7 @@ wrong without any broken-link symptom.
 
 Report both paths and their titles, and say how many inbound links each has. Do not rename either:
 two pages that want the same slug are usually one page that got written twice, and merging is a
-human call. Compare their `sources:` first — the same sources on both is strong evidence of a
+the owner's call. Compare their `sources:` first — the same sources on both is strong evidence of a
 duplicate rather than two things needing better names.
 
 ## What to fix, what to report
@@ -217,8 +217,8 @@ Report, do not fix — anything requiring judgment:
 - Contradictions, duplicates worth merging, stale pages needing re-scan, gaps worth writing,
   uncited claims. For each, say what you would do and wait.
 - Broken citations. A citation pointing at a missing file may mean the source moved, or that
-  the claim was never sourced. Those need opposite fixes, and only a human can tell which.
-- Anything under check 4 or check 14. A page claiming human authority it may not have, and a
+  the claim was never sourced. Those need opposite fixes, and only the owner can tell which.
+- Anything under check 4 or check 14. A page claiming authority it may not have, and a
   secret that reached the knowledge base, are both escalations.
 - Any file name with a malformed date. Renaming a page breaks inbound links, and files under
   `docs/core-sources/` are immutable to you regardless — report the bad name and the corrected
@@ -250,7 +250,7 @@ If everything is clean, say so in one line. Do not manufacture findings.
 ## Rules
 
 - Never edit, rename, or delete anything under the declared source folder, or any read-in-place
-  path. Both are human-owned; the declaration does not change that, it is what establishes it.
+  path. Both belong to the owner; the declaration does not change that, it is what establishes it.
 - Never resolve a contradiction. Surfacing it is the whole point of the check.
 - Never rewrite front matter you could not parse.
 - Never promote a page to `claim_type: decision` or `status: superseded` to make a finding go

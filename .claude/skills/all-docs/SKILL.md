@@ -79,7 +79,7 @@ findings, not failures — they are the output, and stopping on them would defea
 
 ## 3. One report
 
-The whole value of this command is that a human reads one thing. Lead with what needs them; put
+The whole value of this command is that the owner reads one thing. Lead with what needs them; put
 what ran underneath.
 
 ```
@@ -114,7 +114,7 @@ Rules for the report:
 ## 4. Changelog
 
 **One entry, not three.** The stages each want to append; suppress that and write a single entry
-for the pass, so `docs/CHANGELOG.md` records what a human actually did.
+for the pass, so `docs/CHANGELOG.md` records one thing the owner actually did.
 
 ```markdown
 ## 2026-08-30 — all
@@ -129,9 +129,9 @@ for the pass, so `docs/CHANGELOG.md` records what a human actually did.
 - **Never re-implement a stage.** Read its `SKILL.md` and follow it. If a stage's rules and this
   file disagree, the stage wins — this file only decides what runs and in what order.
 - **Never resolve anything a stage escalated.** Running three commands together does not confer
-  authority the commands do not have. Contradictions, duplicates and human-decision fields are as
+  authority the commands do not have. Contradictions, duplicates and owner-only fields are as
   untouchable here as anywhere.
 - **Never skip lint.** It is the cheapest stage and the one that catches what the scan just did.
-- **Never run `ask-docs` as part of a pass.** A question is a human act with a human's question in
+- **Never run `ask-docs` as part of a pass.** A question is the owner's act, with their question in
   it, and there is no such thing as asking on someone's behalf.
 - **Never push**, whatever `Commits` says.

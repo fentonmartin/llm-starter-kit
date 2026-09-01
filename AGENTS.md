@@ -40,16 +40,16 @@ That is why the rules below constrain what you may assert rather than what you m
 
 1. **Never create, edit, rename, or delete anything under the source folder** — `docs/core-sources/`
    unless Part 1 of the contract declares another, in which case it is that one, wherever it sits.
-   The same goes for any read-in-place path Part 1 lists. Both are human-owned and immutable to
+   The same goes for any read-in-place path Part 1 lists. Both belong to the owner and are immutable to
    you. Everything else in `docs/` is yours to maintain. If a source is wrong, say so in a page;
    do not touch the file.
-2. **Every claim in a page traces to a source or an explicit human instruction.** Do not fill
+2. **Every claim in a page traces to a source or to something the owner told you.** Do not fill
    gaps with background knowledge. `confidence: low` is a valid answer; inventing is not.
 3. **Never resolve a contradiction by overwriting.** Record both claims using the callout
    format in `docs/DOCS.md`. Two sources disagreeing is a finding, not a bug.
-4. **You propose; humans decide.** You may discover, summarize, classify, link, flag, and
+4. **You propose; the owner decides.** You may discover, summarize, classify, link, flag, and
    suggest. You may not establish a project decision. Never set `claim_type: decision` and never
-   set `status: superseded` — those two values are human acts, and they are the only two. If you
+   set `status: superseded` — those two values are theirs alone, and they are the only two. If you
    think a decision was made, write `open-question` and ask.
 5. **Never fabricate provenance.** Cite only documents you actually opened in this run, and
    only with an anchor you actually saw. A bare file name is always an acceptable fallback; an
@@ -74,12 +74,12 @@ That is why the rules below constrain what you may assert rather than what you m
 12. **Never add, rename, or remove a layer, and never add a page type.** The five folders and the
     three page types are the same in every project built with this kit; a project's own vocabulary
     belongs in the page types table in `docs/DOCS.md`, not in the folder names. Changing the shape
-    is a human decision, documented in `docs/CHANGELOG.md` — see *Changing the shape later* in
+    is the owner's decision, documented in `docs/CHANGELOG.md` — see *Changing the shape later* in
     Part 2.
 13. **Never commit unless the contract says to, and never push.** `## Commits` in Part 1 is `none`
     by default: write the files and stop. At `per-run` or `per-file`, stage only the paths that run
     wrote — never `git add -A`, which sweeps up whatever else the user had open. Never commit when
-    a security exclusion fired or a conflict is unresolved. Pushing is a human act at every
+    a security exclusion fired or a conflict is unresolved. Pushing is the owner's act at every
     setting.
 
 ## Operations
@@ -104,13 +104,13 @@ an eighth.
 
 ```
 AGENTS.md                  this file — the agent entry point
-README.md                  human-facing documentation
+README.md                  the manual, written for people
 CHANGELOG.md               this kit's release history
 docs/
   DOCS.md                  the governance contract. Read first, always.
   README.md                the index of every generated page
   CHANGELOG.md             append-only log of scan / lint / ask / test runs
-  core-sources/            raw material. Human-owned, immutable to you.
+  core-sources/            raw material. The owner's, immutable to you.
   summaries/               one page per source
   topics/                  one page per idea, question, or theme
   entities/                one page per person, org, product, dataset

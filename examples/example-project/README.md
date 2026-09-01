@@ -4,7 +4,7 @@ A knowledge base small enough to read in five minutes, built from two documents 
 
 The disagreement is the point. Two sources, one specification and one runbook, give different
 values for the same setting. A retrieval system that returns the more relevant chunk answers
-this question confidently and wrongly. This kit records both and says a human has not ruled.
+this question confidently and wrongly. This kit records both and says nobody has ruled.
 
 ## What is here
 
@@ -56,7 +56,7 @@ passing scenarios. It ends with four edits that each make something fail on purp
 **The contradiction** — [`docs/topics/session-management.md`](docs/topics/session-management.md),
 under *Expiry*. Both values are on the page with their anchors. The runbook even explains why
 the TTL was raised, which makes it tempting to close. The page does not close it, because
-nothing in `DOCS.md` says a runbook outranks a spec. That call belongs to a human, and
+nothing in `DOCS.md` says a runbook outranks a spec. That call is the owner's, and
 `docs/DOCS.md` shows the shape the resolution would take — the ruling on top, both sources
 preserved underneath.
 
@@ -64,7 +64,7 @@ preserved underneath.
 The spec records that JWTs were rejected. That is a decision, but the page's `claim_type` is
 `fact`, and the decision sits in a `[!check]` callout citing §5. A source describing a decision
 is evidence one was made, not authority that it still holds. An agent may record it; only a
-human may promote it.
+the owner may promote it.
 
 **The unknown** — the *Open questions* section of the same topic page, and the
 `session-revocation` case in `docs/scenarios/questions.yaml`. Neither source says who owns session

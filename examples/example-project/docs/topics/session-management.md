@@ -45,10 +45,10 @@ The absolute TTL does not agree:
 The runbook gives a reason for the change — the 30-minute expiry logged users out mid-checkout
 during slow payment callbacks in June. That is suggestive, but it is not a ruling. The spec has
 not been revised, and nothing in `DOCS.md` says the runbook supersedes it. Both values stand
-until a human decides.
+until the owner decides.
 
-*A human ruling would rewrite this section into the Decision / Rationale / Evidence shape in
-the Human review section of `docs/DOCS.md`, keeping both values on the page.*
+*A ruling would rewrite this section into the Decision / Rationale / Evidence shape in
+the Review and ruling section of `docs/DOCS.md`, keeping both values on the page.*
 
 ## Restarting Redis
 
