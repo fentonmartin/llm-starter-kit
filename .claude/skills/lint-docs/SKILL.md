@@ -10,6 +10,11 @@ A knowledge base rots quietly. This is the sweep that catches it.
 Read `docs/DOCS.md` **Part 1** first — it defines every rule you are checking against, and it is
 complete on its own. Part 2 is examples and rationale, read on demand.
 
+**The root.** Every path in this skill is written as `docs/…`. `docs/DOCS.md` Part 1 opens by
+declaring the knowledge base root; if it names anything other than `docs/`, read every `docs/…`
+path below as that folder instead. If the user passed a root as an argument, read `<root>/DOCS.md`
+and use that base only. The layers, their names, and their rules never change with the root.
+
 ## Scope
 
 "Pages" means files in `docs/summaries/`, `docs/topics/`, and `docs/entities/`.
@@ -51,7 +56,7 @@ lint, gate on ERROR only.
 | 12 | **Duplicates** | INFO | Pages with heavily overlapping titles or subject matter. |
 | 13 | **Unread sources** | WARNING | Files in `docs/core-sources/` with no summary page. |
 | 14 | **Excluded material** | ERROR | Anything in `docs/core-sources/` matching the security exclusions in `docs/DOCS.md`, and any page that quotes from one. |
-| 15 | **Legacy layout** | WARNING | A `docs/sources/` folder, or `sources:` values and citations pointing at `docs/sources/`. The base predates the 2.0 rename. See below. |
+| 15 | **Stale layout paths** | WARNING | A `docs/sources/` folder, or `sources:` values and citations pointing at `docs/sources/` — the base predates the 2.0 rename. Also any `sources:` value or citation pointing outside the root declared in `docs/DOCS.md` Part 1, which means the base moved root and the paths have not caught up. See below. |
 
 ### Check 1 in detail — do not crash on bad YAML
 
@@ -120,6 +125,12 @@ pages* after the folder has moved is mechanical, and belongs in the fix-silently
 
 If both `docs/sources/` and `docs/core-sources/` exist, do not merge them. Report it and stop:
 a half-finished migration needs a human to say which file wins.
+
+**The same check catches a root move.** If Part 1 declares a root other than `docs/` — `docs/kb/`,
+say — then `sources:` values and citations still written as `docs/core-sources/…` are stale in
+exactly the same way, and rewriting them to the declared root is equally mechanical. Rewrite them
+and say how many. Do not move any folder to make the paths true; the declared root wins, and if
+the user declared it by mistake that is a one-line fix in `DOCS.md`, not a repository move.
 
 ## What to fix, what to report
 

@@ -19,6 +19,11 @@ Read `docs/DOCS.md` **Part 1** in full, and `docs/README.md`. Part 2 is examples
 read it only if you need it. `DOCS.md` overrides anything here: page types, link style,
 retrieval scope, security exclusions, and the project's own rules.
 
+**The root.** Every path in this skill is written as `docs/…`. `docs/DOCS.md` Part 1 opens by
+declaring the knowledge base root; if it names anything other than `docs/`, read every `docs/…`
+path below as that folder instead. If the user passed a root as an argument, read `<root>/DOCS.md`
+and use that base only. The layers, their names, and their rules never change with the root.
+
 ### 2. Select candidates — never load the whole base
 
 Selection is by index and links. **Do not read every page, and do not glob `docs/**/*.md`.**

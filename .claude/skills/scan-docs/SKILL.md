@@ -8,6 +8,11 @@ description: Read new or changed files in docs/core-sources/ and fold them into 
 Turn raw material in `docs/core-sources/` into linked pages in `docs/`. This is the only operation that
 creates summary pages.
 
+**The root.** Every path in this skill is written as `docs/…`. `docs/DOCS.md` Part 1 opens by
+declaring the knowledge base root; if it names anything other than `docs/`, read every `docs/…`
+path below as that folder instead. If the user passed a root as an argument, read `<root>/DOCS.md`
+and use that base only. The layers, their names, and their rules never change with the root.
+
 ## Before you start
 
 1. Read `docs/DOCS.md` **Part 1** in full — it is the complete rules, and it overrides anything

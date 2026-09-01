@@ -12,6 +12,11 @@ was built to answer — a source gets superseded, a page goes stale, a merge dro
 Read `docs/DOCS.md` **Part 1** first — it is the complete rules. Part 2 is examples and
 rationale, read on demand.
 
+**The root.** Every path in this skill is written as `docs/…`. `docs/DOCS.md` Part 1 opens by
+declaring the knowledge base root; if it names anything other than `docs/`, read every `docs/…`
+path below as that folder instead. If the user passed a root as an argument, read `<root>/DOCS.md`
+and use that base only. The layers, their names, and their rules never change with the root.
+
 ## Honest scope
 
 Every check here runs by reading files and reasoning about them. There is no program, and
