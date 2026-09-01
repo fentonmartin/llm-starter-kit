@@ -17,9 +17,11 @@ conflicts, naming and dates — applies here unchanged. Read it in
 > **Root: `docs/`**
 > **Source folder: `docs/core-sources/`**
 > **Index: `docs/INDEX.md`**
+> **Commits: `none`**
 
 The defaults. `INDEX.md` rather than `README.md` because this project has its own root
-`README.md`, which is the usual case.
+`README.md`, which is the usual case. `Commits: none` means the agent writes files and leaves
+them for a human to review and commit — which is how the pages in this example were produced.
 
 Below are the only three sections `/init-docs` rewrites per project.
 

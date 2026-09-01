@@ -9,10 +9,10 @@ Orient someone in under a screen. **What this base is, what state it is in, what
 the commands.** In that order — a command list is the least useful part of help, because the
 question behind *"what can I do?"* is almost always *"what should I do now?"*
 
-**This must be cheap.** Read `docs/DOCS.md` Part 1 for the declarations and page types, read the
-index, and count files. **Never read a page body, never read a source, never glob the base.** Help
-that costs a full context read is not help. If the base is large, counting is still cheap — you
-are listing directories, not opening them.
+**This must be cheap.** Read `docs/DOCS.md` Part 1 for the declarations, the commit setting and the
+page types; read the index; count files. **Never read a page body, never read a source, never glob
+the base.** Help that costs a full context read is not help. If the base is large, counting is
+still cheap — you are listing directories, not opening them.
 
 Do not write anything. Help changes nothing, appends no changelog entry, and fixes nothing it
 finds. If it spots a problem, it names the command that fixes it.
@@ -42,11 +42,13 @@ Knowledge base: docs/          (codebase — one page per service, decision, end
 Sources:        docs/core-sources/       14 files, all read
 Pages:          9 summaries · 6 topics · 4 entities
 Scenarios:      3
+Commits:        none — files are left for you to review
 Last run:       scan, 2026-08-30
 
 Next: nothing owed. 2 open contradictions are waiting on you —
       /ask-docs "what is contradicted?" to see them.
 
+  /all-docs     scan, lint and test in one pass
   /scan-docs    read new material into pages
   /ask-docs Q   answer from the pages, with citations
   /lint-docs    health-check and fix what is mechanical
@@ -99,7 +101,8 @@ Common ones worth answering directly:
 | How do I change the rules? | Edit *Project-specific rules* in `docs/DOCS.md`. Free, no migration — Part 2's *Changing the shape later* says what each kind of change costs. |
 | Why is the answer "unknown"? | The base does not know, and said so instead of guessing. That is the feature. Add a source that covers it. |
 | Can I move the folders? | The root and source folder are declarations in Part 1. Layers and page types are fixed. Part 2, *Changing the shape later*. |
-| Is my base healthy? | `/lint-docs` for structure, `/test-docs` for whether it still answers correctly. |
+| Is my base healthy? | `/lint-docs` for structure, `/test-docs` for whether it still answers correctly, `/all-docs` for both plus anything unscanned. |
+| Do I have to commit by hand? | Yes, unless `## Commits` in Part 1 says otherwise. It is `none` by default, and worth leaving there while the rules are still settling. |
 
 ## Rules
 

@@ -8,13 +8,13 @@ Drop it into any repo. It builds a `docs/` folder that every agent reads, mainta
 answers from — where every claim traces to a source, disagreements stay visible, and obsolete
 knowledge is marked as obsolete.
 
-`init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `test-docs` · `help-docs`
+`init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `test-docs` · `help-docs` · `all-docs`
 
 [![version](https://img.shields.io/badge/version-2.3.0-blue?style=flat-square)](CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-**Latest: `2.3.0`** — a hands-on tutorial, `/help-docs`, fewer setup questions, subfolder grouping,
-and the reasoning behind every folder name.
+**Latest: `2.3.0`** — a tutorial, `/all-docs` and `/help-docs`, a commit setting, fewer setup
+questions, subfolder grouping, and the reasoning behind every folder name.
 [What changed](CHANGELOG.md#230--2026-09-01) · [Tutorial](#tutorial-your-first-hour) · [Upgrading](#already-using-an-older-version)
 
 [**Quick start**](#quick-start) · [**Tutorial**](#tutorial-your-first-hour) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-human-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
@@ -223,6 +223,20 @@ someone has to pick.
 | **Your root `README.md`** | Gains one section saying the base exists and which commands read it. Nothing else in it is ever touched. If you have no root README, you get a minimal one. |
 | **The folder layout** | Fixed. Same five folders in every project — see [why](#why-these-names). |
 
+One setting *is* offered, at the end rather than in the interview — **commits**:
+
+```
+Commits: none        the default. files are written, you review and commit
+         per-run     one commit per command run
+         per-file    one commit per page. noisy, individually revertable
+```
+
+`none` isn't timidity. Reading `git diff` after a scan is how you find where the agent's judgment
+differs from yours, and auto-committing doesn't remove that review — it removes the *moment* that
+prompts it. Turn it on once your rules have stopped changing. At any setting the agent stages only
+what the run wrote (never `git add -A`, which would sweep up your work in progress) and **never
+pushes**.
+
 So the interview is really one question — the preset — plus *"where should sources go?"* on a
 fresh start.
 
@@ -346,8 +360,9 @@ Prefer to drive it yourself? The manual steps are in [CHANGELOG.md](CHANGELOG.md
 | **`/lint-docs`** | 17 checks at three severities — schema, citations, staleness, orphans, gaps, contradictions. Fixes the mechanical, escalates the rest | Every few scans |
 | **`/test-docs`** | Runs `docs/scenarios/questions.yaml` and reports what the base no longer answers correctly | After big changes |
 | **`/help-docs`** | What this base is, what state it's in, and the one thing worth doing next | When you're not sure |
+| **`/all-docs`** | Scan, lint, test in order — skips what has nothing to do, reports once | Sitting down to the docs |
 
-`/init` `/scan` `/ask` `/lint` `/test` work as short aliases. The long names are canonical
+`/init` `/scan` `/ask` `/lint` `/test` `/all` work as short aliases. The long names are canonical
 because this installs globally — a bare `/lint` would collide with code linters and misfire on
 *"lint my code."* There's deliberately **no `/help` alias**, for the same reason: your agent almost
 certainly has its own.
@@ -361,11 +376,38 @@ Sources:        docs/core-sources/       14 files · 3 unread
 Pages:          9 summaries · 6 topics · 4 entities
 Scenarios:      none yet
 
-Next: 3 sources are waiting. /scan-docs reads them.
+Next: 3 sources are waiting. /scan-docs reads them, or /all-docs does the whole pass.
 ```
 
 It writes nothing, and it won't invent work — *"nothing is owed"* is an answer it's allowed to
 give.
+
+**Been away a while?** `/all-docs` does the whole pass in the order the stages depend on each
+other — scan new material, lint what that changed, test whether the base still answers — skipping
+any stage with nothing to do:
+
+```
+14 files in docs/core-sources/, 3 with no summary.
+Plan: scan 3 → lint → test 5 scenarios.
+Scanning reads sources in full, so this is the expensive part.
+```
+
+It tells you the cost before it starts, and **stops to ask if the scan is large** — more than about
+ten unread sources and it offers to do a batch instead. At the end you get *one* report, leading
+with what needs you:
+
+```
+Needs you (3):
+  · Contradiction — session TTL. 30 minutes vs 24 hours. Both sides recorded.
+  · Scenario failed — "session-revocation" expected unknown, got known.
+  · Gap — [[rate-limiting]] has 5 inbound links and no page.
+
+Ran:  scan 3 sources · lint 0 errors 4 warnings · test 4/5 pass
+```
+
+It orchestrates the real commands rather than reimplementing them, and it gains no authority by
+running them together: contradictions and human-decision fields are as untouchable in a pass as
+anywhere. It never runs `/ask-docs` — a question is a human act.
 
 These are [Agent Skills](.claude/skills/), so plain description works too: *"document this
 repo"* runs `init-docs`.
@@ -496,8 +538,8 @@ A rhythm, not a project: sources in as they arrive, `/scan-docs` when a few have
 `/lint-docs` every few scans, `/test-docs` after anything structural. See
 [A rhythm that works](#a-rhythm-that-works).
 
-Come back in three weeks having forgotten all of it? **`/help-docs`** — it tells you what state
-the base is in and the one thing worth doing next.
+Come back in three weeks having forgotten all of it? **`/help-docs`** tells you what state the base
+is in and the one thing worth doing next, and **`/all-docs`** just does the pass.
 
 Two things to expect as it grows. Layers pass thirty pages and want
 [subfolders](#directory-structure). And your `DOCS.md` rules keep accumulating — that's the base
@@ -509,7 +551,7 @@ learning, and it's the point.
 
 ```
 README.md                you are here
-AGENTS.md                agent entry point — 12 hard rules, and a pointer to the schema
+AGENTS.md                agent entry point — 13 hard rules, and a pointer to the schema
 CHANGELOG.md             this kit's release history
 LICENSE
 docs/
@@ -522,8 +564,8 @@ docs/
 ├── entities/            🏷️  one page per service, table, person, product…
 └── scenarios/           ✅  questions.yaml — what this base must answer correctly
 examples/example-project/  a complete worked example, five minutes to read
-.claude/skills/          the six skills, as plain Markdown
-.claude/commands/        the six, plus short aliases
+.claude/skills/          the seven skills, as plain Markdown
+.claude/commands/        the seven, plus short aliases
 .claude-plugin/          install this repo as a Claude Code plugin
 ```
 
@@ -1007,7 +1049,7 @@ defaults, since the root, the source folder and the index can each be elsewhere.
 - docs/DOCS.md  — the governance contract. Read it fully before writing anything. It
                   overrides these instructions.
 
-Six operations, fully specified in .claude/skills/<name>/SKILL.md — read the relevant file
+Seven operations, fully specified in .claude/skills/<name>/SKILL.md — read the relevant file
 before you begin:
 
 - init-docs → .claude/skills/init-docs/SKILL.md   (set up, once per project)
@@ -1016,6 +1058,7 @@ before you begin:
 - lint-docs → .claude/skills/lint-docs/SKILL.md
 - test-docs → .claude/skills/test-docs/SKILL.md
 - help-docs → .claude/skills/help-docs/SKILL.md   (what state is this in, what next)
+- all-docs  → .claude/skills/all-docs/SKILL.md    (scan, lint, test in one pass)
 
 Non-negotiable:
 - You propose; I decide. Never set claim_type: decision and never set status: superseded.
@@ -1090,7 +1133,7 @@ Obsidian's formats and tooling, these handle what goes in the pages and why.
 
 ## Continuous integration
 
-**There is no CI here, and nothing in this kit can run in CI.** All six operations are Markdown
+**There is no CI here, and nothing in this kit can run in CI.** All seven operations are Markdown
 instructions an agent follows — no program, no exit code, no deterministic pass or fail. That is
 a design choice: a linter binary would mean a language runtime, a dependency tree, and a release
 process, in a project whose value is that it is Markdown in a folder.
@@ -1154,7 +1197,7 @@ searching, because the connection was made when the material came in.
 Stated plainly, because documentation that claims more than it does is the failure this kit
 exists to prevent.
 
-- **Nothing here executes.** All six operations are Markdown instructions. There is no CLI, no
+- **Nothing here executes.** All seven operations are Markdown instructions. There is no CLI, no
   parser, no test suite, and nothing that can run in CI.
 - **`lint-docs` and `test-docs` are therefore not deterministic.** Two runs may word the same
   finding differently or disagree at the margin. Structural checks are far more stable than

@@ -5,7 +5,7 @@
     {
       "name": "llm-starter-kit",
       "source": "./",
-      "description": "A governed, agent-agnostic knowledge base for any project: init-docs, scan-docs, ask-docs, lint-docs, test-docs, help-docs. Evidence-backed answers with provenance, lifecycle, and contradictions kept visible."
+      "description": "A governed, agent-agnostic knowledge base for any project: init-docs, scan-docs, ask-docs, lint-docs, test-docs, help-docs, all-docs. Evidence-backed answers with provenance, lifecycle, and contradictions kept visible."
     }
   ]
 }

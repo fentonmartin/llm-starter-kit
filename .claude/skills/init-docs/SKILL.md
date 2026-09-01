@@ -230,6 +230,11 @@ If you created `sources/` at the root, add a one-line `sources/README.md` saying
 is for and that the agent never writes to it. A bare empty folder at the top of someone's project
 is a puzzle three months later, and it is the one place this layout is not self-explaining.
 
+**Commits — write `none`, and say so.** The agent writes files and leaves them in the working tree
+for the user to review and commit. Do not ask during the interview; it is a preference, not
+knowledge about their project, and it belongs at the end where it will not crowd out a question
+that shapes the base. Step 6 puts it to them once, with `none` already set.
+
 **Index — decided by a rule.** `docs/INDEX.md`. The file is an index, not a readme, and almost
 every project has a root `README.md` that a second one would compete with. Use `docs/README.md`
 only when the project has no root README of its own and nothing else claims the name.
@@ -355,7 +360,17 @@ For a codebase, a good starting shape:
 3. Tell them what to do next: put material in the source folder, then run `/scan-docs`. If you
    moved existing files into it, or declared a folder that already had material in it, say that a
    scan will turn them into pages — and roughly how many files that is.
-4. Say in one line that the rules are theirs to change at any time and that most changes cost
+4. **Offer the one setting.** Commits are `none` — you write files, they review and commit. Put
+   the alternatives in two lines and take whatever they say:
+
+   > I've set commits to `none`: I'll write files and leave them for you to review. I'd keep it
+   > there for now — reading `git diff` after a scan is how you find where my judgment differs
+   > from yours, and it's what turns a generic base into a good one. Once the rules have settled,
+   > `per-run` (one commit per command) or `per-file` are a one-line change in `docs/DOCS.md`.
+
+   Change the declaration if they ask for something else, and do not argue past one sentence. It
+   is their repository.
+5. Say in one line that the rules are theirs to change at any time and that most changes cost
    nothing — `docs/DOCS.md` Part 2, *Changing the shape later*, says which are free and which need
    a migration. The most common way this kit is abandoned is a user who decides the schema was
    wrong and does not know they were allowed to edit it.
@@ -379,7 +394,8 @@ Stop at any point they want to review.
 | `Part 1 — The contract` present, no `Root:` declaration under `## Layers` | `2.0` |
 | A `Root:` declaration but no `Source folder:` one | `2.1` |
 | `Root:` and `Source folder:` but no `Index:` | `2.2` |
-| All three declarations under `## Layers` | `2.3` — already current |
+| All three declarations, no `## Commits` section | `2.3` early |
+| All three declarations and a `## Commits` section | `2.3` — already current |
 
 **From `2.x` to current there is nothing to migrate.** Replace the kit files (step 1) and stop.
 Their `docs/` is already correct: every declaration defaults to exactly where their base already
@@ -388,6 +404,10 @@ no lint sweep to run. Then do step 3, which is the part that matters for a `2.x`
 these without doing them unasked:
 
 - add the missing declaration lines to Part 1, so all three are explicit;
+- **add the `Commits` section if their Part 1 has none, set to `none`, and put the choice to them
+  once.** It is new, it changes what the agent does to their repository, and defaulting it
+  silently is the wrong way to introduce that. Same two lines as an init: `none` writes files for
+  them to review, `per-run` and `per-file` are a one-line change later.
 - add the knowledge-base section to the project's root `README.md` if it has none;
 - rename the index to `INDEX.md` if the project has a root README that competes with
   `docs/README.md` — a `git mv`, a declaration change, and a lint run;
@@ -446,6 +466,8 @@ Copy the kit's `docs/DOCS.md` over theirs, then port back, verbatim:
    them
 4. their **declarations**, if any are not the default — and fill in any the old file did not have,
    from where their base actually keeps things rather than from what the shipped file says
+5. their **`Commits` setting**, if they had one. If they did not, it is `none` and you say so —
+   never carry a shipped default into a repository the user has not agreed to have committed to
 
 Then delete every preset section, as in step 5 of an init.
 

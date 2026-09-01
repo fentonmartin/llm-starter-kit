@@ -76,6 +76,11 @@ That is why the rules below constrain what you may assert rather than what you m
     belongs in the page types table in `docs/DOCS.md`, not in the folder names. Changing the shape
     is a human decision, documented in `docs/CHANGELOG.md` — see *Changing the shape later* in
     Part 2.
+13. **Never commit unless the contract says to, and never push.** `## Commits` in Part 1 is `none`
+    by default: write the files and stop. At `per-run` or `per-file`, stage only the paths that run
+    wrote — never `git add -A`, which sweeps up whatever else the user had open. Never commit when
+    a security exclusion fired or a conflict is unresolved. Pushing is a human act at every
+    setting.
 
 ## Operations
 
@@ -90,9 +95,10 @@ relevant one before starting, whatever agent you are.
 | `lint-docs` | Health-checking for orphans, gaps, contradictions, stale pages, schema violations. |
 | `test-docs` | Checking whether the knowledge base still answers its known questions correctly. |
 | `help-docs` | Someone asks what this is, what they can do, or what to do next. Reads declarations and counts files; never opens a page and never writes. |
+| `all-docs` | A whole maintenance pass — scan, lint, test in order, skipping what has nothing to do, reporting once. Orchestrates the others; overrides none of them. |
 
-If a request does not clearly match one of the six, ask which is meant rather than improvising
-a seventh.
+If a request does not clearly match one of the seven, ask which is meant rather than improvising
+an eighth.
 
 ## Repository layout
 
@@ -110,7 +116,7 @@ docs/
   entities/                one page per person, org, product, dataset
   scenarios/questions.yaml questions the knowledge base must answer correctly
 examples/example-project/  a small worked example of the whole loop
-.claude/skills/            the six skills, as plain Markdown
+.claude/skills/            the seven skills, as plain Markdown
 .claude/commands/          slash-command aliases
 ```
 

@@ -35,6 +35,44 @@ included, and subfolders are optional everywhere.
   a visible folder beats a tidier tree they never fill, so the second option is offered without
   argument.
 
+- **A seventh command: `/all-docs`** — the sit-down-to-the-docs pass. Scan new material, lint what
+  that changed, test whether the base still answers, in that order because each stage changes what
+  the next one sees. Stages with nothing to do are skipped and said to be skipped.
+
+  It reports the plan and the cost *before* it starts, and stops to ask when the scan is large —
+  more than roughly ten unread sources means a run whose cost nobody agreed to, so it offers a
+  batch instead. At the end it produces **one** report, leading with a counted *needs you* list
+  rather than three reports in a row.
+
+  It orchestrates rather than reimplements: each stage follows its own `SKILL.md`, and where the
+  two disagree the stage wins. Running commands together confers no authority the commands lack —
+  contradictions and human-decision fields stay untouchable. It never runs `ask-docs`, because a
+  question is a human act with a human's question in it. It stops immediately if a security
+  exclusion fires, and skips `test` when lint found errors that make the base unreadable, since
+  testing an unreadable base produces noise rather than signal. One changelog entry per pass, not
+  three.
+
+- **A commit setting, declared in Part 1: `none`, `per-run`, or `per-file`.** Default `none` —
+  the agent writes files and stops, and you review and commit.
+
+  `none` is the default on purpose. Reading `git diff` after a scan is the feedback loop that turns
+  a generic base into a good one, and auto-committing does not remove that review, it removes the
+  moment that prompts it. The recommendation is to turn it on once the rules in `DOCS.md` have
+  stopped changing.
+
+  Rules that hold at every setting: stage only the paths the run wrote — never `git add -A`, which
+  would sweep up whatever the user had open, and someone mid-branch is the normal case; never
+  commit when a security exclusion fired or a conflict is unresolved; never push, at any setting,
+  because committing is local and reversible and pushing is neither; and a commit never replaces
+  the report.
+
+  `init-docs` sets it to `none` and puts the choice once at the end rather than in the interview —
+  it is a preference, not knowledge about the project. An upgrade adds the section and asks the
+  same question, because it changes what the agent does to someone's repository and defaulting
+  that silently is the wrong way to introduce it.
+
+- **Hard rule 13 in `AGENTS.md`** — never commit unless the contract says to, and never push.
+
 - **A sixth command: `/help-docs`.** What this base is, what state it is in, and the one thing
   worth doing next — then the command list, in that order, because the question behind *"what can
   I do?"* is almost always *"what should I do now?"*

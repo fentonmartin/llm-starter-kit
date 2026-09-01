@@ -26,6 +26,11 @@ any other: the layer folder decides what a page is, however deep it sits. Slugs 
 whole layer, so a wikilink resolves by slug and does not care about the path. The layers, their
 names, and their rules never change with any declaration.
 
+**Commits.** Part 1 also declares whether you commit your own work — `none` by default, meaning
+you write files and stop. At `per-run` or `per-file`, stage only the paths this run wrote, never
+`git add -A`, and never push. Never commit when a security exclusion fired or a conflict is
+unresolved. Committing never replaces reporting.
+
 ## Scope
 
 "Pages" means files in `docs/summaries/`, `docs/topics/`, and `docs/entities/`.

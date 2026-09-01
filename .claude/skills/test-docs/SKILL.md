@@ -28,6 +28,10 @@ any other: the layer folder decides what a page is, however deep it sits. Slugs 
 whole layer, so a wikilink resolves by slug and does not care about the path. The layers, their
 names, and their rules never change with any declaration.
 
+**Commits.** Part 1 also declares whether you commit your own work — `none` by default. This
+command writes only a changelog entry; at `per-run` or `per-file`, stage that file alone, and
+never push.
+
 ## Honest scope
 
 Every check here runs by reading files and reasoning about them. There is no program, and

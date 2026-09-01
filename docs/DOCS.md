@@ -347,6 +347,39 @@ secret is already in context, and a partial summary normalizes the leak.
 These exclusions are instructions, not enforcement. Nothing in a Markdown file can stop an agent
 from reading a path.
 
+## Commits
+
+Whether the agent commits its own work, declared here and nowhere else:
+
+> **Commits: `none`**
+
+| Value | Behaviour |
+|---|---|
+| `none` | **The default.** The agent writes files and stops. You review the working tree and commit. |
+| `per-run` | One commit at the end of each command run, covering only what that run wrote. |
+| `per-file` | One commit per file written. Noisy, but every page is individually revertable. |
+
+**`none` is the default for a reason, and it is not timidity.** Reading `git diff` after a scan is
+how you find out where the agent's judgment differs from yours, and it is the feedback loop that
+turns a generic base into a good one. Auto-committing does not remove that review — it removes the
+*moment* that prompts it. Turn it on once the rules in this file have stopped changing, not before.
+
+Rules that hold at every setting:
+
+- **Stage only what the run wrote.** Named paths, never `git add -A` or `git add .`. A knowledge
+  base run must never sweep up unrelated work in progress, and someone with a half-finished branch
+  open is the normal case, not the exception.
+- **Never push.** Committing is local and reversible; pushing is neither. Pushing is always a human
+  act, whatever this setting says.
+- **Never commit when a security exclusion fired.** If a run finds excluded material in the source
+  layer, it stops and reports rather than committing anything from that run.
+- **Never commit a conflict.** Unresolved conflict markers are reported, never staged.
+- **One line, then the detail.** `docs(kb): scan — 3 sources, 7 pages` on the subject line; what
+  needs a human in the body. The changelog entry is still written either way — a commit message is
+  not a substitute for it, since one lives in git and the other lives in the base.
+- **The setting never suppresses a report.** Whatever gets committed, the run still says what it
+  did and what needs judgment. A commit is not a substitute for telling someone.
+
 ## Git conflicts
 
 A merge conflict inside `docs/` is a **semantic** conflict. Git knows a human wrote X and an agent
