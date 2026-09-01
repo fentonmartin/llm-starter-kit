@@ -43,83 +43,138 @@ question with an empty answer.
 
 ## 2. Interview
 
-Ask these. Batch them — do not drip one question at a time. Accept short answers and move on;
-you can propose sensible defaults and let the user correct them.
+**Five or six questions, and most of them depend on the answer to the first.** Ask question 1,
+then question 2, then only the block for the kind of project they said it is. Do not ask the other
+blocks' questions and do not read them out as options — a user answering *"what are your
+services?"* when they have no services is being interviewed by a form, not a colleague.
 
-1. **What is this knowledge base for?** Documenting this codebase, collecting outside research,
-   operating a running system, holding a library of documents, or a mix? This determines
-   everything else — it selects the preset in `docs/DOCS.md` Part 2 that you will build Part 1
-   from:
+Batch each block rather than dripping one question at a time. Accept short answers and move on;
+propose sensible defaults from the survey and let the user correct them.
 
-   | Answer | Preset |
-   |---|---|
-   | This codebase | *Preset: documenting a codebase* |
-   | Outside research, a reading pile | *Preset: outside research* |
-   | Running a system — incidents, runbooks, on-call | *Preset: operations and runbooks* |
-   | The documents *are* the project — a book, a spec set, a policy library, a pile of notes | *Preset: a document library* |
-   | A mix | Take the closest and rename its page types. Do not merge two presets. |
+### Question 1 — what kind of project is this?
 
-   Say which preset you are proposing and why, before asking question 2. It is the cheapest
-   correction the user will ever make, and getting it wrong means every page is shaped wrong.
+Everything else follows from this. It picks the preset in `docs/DOCS.md` Part 2 that you build
+Part 1 from, and it decides which block of questions comes next.
 
-   **Tell them what the preset does not change.** The folders, the page types, the front matter,
-   and every command are identical for all four — the preset only supplies the starting nouns and
-   rules. A user who thinks they are choosing a layout will worry about the choice far more than
-   it deserves, and will hesitate to change it later. It is a cheap decision, reversible at any
-   time: see *Changing the shape later* in Part 2.
-2. **Where will the source material live?** The mode from step 1 decides the shape of this
-   question.
+| Ask it like this | Preset | Then ask |
+|---|---|---|
+| **A codebase** — you want this project's own code documented | *documenting a codebase* | Block A |
+| **Documents you write** — a book, a spec set, a policy library, your own notes | *a document library* | Block B |
+| **A knowledge centre** — material collected from elsewhere: papers, articles, vendor docs, transcripts | *outside research* | Block C |
+| **A system you operate** — incidents, runbooks, on-call knowledge | *operations and runbooks* | Block D |
+| A mix | Take the closest and use its block. Do not merge two presets. | that one's block |
 
-   **Fresh start — a real choice, and the only layout decision the user makes.** Two options, and
-   nothing else. Put it to them plainly:
+Say which one you are proposing and why, from what the survey found, before you ask anything else.
+It is the cheapest correction the user will ever make, and getting it wrong means every page is
+shaped wrong.
 
-   > Where should I keep the material you want documented?
-   >
-   > **A. `docs/core-sources/`** *(default)* — everything lives under `docs/`, so the whole
-   > knowledge base is one folder you can copy, move, or open in Obsidian as a vault.
-   >
-   > **B. `sources/`** — a folder at the top of the project, beside `docs/`. More visible, and
-   > easier to drag files into without going two levels down.
-   >
-   > Same behaviour either way: I read it, I never write to it. It's a one-line change later if
-   > you pick wrong.
+**Say what the preset does not change**, in one line. The folders, the page types, the front
+matter and every command are identical for all four; the preset supplies the starting nouns and a
+few rules. A user who thinks they are choosing a layout will weigh the decision far more heavily
+than it deserves and then hesitate to change it. It is reversible at any time — see *Changing the
+shape later* in Part 2.
+### Question 2 — where will the source material live?
 
-   Take **A** if they have no opinion. Take **B** without argument if they want it — the only
-   difference is how far down the folder sits, and someone who will actually drop files into a
-   visible folder beats a tidier tree they never fill.
+The mode from step 1 decides the shape of this question.
 
-   **Merge — usually not a question at all.** The material is already somewhere, and the answer
-   is to point at it rather than move it. State what you are doing:
+**Fresh start — a real choice, and the only layout decision the user makes.** Two options, and
+nothing else. Put it to them plainly:
 
-   > You already have 40 PDFs in `research-papers/`. I'll point the knowledge base at that folder
-   > rather than moving them — you keep filing them where you file them now, and the agent reads
-   > them there. It never writes to that folder either way.
+> Where should I keep the material you want documented?
+>
+> **A. `docs/core-sources/`** *(default)* — everything lives under `docs/`, so the whole
+> knowledge base is one folder you can copy, move, or open in Obsidian as a vault.
+>
+> **B. `sources/`** — a folder at the top of the project, beside `docs/`. More visible, and
+> easier to drag files into without going two levels down.
+>
+> Same behaviour either way: I read it, I never write to it. It's a one-line change later if
+> you pick wrong.
 
-   Only ask when the survey found material in two or more places, because there is exactly one
-   source location and someone has to choose which. Say what you would pick and why.
+Take **A** if they have no opinion. Take **B** without argument if they want it — the only
+difference is how far down the folder sits, and someone who will actually drop files into a
+visible folder beats a tidier tree they never fill.
 
-   Two follow-ups in either mode. Is anything in there they would rather the agent not read? And
-   is there material that should be **cited but not filed** — a source tree, or docs published by
-   a generator — which becomes *read-in-place sources* instead.
+**Merge — usually not a question at all.** The material is already somewhere, and the answer
+is to point at it rather than move it. State what you are doing:
 
-   **Never ask about the root.** It is `docs/`, in both modes. The one exception is decided by what
-   you found rather than by the user: a `docs/` already built by a site generator means the base
-   goes to `docs/kb/`, and you say so rather than offering a choice. Asking invites a decision with
-   no upside and a migration if it goes wrong.
-3. **Who reads it?** You alone, a team, future contributors, or mostly AI agents working in
-   this repo? Answers change how much context each page must restate.
-4. **What are the recurring things worth a page each?** For code: services, modules, database
-   tables, endpoints, environment variables, architectural decisions. For research: people,
-   organizations, papers, concepts, datasets. Get their actual nouns, not the generic list.
-5. **What must never be got wrong?** Domain rules, terms with a specific local meaning, things
-   previous documentation kept getting wrong. These become the project-specific rules.
-6. **What is out of scope, and what must never be read?** Vendored code, generated files,
-   archives — and separately, anything sensitive. The security exclusions in `docs/DOCS.md`
-   cover the usual suspects (`.env*`, `*.pem`, `secrets/`); ask what this project has *beyond*
-   them. A customer export, a licensed corpus, an HR folder.
-7. **What would you be most embarrassed to get wrong?** Two or three questions the knowledge
-   base must answer correctly. These become `docs/scenarios/questions.yaml`, and they are worth
-   more than they look — including the ones the answer to is *"nobody knows yet."*
+> You already have 40 PDFs in `research-papers/`. I'll point the knowledge base at that folder
+> rather than moving them — you keep filing them where you file them now, and the agent reads
+> them there. It never writes to that folder either way.
+
+Only ask when the survey found material in two or more places, because there is exactly one
+source location and someone has to choose which. Say what you would pick and why.
+
+Two follow-ups in either mode. Is anything in there they would rather the agent not read? And
+is there material that should be **cited but not filed** — a source tree, or docs published by
+a generator — which becomes *read-in-place sources* instead.
+
+**Never ask about the root.** It is `docs/`, in both modes. The one exception is decided by what
+you found rather than by the user: a `docs/` already built by a site generator means the base
+goes to `docs/kb/`, and you say so rather than offering a choice. Asking invites a decision with
+no upside and a migration if it goes wrong.
+### Ask one block, not all four
+
+Each block is two questions. The first gets the nouns that become the **page types**; the second
+gets the failure this particular kind of base has, which becomes the **project-specific rules**.
+Both want their actual answers, not a category — *"one page per Postgres table and one per
+background job"* is usable, *"the usual code things"* is not.
+
+#### Block A — a codebase
+
+1. **What are the units someone would look up by name?** Services, modules, packages, database
+   tables, endpoints, environment variables, background jobs, feature flags. Which of those does
+   this project actually have, and what does it call them?
+2. **What do you keep re-explaining, and what does the code do that the docs get wrong?** The
+   decisions re-litigated every few months, and the places where a comment or a README says one
+   thing and the code does another. The first becomes decision pages; the second becomes the rule
+   that intended behaviour is never written as actual behaviour.
+
+#### Block B — documents you write
+
+1. **What are the documents, and what subjects cut across them?** The subjects matter more than
+   the file list here: a document library is navigated by topic, and if you cannot name four or
+   five subjects the base will end up a filing cabinet of summaries.
+2. **Which terms mean something specific here, and who decides when two documents disagree?**
+   Local vocabulary drifts before facts do, so those terms become entity pages. And a library of
+   your own documents produces real contradictions rather than differences of opinion — knowing
+   whose ruling settles one is what makes them resolvable.
+
+#### Block C — a knowledge centre
+
+1. **What are you actually trying to answer, and whose material is this?** The standing questions
+   the collection exists to answer, and who produced the material — vendors, researchers,
+   competitors, conference talks. Both shape the topic pages, and the second decides how much
+   weight each source carries.
+2. **Which sources do you not trust, and what gets quoted at you as fact?** Marketing numbers,
+   benchmarks with no method, a vendor's claims about a competitor. These become the attribution
+   rules — the ones that keep *"the vendor reports 40% lower latency"* from becoming *"latency is
+   40% lower."*
+
+#### Block D — a system you operate
+
+1. **Which systems, and what do people get paged for?** Services, queues, alerts, dashboards,
+   config keys, on-call rotas — and the failures that actually wake someone up. The pages worth
+   writing are the ones someone reads at 3am.
+2. **Which values drift, and where does the spec differ from production?** Timeouts, TTLs, limits,
+   replica counts — anything with a number that changed without the document changing. This is the
+   preset's central risk, and the answers become the rules about units, as-of dates, and never
+   stating a designed value as a running one.
+
+### Then two questions everyone gets
+
+1. **What must never be read?** The security exclusions in `docs/DOCS.md` already cover the usual
+   suspects — `.env*`, `*.pem`, `secrets/`. Ask what this project has *beyond* them: a customer
+   export, a licensed corpus, an HR folder. Ask separately what is merely out of scope — vendored
+   code, generated files, archives — since one is a security rule and the other is a filter.
+2. **What would you be most embarrassed to get wrong?** Two or three questions the base must
+   answer correctly. These become `docs/scenarios/questions.yaml`, and they are worth more than
+   they look — including, especially, the ones whose honest answer is *"nobody knows yet."*
+
+**On who reads it:** do not ask. Infer it. A solo project, a team repo and a base that mostly
+serves agents differ in how much context each page restates, and the survey plus the answers above
+tell you which this is. If it genuinely matters and you cannot tell, fold it into your proposal —
+*"I'll write these for someone new to the project"* — and let them correct you.
 
 If the user gives thin answers, propose a concrete draft from what you found in step 1 and ask
 them to correct it. A draft they edit beats an interrogation they abandon.
@@ -147,7 +202,7 @@ free to add later, so grouping an empty base is guessing at a shape it has not g
 Mention that they exist when you report the tree; do not build them.
 
 **This is the tree for every project, whatever the preset.** Do not add a folder because the
-project seems to want one, do not drop `scenarios/` because the user had no answer to question 7,
+project seems to want one, do not drop `scenarios/` because the the user had no answer to the scenarios question,
 and do not rename a layer to match the project's vocabulary — the vocabulary goes in the page
 types table, where it is meant to. Say this to the user when you show them the tree: the shape is
 fixed, the words in it are theirs.
@@ -245,13 +300,14 @@ Start from the kit's `docs/DOCS.md`. **Apply the preset chosen in question 1**, 
 three parts of Part 1 with what you learned:
 
 - **Page types** — start from the preset's table, then replace its nouns with this project's
-  actual ones from question 4. If they said "one page per service and one per Postgres table,"
-  say exactly that. The preset is a starting shape, not an answer.
+  actual ones, from the first question of the block you asked. If they said "one page per service
+  and one per Postgres table," say exactly that. The preset is a starting shape, not an answer.
 - **Project-specific rules** — take the preset's suggested rules as a base, keep the ones that
-  apply, and add rules from questions 5 and 6 until you have four to six. Replace the shipped
-  defaults entirely. Vague rules do nothing; each one should be checkable.
-- **Out of scope** — list the paths from question 6, plus the preset's. Append this project's
-  sensitive paths to the security exclusion list rather than replacing what is already there.
+  apply, then add rules from the block's second question and from the security question until you
+  have four to six. Replace the shipped defaults entirely. Vague rules do nothing; each one should
+  be checkable.
+- **Out of scope** — list the paths from the security question, plus the preset's. Append this
+  project's sensitive paths to the security exclusion list rather than replacing what is there.
 - **The declarations** — root, source location and index, per step 3. The codebase preset's
   `src/**` belongs in read-in-place, not in the source folder.
 
@@ -272,9 +328,9 @@ contract, they are what make the kit work, and they are not the place for local 
 project genuinely needs one changed, change it deliberately and note it in
 `docs/CHANGELOG.md` — do not quietly trim it because the file is long.
 
-Then write `docs/scenarios/questions.yaml` from interview question 7 — three to five cases, in the
+Then write `docs/scenarios/questions.yaml` from the scenarios question — three to five cases, in the
 format the shipped template documents. Include at least one `expect_state: unknown`. If the
-user had no answer to question 7, leave the file with `questions: []` and its comments intact,
+the user had no answer to the scenarios question, leave the file with `questions: []` and its comments intact,
 and say it is theirs to fill in.
 
 For a codebase, a good starting shape:
@@ -412,7 +468,7 @@ breakage.
 ### Step 5 — scenarios, optional
 
 `docs/scenarios/questions.yaml` is new and empty by default. Offer to write three to five
-scenarios from interview question 7 — including at least one `expect_state: unknown` — or leave
+scenarios from the scenarios question — including at least one `expect_state: unknown` — or leave
 the template and say it is theirs to fill in.
 
 ### Finish

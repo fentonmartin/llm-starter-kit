@@ -139,26 +139,41 @@ about X" usually routes correctly on its own.
 ```
 
 It reads your README, your manifest, and your layout, tells you whether this is a
-[fresh start or a merge](#fresh-start-or-merge), then asks:
+[fresh start or a merge](#fresh-start-or-merge), then asks **five or six questions — and most of
+them depend on your first answer.**
 
-> - What is this knowledge base for: this codebase, outside research, a running system, or a
->   library of documents?
-> - Where should sources go — `docs/core-sources/` or a top-level `sources/`? *(fresh start only;
->   on a merge it points at what you already have)*
-> - Who reads it — you, your team, or mostly agents working in this repo?
-> - What recurring things deserve a page each? *(your nouns: services, tables, endpoints…)*
-> - What must never be got wrong?
-> - What's out of scope, and what must never be read?
-> - What would you be most embarrassed to get wrong? *(these become your scenarios)*
+Two for everyone:
+
+> - **What kind of project is this?** A codebase · documents you write · a knowledge centre of
+>   material from elsewhere · a system you operate
+> - **Where should sources go** — `docs/core-sources/` or a top-level `sources/`? *(fresh start
+>   only; a merge points at what you already have)*
+
+Then **two questions in your own vocabulary**, not a generic checklist. You're only asked the pair
+that fits:
+
+| If you said… | You're asked |
+|:--|:--|
+| **A codebase** | What units would someone look up by name — services, tables, endpoints, jobs? · What do you keep re-explaining, and where does the code contradict the docs? |
+| **Documents you write** | What are the documents, and what subjects cut across them? · Which terms mean something specific here, and who rules when two documents disagree? |
+| **A knowledge centre** | What are you actually trying to answer, and whose material is this? · Which sources don't you trust, and what gets quoted at you as fact? |
+| **A system you operate** | Which systems, and what do people get paged for? · Which values drift, and where does the spec differ from production? |
+
+And two at the end:
+
+> - **What must never be read?** *(beyond the built-in `.env*`, `*.pem`, `secrets/`)*
+> - **What would you be most embarrassed to get wrong?** *(these become your scenarios)*
+
+It doesn't ask who reads it — that's inferred from your repo, and it'll tell you what it assumed.
 
 The first answer picks a **preset** — the starting shape for your page types and rules:
 
-| If you're documenting… | Preset | Pages are one per… |
+| If you said… | Preset | Pages are one per… |
 |:--|:--|:--|
-| this codebase | **codebase** | module · decision or flow · service, table, endpoint, env var |
-| papers, articles, vendor docs | **outside research** | paper · question or debate · person, lab, model, dataset |
-| a running system, incidents, on-call | **operations** | incident or runbook · procedure or failure mode · service, alert, config key |
-| documents that *are* the project — a book, a spec set, a policy library, your notes | **document library** | document · subject or theme · person, org, product, term |
+| **a codebase** | **codebase** | module · decision or flow · service, table, endpoint, env var |
+| **documents you write** | **document library** | document · subject or theme · person, org, product, term |
+| **a knowledge centre** — papers, articles, vendor docs | **outside research** | paper · question or debate · person, lab, model, dataset |
+| **a system you operate** — incidents, on-call | **operations** | incident or runbook · procedure or failure mode · service, alert, config key |
 
 **Same structure for all four.** Same folders, same three page types, same front matter, same
 claim types, same lifecycle, same five commands. A preset is not a layout — it supplies the

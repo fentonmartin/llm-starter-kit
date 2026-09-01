@@ -35,6 +35,23 @@ included, and subfolders are optional everywhere.
   a visible folder beats a tidier tree they never fill, so the second option is offered without
   argument.
 
+- **The interview branches by use case instead of asking everyone everything.** Two questions for
+  everyone — what kind of project this is, and where sources go — then **two questions in that
+  kind of project's own vocabulary**, and two at the end. A codebase is asked what units someone
+  looks up by name and where the code contradicts the docs; a document library is asked what
+  subjects cut across the documents and who rules when two disagree; a knowledge centre is asked
+  what it is trying to answer and which sources it does not trust; an operations base is asked
+  what people get paged for and which values drift.
+
+  Previously every project got the same seven generic questions, which produced generic answers
+  and then a generic `DOCS.md` — the failure this skill says up front is the main way it fails.
+  *"What recurring things deserve a page?"* invites a shrug; *"what do you keep re-explaining?"*
+  gets a real list. The other blocks are never read out, because a user answering *"what are your
+  services?"* when they have no services is being interviewed by a form.
+
+  *"Who reads it"* is no longer asked at all — it is inferred from the repo and stated as an
+  assumption the user can correct.
+
 - **A tutorial — *your first hour*.** Six steps ending in a working base: install, add one source,
   read the diff, ask a question, write scenarios, lint. Deliberately one source at step 2, because
   step 3 is reading the agent's judgment line by line and that is tractable for one document and
