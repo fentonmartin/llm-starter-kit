@@ -10,18 +10,26 @@ A knowledge base rots quietly. This is the sweep that catches it.
 Read `docs/DOCS.md` **Part 1** first — it defines every rule you are checking against, and it is
 complete on its own. Part 2 is examples and rationale, read on demand.
 
-**The root.** Every path in this skill is written as `docs/…`. `docs/DOCS.md` Part 1 opens by
-declaring the knowledge base root; if it names anything other than `docs/`, read every `docs/…`
-path below as that folder instead. If the user passed a root as an argument, read `<root>/DOCS.md`
-and use that base only. The layers, their names, and their rules never change with the root.
+**The root and the source folder.** Every path in this skill is written as `docs/…`, and the
+source layer as `docs/core-sources/`. Both are declarations in `docs/DOCS.md` Part 1, not
+constants:
+
+- If Part 1 names a root other than `docs/`, read every `docs/…` path below as that folder.
+- If it names a source folder other than `docs/core-sources/`, read every `docs/core-sources/`
+  below as that folder — including when it sits outside the root. It is immutable to you wherever
+  it is, and Part 1 may also list *read-in-place sources*, which you cite but never file.
+- If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
+
+The layers, their names, and their rules never change with either declaration.
 
 ## Scope
 
 "Pages" means files in `docs/summaries/`, `docs/topics/`, and `docs/entities/`.
 
-**Every check below skips `docs/core-sources/`.** It is raw material, not pages — exempt from front
+**Every check below skips the source folder.** It is raw material, not pages — exempt from front
 matter, slugs, wikilinks, and page types. Only checks 13 and 14 look inside it, and only the
-`YYMMDD` file-name rule applies there. Also skip the files at the top of `docs/`: `DOCS.md`,
+`YYMMDD` file-name rule applies there. Read-in-place paths are skipped by every check including
+13 and 14; they are cited, not governed. Also skip the files at the top of `docs/`: `DOCS.md`,
 `AGENTS.md`, `README.md`, `CHANGELOG.md`.
 
 ## Severity
@@ -54,9 +62,10 @@ lint, gate on ERROR only.
 | 10 | **Gaps** | INFO | Wikilinks pointing at pages that do not exist. Group by how many pages link to each — a target with five inbound links is a real hole. |
 | 11 | **Contradictions** | INFO | Existing contradiction callouts still open. Plus new ones: claims across pages that conflict on the same fact. |
 | 12 | **Duplicates** | INFO | Pages with heavily overlapping titles or subject matter. |
-| 13 | **Unread sources** | WARNING | Files in `docs/core-sources/` with no summary page. |
-| 14 | **Excluded material** | ERROR | Anything in `docs/core-sources/` matching the security exclusions in `docs/DOCS.md`, and any page that quotes from one. |
-| 15 | **Stale layout paths** | WARNING | A `docs/sources/` folder, or `sources:` values and citations pointing at `docs/sources/` — the base predates the 2.0 rename. Also any `sources:` value or citation pointing outside the root declared in `docs/DOCS.md` Part 1, which means the base moved root and the paths have not caught up. See below. |
+| 13 | **Unread sources** | WARNING | Files in the declared source folder with no summary page. Read-in-place paths are skipped — they produce no summaries by design. |
+| 14 | **Excluded material** | ERROR | Anything in the declared source folder matching the security exclusions in `docs/DOCS.md`, and any page that quotes from one. |
+| 15 | **Stale layout paths** | WARNING | A `docs/sources/` folder, or `sources:` values and citations pointing at `docs/sources/` — the base predates the 2.0 rename. Also any `sources:` value or citation that does not match the root and source folder declared in `docs/DOCS.md` Part 1, which means one of them moved and the paths have not caught up. See below. |
+| 16 | **Source declaration** | ERROR | Part 1 declares a source folder that does not exist, declares more than one, or declares one that overlaps `summaries/`, `topics/`, or `entities/`. See below. |
 
 ### Check 1 in detail — do not crash on bad YAML
 
@@ -103,7 +112,7 @@ ERROR  docs/topics/authentication.md
        Not checked: this page was skipped by checks 2-15.
 ```
 
-### Check 15 in detail — migrating a 1.x base
+### Check 15 in detail — a 1.x base, or a moved path
 
 Bases built on `1.x` keep their material in `docs/sources/`. Nothing about them is wrong; the
 folder was renamed in `2.0`. Report it once, at the top, and offer the migration:
@@ -126,11 +135,31 @@ pages* after the folder has moved is mechanical, and belongs in the fix-silently
 If both `docs/sources/` and `docs/core-sources/` exist, do not merge them. Report it and stop:
 a half-finished migration needs a human to say which file wins.
 
-**The same check catches a root move.** If Part 1 declares a root other than `docs/` — `docs/kb/`,
-say — then `sources:` values and citations still written as `docs/core-sources/…` are stale in
-exactly the same way, and rewriting them to the declared root is equally mechanical. Rewrite them
-and say how many. Do not move any folder to make the paths true; the declared root wins, and if
-the user declared it by mistake that is a one-line fix in `DOCS.md`, not a repository move.
+**The same check catches a moved root or source folder.** If Part 1 declares a root other than
+`docs/` — `docs/kb/`, say — or a source folder other than `docs/core-sources/`, then `sources:`
+values and citations still written the old way are stale in exactly the same way, and rewriting
+them to the declared paths is equally mechanical. Rewrite them and say how many. Do not move any
+folder to make the paths true; the declaration wins, and if the user declared it by mistake that
+is a one-line fix in `DOCS.md`, not a repository move.
+
+### Check 16 in detail — the source declaration
+
+This one is worth an ERROR because everything downstream is silently wrong when it is broken, and
+nothing else notices.
+
+- **The folder does not exist.** Usually a typo, sometimes a folder that was moved without
+  updating Part 1. Report the declared path and what you found near it; do not create the folder
+  and do not guess which one was meant.
+- **More than one folder declared.** Report both and stop. One summary page per source file is
+  the backbone of provenance, and you cannot maintain it across two folders once a file name
+  repeats. The fix is a human decision: file everything into one, or move the extra to
+  *read-in-place sources*.
+- **The declared folder contains a page layer**, or is a page layer, or is the root itself. This
+  makes the agent's own output look like source material. Report it and stop — a scan run against
+  this declaration will start summarizing summaries.
+
+Never fix any of these silently. Each one means the contract says something its author did not
+intend, and writing to the base before that is settled makes it worse.
 
 ## What to fix, what to report
 
@@ -185,7 +214,8 @@ If everything is clean, say so in one line. Do not manufacture findings.
 
 ## Rules
 
-- Never edit, rename, or delete anything under `docs/core-sources/`.
+- Never edit, rename, or delete anything under the declared source folder, or any read-in-place
+  path. Both are human-owned; the declaration does not change that, it is what establishes it.
 - Never resolve a contradiction. Surfacing it is the whole point of the check.
 - Never rewrite front matter you could not parse.
 - Never promote a page to `claim_type: decision` or `status: superseded` to make a finding go

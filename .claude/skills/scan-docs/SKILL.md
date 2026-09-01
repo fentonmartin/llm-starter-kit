@@ -5,13 +5,20 @@ description: Read new or changed files in docs/core-sources/ and fold them into 
 
 # Scan
 
-Turn raw material in `docs/core-sources/` into linked pages in `docs/`. This is the only operation that
-creates summary pages.
+Turn raw material in the source folder into linked pages in `docs/`. This is the only operation
+that creates summary pages.
 
-**The root.** Every path in this skill is written as `docs/…`. `docs/DOCS.md` Part 1 opens by
-declaring the knowledge base root; if it names anything other than `docs/`, read every `docs/…`
-path below as that folder instead. If the user passed a root as an argument, read `<root>/DOCS.md`
-and use that base only. The layers, their names, and their rules never change with the root.
+**The root and the source folder.** Every path in this skill is written as `docs/…`, and the
+source layer as `docs/core-sources/`. Both are declarations in `docs/DOCS.md` Part 1, not
+constants:
+
+- If Part 1 names a root other than `docs/`, read every `docs/…` path below as that folder.
+- If it names a source folder other than `docs/core-sources/`, read every `docs/core-sources/`
+  below as that folder — including when it sits outside the root. It is immutable to you wherever
+  it is, and Part 1 may also list *read-in-place sources*, which you cite but never file.
+- If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
+
+The layers, their names, and their rules never change with either declaration.
 
 ## Before you start
 
@@ -23,8 +30,12 @@ and use that base only. The layers, their names, and their rules never change wi
    the index for one that covers the same ground.
 3. Determine the work set:
    - Explicit file(s) named by the user, or
-   - Everything in `docs/core-sources/` with no corresponding `docs/summaries/<slug>.md`, or
+   - Everything in the declared source folder with no corresponding `docs/summaries/<slug>.md`, or
    - Files whose mtime is newer than their summary's `updated` field.
+
+Read-in-place paths are never in the work set by themselves — they produce no summary pages, and
+sweeping a source tree every scan is how a scan run never finishes. Read them when a source you
+are already summarizing points into them, or when the user names one.
 
 If the work set is empty, say so and stop. Do not invent work.
 
@@ -166,7 +177,8 @@ Contradictions and low-confidence claims go in the report, not just in the files
 
 ## Rules
 
-- Never edit, rename, or delete anything under `docs/core-sources/`.
+- Never edit, rename, or delete anything under the declared source folder, or any read-in-place
+  path. Both are human-owned; the declaration does not change that, it is what establishes it.
 - Never read a path excluded by the security section of `docs/DOCS.md`.
 - Never assert something the source does not support. `confidence: low` is a valid answer.
 - Never invent provenance — no unseen page numbers, no unverified line ranges, no guessed

@@ -19,10 +19,17 @@ Read `docs/DOCS.md` **Part 1** in full, and `docs/README.md`. Part 2 is examples
 read it only if you need it. `DOCS.md` overrides anything here: page types, link style,
 retrieval scope, security exclusions, and the project's own rules.
 
-**The root.** Every path in this skill is written as `docs/…`. `docs/DOCS.md` Part 1 opens by
-declaring the knowledge base root; if it names anything other than `docs/`, read every `docs/…`
-path below as that folder instead. If the user passed a root as an argument, read `<root>/DOCS.md`
-and use that base only. The layers, their names, and their rules never change with the root.
+**The root and the source folder.** Every path in this skill is written as `docs/…`, and the
+source layer as `docs/core-sources/`. Both are declarations in `docs/DOCS.md` Part 1, not
+constants:
+
+- If Part 1 names a root other than `docs/`, read every `docs/…` path below as that folder.
+- If it names a source folder other than `docs/core-sources/`, read every `docs/core-sources/`
+  below as that folder — including when it sits outside the root. It is immutable to you wherever
+  it is, and Part 1 may also list *read-in-place sources*, which you cite but never file.
+- If the user passed a root as an argument, read `<root>/DOCS.md` and use that base only.
+
+The layers, their names, and their rules never change with either declaration.
 
 ### 2. Select candidates — never load the whole base
 
@@ -46,7 +53,7 @@ Honor explicit scope when given, and say what you scoped to:
 Skip pages with `status: superseded` unless the user is asking
 about history. Include `status: stale` pages, and label them in the answer.
 
-Drop to `docs/core-sources/` **only** when the pages are thin, the question needs a verbatim quote,
+Drop to the source folder **only** when the pages are thin, the question needs a verbatim quote,
 or you suspect a page is stale. Say so in the answer when you do.
 
 *This step is the retriever. It is deliberately replaceable — a project that later indexes
