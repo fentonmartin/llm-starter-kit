@@ -7,7 +7,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning is [semantic](https://semver.org/spec/v2.0.0.html), applied to the schema and the
 command surface: a breaking change is one that invalidates an existing knowledge base.
 
-## [2.3.0] — 2026-09-01
+## [2.1.0] — 2026-09-01
 
 One structure for every use case, and a kit you can actually be shown how to use.
 
@@ -20,10 +20,6 @@ folder name written down where it can be read.
 **Nothing breaks.** No folder, field, command or check was renamed or removed. Every declaration
 defaults to what an existing base already uses — `docs/`, `docs/core-sources/`, `docs/README.md`
 — so a `2.0` base is current as it stands, and subfolders are optional everywhere.
-
-> `2.1.0` and `2.2.0` were never released. They existed as intermediate numbers while this work
-> was in progress and are folded in here, which is why the log goes `2.0.0` → `2.3.0`. Upgrading
-> is `2.0` → `2.3`, and there is nothing to migrate.
 
 ### Added — shape and setup
 
@@ -518,6 +514,6 @@ Initial release.
 - Contradiction callouts, and the rule that contradictions are never silently resolved.
 - `AGENTS.md` as the entry point for any filesystem-capable agent.
 
-[2.3.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.3.0
+[2.1.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.1.0
 [2.0.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v2.0.0
 [1.0.0]: https://github.com/fentonmartin/llm-starter-kit/releases/tag/v1.0.0

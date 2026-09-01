@@ -404,9 +404,9 @@ Stop at any point they want to review.
 | No `Part 1` / `Part 2` headings, front matter without `status` and `claim_type` | `1.x` |
 | `docs/sources/` still in the layers table | `1.x` |
 | `Part 1 — The contract` present, no declarations block under `## Layers` | `2.0` |
-| A declarations block and a `## Commits` section | `2.3` — already current |
+| A declarations block and a `## Commits` section | `2.1` — already current |
 
-**From `2.0` to `2.3` there is nothing to migrate.** Replace the kit files (step 1) and stop.
+**From `2.0` to `2.1` there is nothing to migrate.** Replace the kit files (step 1) and stop.
 Their `docs/` is already correct: every declaration defaults to exactly where their base already
 keeps things, `docs/README.md` included. Skip steps 2, 4 and 5 — there is no folder to rename and
 no lint sweep to run. Then do step 3, which is the part that matters here, and offer these without

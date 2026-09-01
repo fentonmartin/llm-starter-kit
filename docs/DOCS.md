@@ -478,7 +478,7 @@ readme, and two cases make the accurate name the necessary one:
   alone.
 
 Since almost every project has a root README, `INDEX.md` is the usual outcome. `README.md` is
-still valid and is what bases built before `2.3` use: either name works, the declaration settles
+still valid and is what bases built before `2.1` use: either name works, the declaration settles
 which, and nothing in this contract treats them differently. There is no reason to rename an
 existing one except preference.
 
