@@ -50,20 +50,29 @@ you can propose sensible defaults and let the user correct them.
    rules. A user who thinks they are choosing a layout will worry about the choice far more than
    it deserves, and will hesitate to change it later. It is a cheap decision, reversible at any
    time: see *Changing the shape later* in Part 2.
-2. **Where does the material live?** The default is a new `docs/core-sources/` that they fill.
-   Ask only if step 1 found material already organized somewhere — `research-papers/`, `notes/`,
-   `contracts/`, a published docs folder. Propose pointing at it rather than moving it:
+2. **Where does the material live?** Three answers, and step 1 usually tells you which before you
+   ask:
+
+   | What the survey found | Declare | Ask? |
+   |---|---|---|
+   | Nothing filed yet | `docs/core-sources/` | No. Say what you are doing and move on. |
+   | Material already organized in a folder — `research-papers/`, `notes/`, `contracts/`, a published docs folder | that folder | Yes, propose it. |
+   | Loose documents at the top of the repo and little else | `./*` | Yes, and name the root files you would exclude. |
+
+   When there is something to point at, propose pointing rather than moving:
 
    > You already have 40 PDFs in `research-papers/`. I can point the knowledge base at that
    > folder instead of moving them into `docs/core-sources/` — you keep filing them where you
    > file them now, and the agent reads them there. It never writes to that folder either way.
 
-   Two follow-ups if they say yes. Is anything in there something they'd rather the agent not
-   read? And is there material that should be **cited but not filed** — a source tree, or docs
-   published by a generator — which becomes *read-in-place sources* instead.
+   Two follow-ups if they say yes. Is anything in there they would rather the agent not read? And
+   is there material that should be **cited but not filed** — a source tree, or docs published by a
+   generator — which becomes *read-in-place sources* instead.
 
-   Do not offer this when there is nothing to point at. A new project gets `docs/core-sources/`
-   and no question.
+   **Never ask about the root.** It is `docs/`. The one exception is decided by what you found, not
+   by the user: a `docs/` already built by a site generator means the base goes to `docs/kb/`, and
+   you say so rather than offering a choice. Asking invites a decision with no upside and a
+   migration if it is wrong.
 3. **Who reads it?** You alone, a team, future contributors, or mostly AI agents working in
    this repo? Answers change how much context each page must restate.
 4. **What are the recurring things worth a page each?** For code: services, modules, database
@@ -89,9 +98,9 @@ Create, without overwriting anything that exists:
 ```
 docs/
   DOCS.md               written from the interview — see below
-  README.md             the index, empty to start
+  INDEX.md              the index, empty to start — or README.md, see below
   CHANGELOG.md          the log, empty to start
-  core-sources/         empty, for raw material
+  core-sources/         empty, for raw material — omit if question 2 pointed elsewhere
   summaries/  topics/  entities/
   scenarios/questions.yaml  what this base must answer — empty to start
 ```
@@ -99,29 +108,44 @@ docs/
 Five files and five folders. Nothing else — the schema carries the rules, so there is no
 second guidance file to drift out of sync with it.
 
+Leave the page layers flat. Subfolders are worth it past roughly thirty pages in a layer and are
+free to add later, so grouping an empty base is guessing at a shape it has not grown into yet.
+Mention that they exist when you report the tree; do not build them.
+
 **This is the tree for every project, whatever the preset.** Do not add a folder because the
 project seems to want one, do not drop `scenarios/` because the user had no answer to question 7,
 and do not rename a layer to match the project's vocabulary — the vocabulary goes in the page
 types table, where it is meant to. Say this to the user when you show them the tree: the shape is
 fixed, the words in it are theirs.
 
-**The root.** Scaffold at `docs/` unless one of these applies:
+Set all three declarations in Part 1 of the new `DOCS.md`, and say what you set them to. That block
+is the only place the paths are declared; a path you used but did not declare is the one mistake
+here that looks like it worked.
 
-| Situation | Root |
-|---|---|
-| Normal — anything else | `docs/` |
-| The project's `docs/` is built by a site generator (`mkdocs.yml`, `docusaurus.config.js`, `book.toml`) | `docs/kb/` — see step 4 |
-| The user asked for a second, separate knowledge base in this project | the root they named |
+**Root — decided by you, never asked.** `docs/`, unless the project's `docs/` is built by a site
+generator (`mkdocs.yml`, `docusaurus.config.js`, `book.toml`), in which case `docs/kb/` — see step
+4. A user who explicitly asked for a second, separate base gets the root they named.
 
-**The source folder.** Create `core-sources/` under the root and declare it, unless question 2
-pointed at an existing folder — then create nothing, and declare that folder instead. Record any
-read-in-place paths from the same question in Part 1. Never point the declaration at a folder the
-agent writes to, and never at more than one folder.
+**Source folder — from question 2.** Create `core-sources/` under the root only when question 2
+came out as the default; when it pointed at an existing folder or at `./*`, create nothing and
+declare that instead. Record any read-in-place paths in Part 1 too. Never declare a folder the
+agent writes to, and never more than one location.
 
-If either declaration is anything but the default, **set it in Part 1 of the new `DOCS.md`** and
-say so in your report. Those two lines are the only place the paths are declared; without them the
-contract and the four other skills still point at `docs/` and `docs/core-sources/`, and nothing
-will work.
+**Index — decided by a rule.** `docs/INDEX.md`. The file is an index, not a readme, and almost
+every project has a root `README.md` that a second one would compete with. Use `docs/README.md`
+only when the project has no root README of its own and nothing else claims the name.
+
+If a `docs/README.md` already exists and reads as a readme — prose for people, not a page list —
+leave it exactly as it is and put the index in `INDEX.md` alongside it.
+
+Say which you chose and why in one line; it is the kind of thing a user notices later and wonders
+about.
+
+**The project's root `README.md` is the front door, and the base should be visible from it.** Add
+one short section — what the knowledge base covers, where it lives, and the five commands. If the
+project has no root README at all, write a minimal one: what the project is, in a line or two, and
+that section. Change nothing else in it, ever. It is the most-read file in the repository and it is
+not yours.
 
 Also copy the kit's root `AGENTS.md` if the project has none. If it already has one, **append a
 short section** pointing to `docs/DOCS.md` rather than replacing the file.
@@ -144,6 +168,8 @@ Classify every existing file, then act:
 | You cannot confidently classify it | Move it to `docs/core-sources/`. **This is the safe default** — nothing is lost, and the next scan will read it and produce proper pages. |
 | Generated output — API reference, coverage reports, build artifacts | Leave it exactly where it is. Note it in `DOCS.md` as out of scope. |
 | `README.md`, `CONTRIBUTING.md`, `LICENSE`, or anything the project's tooling reads by path | Leave it. Moving these breaks things. |
+| A `docs/README.md` that reads as a readme — an introduction for people, not a page list | Leave it. Declare the index as `docs/INDEX.md` and write the index there. |
+| A `docs/README.md` that is already a list of the folder's contents | Keep it as the index. Declare it, rewrite it in the index format, and say you did. |
 
 Rules while reorganizing:
 
@@ -175,8 +201,8 @@ three parts of Part 1 with what you learned:
   defaults entirely. Vague rules do nothing; each one should be checkable.
 - **Out of scope** — list the paths from question 6, plus the preset's. Append this project's
   sensitive paths to the security exclusion list rather than replacing what is already there.
-- **The source declaration and read-in-place paths** — from question 2, if they are not the
-  default. The codebase preset's `src/**` belongs in read-in-place, not in the source folder.
+- **The declarations** — root, source location and index, per step 3. The codebase preset's
+  `src/**` belongs in read-in-place, not in the source folder.
 
 Then **delete the whole `## Presets` section from Part 2**, including the preset you used and
 *Writing your own preset*. It is a menu for `init-docs`, not documentation for the project —
@@ -214,7 +240,9 @@ For a codebase, a good starting shape:
    left alone.
 2. Report to the user:
    - the tree you created
+   - **the three declarations**, and for the index, one line on why that name
    - every file you moved, and anything you deliberately did not touch
+   - the section you added to the project's root `README.md`
    - **the rules you wrote in `DOCS.md`, quoted** — ask them to read and correct these now,
      while it is cheap
 3. Tell them what to do next: put material in the source folder, then run `/scan-docs`. If you
@@ -243,15 +271,41 @@ Stop at any point they want to review.
 | `docs/sources/` still in the layers table | `1.x` |
 | `Part 1 — The contract` present, no `Root:` declaration under `## Layers` | `2.0` |
 | A `Root:` declaration but no `Source folder:` one | `2.1` |
-| Both declarations under `## Layers` | `2.2` — already current |
+| `Root:` and `Source folder:` but no `Index:` | `2.2` |
+| All three declarations under `## Layers` | `2.3` — already current |
 
-**From `2.0` or `2.1` to current there is nothing to migrate.** Replace the kit files (step 1) and
-stop. Their `docs/` is already correct: both declarations default to exactly where their base
-already keeps things. Offer, and do not do unasked, two optional touches: add the two declaration
-lines to their Part 1 so they are explicit, and mention what the newer versions added if they ever
-want it — the fourth preset and `Changing the shape later` in `2.1`, and pointing the base at
-material they already file elsewhere in `2.2`. Skip steps 2, 3 and 4 entirely — there is no folder
-to rename and no lint sweep to run.
+**From `2.x` to current there is nothing to migrate.** Replace the kit files (step 1) and stop.
+Their `docs/` is already correct: every declaration defaults to exactly where their base already
+keeps things, `docs/README.md` included. Skip steps 2, 4 and 5 — there is no folder to rename and
+no lint sweep to run. Then do step 3, which is the part that matters for a `2.x` upgrade, and offer
+these without doing them unasked:
+
+- add the missing declaration lines to Part 1, so all three are explicit;
+- add the knowledge-base section to the project's root `README.md` if it has none;
+- rename the index to `INDEX.md` if the project has a root README that competes with
+  `docs/README.md` — a `git mv`, a declaration change, and a lint run;
+- name what the newer versions added, in case they want it: the fourth preset and *Changing the
+  shape later* in `2.1`, pointing the base at material they already file elsewhere in `2.2`,
+  subfolder grouping and the structure rationale in `2.3`.
+
+### Step 0 — does the base still describe what it is for?
+
+**Every upgrade, including a `2.x` one.** A `DOCS.md` was written from an interview about a project
+that has since moved. Read their page types and project-specific rules against what the repository
+now looks like, and say what you notice:
+
+- Do the page types name things that still exist? A base whose entity type is *"one page per
+  microservice"* in a repo that consolidated to a monolith is describing a project that is gone.
+- Does the preset still fit? A codebase base that has filled up with vendor PDFs is really doing
+  outside research, and its rules are working against it.
+- Do the project-specific rules still bite? A rule nothing has violated in a year is either
+  well-internalized or obsolete, and the difference is worth a sentence.
+- Is anything in the base's own `CHANGELOG.md` a decision that should have become a rule?
+
+**Report; do not rewrite.** This is the one part of an upgrade that needs the user's judgment, and
+they are the only one who knows which drift was deliberate. Offer to make the changes they confirm,
+in the same pass as step 3. If nothing has drifted, say that in a line and move on — it is worth
+knowing.
 
 The steps below are the `1.x` → current path.
 
@@ -283,6 +337,8 @@ Copy the kit's `docs/DOCS.md` over theirs, then port back, verbatim:
 2. their **project-specific rules**
 3. their **out of scope** paths — appended to the shipped security exclusions, never replacing
    them
+4. their **declarations**, if any are not the default — and fill in any the old file did not have,
+   from where their base actually keeps things rather than from what the shipped file says
 
 Then delete every preset section, as in step 5 of an init.
 
@@ -311,7 +367,8 @@ the template and say it is theirs to fill in.
 ### Finish
 
 Append one `docs/CHANGELOG.md` entry recording the upgrade, then report: the version they moved
-from, the three sections you ported, the page count lint touched, and anything left open.
+from, what step 0 found about whether the base still describes the project, the three sections you
+ported, the page count lint touched, and anything left open.
 
 ## 8. Restructuring a base that has grown
 
@@ -361,6 +418,16 @@ the new base with its own citation, **not** by linking across roots.
 **Merging two bases.** `git mv` the second base's four layers into the first, port its
 project-specific rules into the survivor's Part 1 rather than discarding them, then lint. Expect
 duplicate findings: two bases worth merging were covering the same ground.
+
+**Grouping a layer into subfolders.** Worth proposing unasked once a layer passes roughly thirty
+pages, because that is when the index stops being scannable. Group by subject, two levels at most,
+and never by date or by type. Slugs do not change, so no wikilink breaks — but check for collisions
+first (lint check 17), since the whole risk here is two pages ending up with one slug in different
+folders. Summary pages move to mirror their sources' paths, not independently. Rebuild the index
+and lint.
+
+**Renaming the index.** `git mv docs/README.md docs/INDEX.md`, change the declaration, lint. Worth
+offering when a project's root README makes the second one confusing, which is most projects.
 
 **Moving or repointing the source folder.** If they are moving material, `git mv` it, change the
 declaration, and lint — check 15 rewrites the citations. If they are pointing at a folder that
