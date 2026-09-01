@@ -10,13 +10,14 @@ knowledge is marked as obsolete.
 
 `init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `test-docs`
 
-[![version](https://img.shields.io/badge/version-2.2.0-blue?style=flat-square)](CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-2.3.0-blue?style=flat-square)](CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-**Latest: `2.2.0`** — point the base at source material you already file somewhere, instead of
-moving it. [What changed](CHANGELOG.md#220--2026-09-01) · [Upgrading](#already-using-an-older-version)
+**Latest: `2.3.0`** — a hands-on tutorial, fewer setup questions, subfolder grouping, and the
+reasoning behind every folder name.
+[What changed](CHANGELOG.md#230--2026-09-01) · [Tutorial](#tutorial-your-first-hour) · [Upgrading](#already-using-an-older-version)
 
-[**Quick start**](#quick-start) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-human-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
+[**Quick start**](#quick-start) · [**Tutorial**](#tutorial-your-first-hour) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-human-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
 
 </div>
 
@@ -165,6 +166,35 @@ in your actual nouns, and deletes the rest.
 That means the choice is cheap and reversible. Picking wrong costs you a `DOCS.md` edit, not a
 migration — see [As the project grows](#as-the-project-grows).
 
+### What setup decides, and what it doesn't ask
+
+Only one question shapes the base: the preset. Everything else is either fixed or decided from what
+`/init-docs` finds in your repo.
+
+| | Who decides | What happens |
+|:--|:--|:--|
+| **The preset** | **You** | The one real question. Sets your page types and starting rules. |
+| **Where sources live** | You, if there's something to point at | Default `docs/core-sources/`. If you already file material somewhere — `research-papers/`, `notes/`, loose docs at the repo root — it points there instead of moving it. |
+| **The root folder** | The agent | Always `docs/`. The single exception: if your `docs/` is built by a site generator, the base goes to `docs/kb/` and your published docs become sources. You are told, not asked. |
+| **The index filename** | A rule | `docs/INDEX.md`, because it is an index and your project already has a root `README.md`. `docs/README.md` only when the project has none. |
+| **Your root `README.md`** | The agent | Gains one section saying the base exists and which commands read it. Nothing else in it is touched, ever. If you have no root README, you get a minimal one. |
+
+**On sources.** Three forms are valid, and there is exactly one source location — pointing at
+material you already file beats moving it into a folder this kit invented:
+
+```
+docs/core-sources/     the default: a folder inside the base
+research-papers/       any folder, anywhere, including outside the base
+./*                    loose documents at the top of the repo, non-recursive
+```
+
+Anything that should be *cited but not filed* — a source tree, generated docs — goes in
+**read-in-place sources** instead: no summary pages, and citations carry a commit hash.
+
+**On the index.** It's an index, not a readme: every page, once, grouped by type. `INDEX.md` says
+that, and it stops a second README competing with your project's real one. Either name works and
+the contract treats them identically.
+
 Out comes a `docs/` folder and a `docs/DOCS.md` **written for your project**, in your
 vocabulary.
 
@@ -195,7 +225,7 @@ vocabulary.
 BEFORE                          AFTER
 docs/                           docs/
 ├── architecture.md             ├── DOCS.md          ← the schema
-├── setup-guide.md              ├── README.md        ← the index
+├── setup-guide.md              ├── INDEX.md         ← the index
 ├── vendor-api-spec.pdf         ├── topics/
 └── old-notes.md                │   ├── architecture.md      ← kept, front matter added
                                 │   └── setup-guide.md
@@ -222,7 +252,7 @@ line there, and treats your published docs as sources.
 Commit first, then paste this into your agent:
 
 ```
-Upgrade the llm-starter-kit installation in this project to 2.2.
+Upgrade the llm-starter-kit installation in this project to 2.3.
 
 1. Clone https://github.com/fentonmartin/llm-starter-kit into a temp folder
    outside this repo.
@@ -275,7 +305,7 @@ Prefer to drive it yourself? The manual steps are in [CHANGELOG.md](CHANGELOG.md
 | **`/init-docs`** | Surveys the project, interviews you, scaffolds `docs/`, writes a schema for *this* codebase | Once, at the start |
 | **`/scan-docs`** | Reads new sources in full, writes a summary each, updates every topic and entity they touch, types the claims, flags contradictions | When material piles up |
 | **`/ask-docs`** | Answers from the pages within a context budget, with citations and an explicit known / inferred / contradicted / unknown split | Instead of digging |
-| **`/lint-docs`** | 16 checks at three severities — schema, citations, staleness, orphans, gaps, contradictions. Fixes the mechanical, escalates the rest | Every few scans |
+| **`/lint-docs`** | 17 checks at three severities — schema, citations, staleness, orphans, gaps, contradictions. Fixes the mechanical, escalates the rest | Every few scans |
 | **`/test-docs`** | Runs `docs/scenarios/questions.yaml` and reports what the base no longer answers correctly | After big changes |
 
 `/init` `/scan` `/ask` `/lint` `/test` work as short aliases. The long names are canonical
@@ -298,6 +328,122 @@ Every command also takes a **root**, for the rare project with more than one kno
 
 ---
 
+## Tutorial: your first hour
+
+A walkthrough with a real base at the end of it. Use your own repo, or an empty folder and three
+PDFs you've been meaning to read — the shape is the same either way.
+
+### 1. Install and set up · ~10 min
+
+Paste the [quick start prompt](#1-paste-this-into-your-agent), answer the interview, and read the
+`DOCS.md` it writes you. **Read the page types table and the project-specific rules properly** —
+those two sections are the whole product of the interview, and correcting them now costs a
+sentence. Correcting them after fifty pages costs fifty pages.
+
+```
+docs/
+├── DOCS.md          ← read this. it's yours, not the kit's
+├── INDEX.md         ← empty
+├── core-sources/    ← empty
+└── summaries/  topics/  entities/  scenarios/
+```
+
+### 2. Add one source, not ten · ~5 min
+
+Drop **one** document into `docs/core-sources/`. One, deliberately: you're about to review the
+agent's judgment line by line, and that's tractable for one source and not for ten.
+
+Name it with a date prefix if it has a meaningful date — `260415-auth-spec.pdf`. The kit uses
+`YYMMDD` so files sort chronologically in any file browser.
+
+```
+/scan-docs
+```
+
+### 3. Read the diff · ~15 min
+
+```
+git diff
+```
+
+**This is the most valuable quarter-hour you'll spend with this kit.** You're looking for the gap
+between the agent's judgment and yours:
+
+- Did it split the source into the *topics you'd have chosen*? Wrong topic boundaries are the most
+  expensive thing to fix later.
+- Are the `claim_type` values right? A *"we chose Redis"* recorded as `fact` rather than `decision`
+  is the single most common error, and it's how a base starts quietly lying.
+- Did it wikilink concepts that deserve their own page — including pages that don't exist yet?
+  Those links aren't broken, they're your to-do list.
+- Anything asserted without a citation?
+
+Every disagreement you find is a rule waiting to be written. Add it to the
+**project-specific rules** in `DOCS.md`, in language that's checkable — *"figures carry their unit
+and as-of date"*, not *"be precise"*. Then re-run `/scan-docs` on the same source and watch the
+rule take effect.
+
+### 4. Ask it something · ~5 min
+
+```
+/ask-docs what does the spec say about session expiry?
+```
+
+Read the answer's shape, not just its content. Every answer is labelled **known / inferred /
+contradicted / unknown**, and cites the pages it used. An `unknown` is the feature working: it
+means the base doesn't know, and it told you instead of guessing.
+
+Now ask something the source *doesn't* cover. You should get `unknown`, not a plausible paragraph.
+If you get the paragraph, that's a finding worth reporting.
+
+### 5. Write down what must not break · ~10 min
+
+Open `docs/scenarios/questions.yaml` and write three cases — questions the base must keep answering
+correctly. Include one whose honest answer is *"nobody knows yet"*:
+
+```yaml
+questions:
+  - id: session-ttl
+    ask: What is the session TTL?
+    expect_state: known
+    expect_sources: [docs/core-sources/260415-auth-spec.pdf]
+    must_mention: ["24 hours"]
+  - id: revocation
+    ask: How are sessions revoked on password change?
+    expect_state: unknown        # the sources don't say. that's the point.
+```
+
+```
+/test-docs
+```
+
+These are the regression tests for your knowledge. They're worth more than they look: the failure
+this kit exists to prevent is a base that still passes every schema check while quietly answering
+wrongly.
+
+### 6. Add the rest, then lint · ~15 min
+
+Now add the other documents and scan them. With several sources in, run:
+
+```
+/lint-docs
+```
+
+Expect findings — a new base always has gaps, and gaps are information. Read them by severity:
+**ERROR** is mechanically wrong and worth fixing now; **WARNING** is tolerable; **INFO** wants your
+judgment and includes the contradictions, which are the most interesting output this kit produces.
+
+### Then what
+
+A rhythm, not a project: sources in as they arrive, `/scan-docs` when a few have piled up,
+`/lint-docs` every few scans, `/test-docs` after anything structural. See
+[A rhythm that works](#a-rhythm-that-works).
+
+Two things to expect as it grows. Layers pass thirty pages and want
+[subfolders](#directory-structure). And your `DOCS.md` rules keep accumulating — that's the base
+learning, and it's the point.
+
+---
+
 ## Directory structure
 
 ```
@@ -307,7 +453,7 @@ CHANGELOG.md             this kit's release history
 LICENSE
 docs/
 ├── DOCS.md              ⚖️  the governance contract — read below
-├── README.md            🗂️  the index. every generated page, once.
+├── INDEX.md             🗂️  the index. every generated page, once. (or README.md)
 ├── CHANGELOG.md         📜  append-only log of every run
 ├── core-sources/        📥  raw material. yours. read-only to the agent.
 ├── summaries/           📄  one page per source
@@ -331,19 +477,64 @@ Everything sits under `docs/` so the knowledge base is one self-contained folder
 anywhere. `docs/core-sources/` is nested for filing only — it stays read-only to the agent and
 exempt from every page rule.
 
-Two paths are yours to choose, and `docs/DOCS.md` Part 1 declares both — every skill reads those
-two lines rather than assuming a path.
+`docs/DOCS.md` Part 1 opens by declaring three paths, and every skill resolves against them rather
+than assuming:
 
-**The root.** `docs/` by default. Two situations want otherwise: a `docs/` that a site generator
-already owns (→ `docs/kb/`), and a project that needs
-[two separate bases](#as-the-project-grows).
+```
+> Root: docs/
+> Source folder: docs/core-sources/
+> Index: docs/INDEX.md
+```
 
-**The source folder.** `docs/core-sources/` by default. If you already keep the material somewhere
-— `research-papers/`, `notes/`, `contracts/`, a published docs folder — point the base at it
-instead of moving it. You keep filing where you file today; the agent reads it there and still
-never writes to it. It can sit outside the root, and there is exactly one of it: anything else
-worth citing but not filing (a source tree, generated docs) goes in **read-in-place sources**,
-which are cited with a commit hash and produce no summary pages.
+The root is not a choice — see [what setup decides](#what-setup-decides-and-what-it-doesnt-ask).
+The source location is, and the index name follows a rule.
+
+### Why these names
+
+Every folder name is doing a job, and the jobs are what the rules protect:
+
+| | Why not something else |
+|:--|:--|
+| `core-sources/` | Not `sources/` — "source" is already the `sources:` field, the citation, and source code. The `core-` prefix names a **role**: the root of the provenance chain, the one layer everything else is reproducible from. It also separates curated material from read-in-place paths, which is exactly where immutability has to be sharp. |
+| `summaries/` | Not `notes/`. One source, one job, and the name says both. The only page type allowed to paraphrase at length, because faithfulness to one document is what it's *for*. |
+| `topics/` | Not `concepts/`. A topic outlives any one source and is where sources are compared — so it's the only layer where a contradiction can live. |
+| `entities/` | Not `glossary/`. The point is the backlinks: one thing, stable facts, and every place it appears. A glossary implies definitions only. |
+| `scenarios/` | Not `tests/`. Nothing executes here, and calling it tests promises a green tick this kit can't give. |
+| the index | Not generated. It's the entry point an agent reads before anything else, maintained in the same pass that changes a page. |
+
+**And why they're separate at all:** who may write to a file is the only durable way to keep
+provenance honest. Sources are human-owned and immutable, pages are agent-maintained and derived,
+scenarios are human-owned, bookkeeping is agent-owned. Merge any two and *"where did this claim come
+from?"* stops having an answer. The three page types are separate for a different reason — they fail
+differently, and keeping them apart is what makes a lint finding specific enough to act on.
+
+Full version in [`docs/DOCS.md`](docs/DOCS.md) Part 2, *Why the structure is shaped this way*,
+including how an agent reads a base without reading all of it.
+
+### Subfolders
+
+**Group a layer once it passes ~30 pages.** Below that, flat is easier to scan.
+
+```
+docs/topics/
+├── auth/
+│   ├── session-management.md
+│   └── token-rotation.md
+└── billing/
+    └── invoice-generation.md
+```
+
+- **By subject, never by date or type.** `topics/auth/`, not `topics/2026/`.
+- **The layer folder still decides what a page is.** Everything under `topics/` is a topic page,
+  however deep. Never nest one layer inside another.
+- **Two levels is the limit.** Deeper and the path becomes a taxonomy nobody maintains.
+- **Slugs stay unique across the whole layer.** `auth/tokens.md` and `billing/tokens.md` make
+  `[[tokens]]` ambiguous — lint catches it as an ERROR. Two pages wanting one slug are usually one
+  page.
+- **A summary mirrors its source's path.** `core-sources/vendor/acme.pdf` →
+  `summaries/vendor/acme.md`. That's how lint pairs them.
+- **Moving a page between subfolders breaks nothing** — wikilinks resolve by slug. Regroup whenever
+  the shape stops fitting.
 
 ---
 
@@ -558,7 +749,7 @@ question → select candidates → read → estimate budget
 ```
 
 **Selection is by index and links**, not by reading everything: match the question against
-`docs/README.md`, read those entry points, follow their wikilinks one hop out — two if the
+the index, read those entry points, follow their wikilinks one hop out — two if the
 question is broad. Then stop. If the answer is not in reach after two hops, that is a finding
 about the knowledge base, not a reason to widen the sweep.
 
@@ -630,14 +821,14 @@ conflict → human reads both sides → checks the sources → resolves the Mark
         → /lint-docs → commit
 ```
 
-`docs/CHANGELOG.md` (keep both, date order) and `docs/README.md` (keep the union, re-sort) are
+`docs/CHANGELOG.md` (keep both, date order) and the index (keep the union, re-sort) are
 the only exceptions, because neither carries meaning.
 
 ---
 
 ## Linting
 
-`/lint-docs` runs 16 checks at three severities.
+`/lint-docs` runs 17 checks at three severities.
 
 | Severity | Reserved for | Examples |
 |:--|:--|:--|
@@ -771,7 +962,7 @@ Non-negotiable:
   scope. Never answer from a silently truncated set.
 - Never read .env*, *.pem, *.key, secrets/, credentials/, private/, .ssh/, .aws/.
 - docs/CHANGELOG.md is append-only, newest first.
-- docs/README.md lists every generated page exactly once. Keep it current.
+- The index lists every generated page exactly once. Keep it current.
 - Dates in file names are YYMMDD. Dates inside files are YYYY-MM-DD.
 
 Start with: init-docs, scan-docs, ask-docs QUESTION, lint-docs, or test-docs
@@ -886,7 +1077,7 @@ searching, because the connection was made when the material came in.
 | Pages drifted from their sources | Sources edited after scanning | Lint flags them `stale`; re-scan |
 | Summaries are shallow | Agent skimmed a long PDF | Scan that source alone, and say *"read it in full"* |
 | Too many dangling links | Normal and healthy | That's your reading list, not a bug |
-| `ask-docs` keeps refusing on budget | Question too broad, or the index is thin | Use `--topic` / `--source`; check `docs/README.md` descriptions are specific |
+| `ask-docs` keeps refusing on budget | Question too broad, or the index is thin | Use `--topic` / `--source`; check the index descriptions are specific |
 | A contradiction won't go away | It is genuinely unresolved | That's the point. Rule on it — see [Human review](#contradictions-and-human-review) |
 
 </details>
@@ -907,7 +1098,7 @@ exists to prevent.
 - **The context budget is an estimate** at ~4 characters per token. It is deliberately
   conservative and will sometimes refuse a question that would have fit.
 - **Retrieval depends on the index and the link graph.** An unlinked page missing from
-  `docs/README.md` is invisible to `ask-docs`. That is why orphans are a lint check, and it is
+  the index is invisible to `ask-docs`. That is why orphans are a lint check, and it is
   the real cost of not having an embedding index.
 - **Security exclusions are instructions, not enforcement.**
 - **Scanning is slow and token-expensive.** Reading a long PDF in full is the point, and it is
@@ -1055,7 +1246,7 @@ the migration.
 - **[Andrej Karpathy — *LLM Wiki*](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)**
   — the three-layer pattern (raw sources / wiki / schema) and the ingest–query–lint loop this
   kit is built on, here renamed scan–ask–lint. His `index.md` and `log.md` became
-  `docs/README.md` and `docs/CHANGELOG.md`.
+  the index and `docs/CHANGELOG.md`.
 - **[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)** — the Agent Skills
   packaging model (`skills/<name>/SKILL.md`, `.claude-plugin/`) and the Obsidian Flavored
   Markdown conventions: wikilinks, callouts, YAML properties. **None of his skills are vendored
