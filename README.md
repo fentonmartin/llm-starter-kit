@@ -10,12 +10,12 @@ knowledge is marked as obsolete.
 
 `init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `test-docs` · `help-docs` · `all-docs`
 
-[![version](https://img.shields.io/badge/version-2.1.0-blue?style=flat-square)](CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-2.3.0-blue?style=flat-square)](CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-**Latest: `2.1.0`** — one structure for every use case, a tutorial, `/all-docs` and `/help-docs`,
+**Latest: `2.3.0`** — one structure for every use case, a tutorial, `/all-docs` and `/help-docs`,
 a commit setting, and the reasoning behind every folder name.
-[What changed](CHANGELOG.md#210--2026-09-01) · [Tutorial](#tutorial-your-first-hour) · [Upgrading](#already-using-an-older-version)
+[What changed](CHANGELOG.md#230--2026-09-01) · [Tutorial](#tutorial-your-first-hour) · [Upgrading](#already-using-an-older-version)
 
 [**Quick start**](#quick-start) · [**Tutorial**](#tutorial-your-first-hour) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
 
@@ -312,7 +312,7 @@ line there, and treats your published docs as sources.
 Commit first, then paste this into your agent:
 
 ```
-Upgrade the llm-starter-kit installation in this project to 2.1.
+Upgrade the llm-starter-kit installation in this project to 2.3.
 
 1. Clone https://github.com/fentonmartin/llm-starter-kit into a temp folder
    outside this repo.
@@ -340,7 +340,7 @@ with steps 1 and 3 removed — the plugin has already replaced the kit files for
 
 **Already on 2.0?** There's nothing to migrate. Replace the kit files and you're done — your
 `docs/` is already correct, since every declaration defaults to where your base already keeps
-things. What 2.1 adds (a fourth preset, `/all-docs`, `/help-docs`, a commit setting, subfolder
+things. What 2.3 adds (a fourth preset, `/all-docs`, `/help-docs`, a commit setting, subfolder
 grouping, the migration guide) is in the kit, waiting for the day you want it.
 
 **Why the prompt is that specific about `docs/DOCS.md`:** it's the only file in this kit you
