@@ -91,16 +91,22 @@ Set up the llm-starter-kit documentation system in this project.
 
 1. Clone https://github.com/fentonmartin/llm-starter-kit into a temp folder
    outside this repo.
-2. Copy its docs/, .claude/ and AGENTS.md into this project. Do not overwrite
-   anything that already exists here — if a file or folder collides, stop and
-   tell me before touching it.
-3. Read .claude/skills/init-docs/SKILL.md and follow it exactly: survey this
-   project first, then interview me, then write docs/DOCS.md from my answers.
-4. Delete the temp folder.
+2. Copy its .claude/ and AGENTS.md into this project, overwriting neither if
+   they already exist — append instead, and tell me what you appended.
+3. Copy its docs/ ONLY if this project has no docs/ folder. If I already have
+   one, leave it completely alone: init-docs merges it in step 4, and copying
+   a template over it is the one thing that would lose my work.
+4. Read .claude/skills/init-docs/SKILL.md and follow it exactly: survey this
+   project first, tell me whether this is a fresh start or a merge, then
+   interview me, then write docs/DOCS.md from my answers.
+5. Delete the temp folder.
 
 Do not skip the interview and do not answer its questions on my behalf.
 Show me the docs/DOCS.md rules you wrote before we go any further.
 ```
+
+That's the whole setup. Afterwards, **`/help-docs`** tells you where you are and what to do next
+at any point — it's the one command you don't need to remember anything to use.
 
 <details>
 <summary><b>Copy the files yourself instead</b>, and day-to-day prompts</summary>
@@ -109,9 +115,18 @@ Show me the docs/DOCS.md rules you wrote before we go any further.
 
 ```bash
 git clone https://github.com/fentonmartin/llm-starter-kit /tmp/lsk
-cp -r /tmp/lsk/docs /tmp/lsk/.claude /tmp/lsk/AGENTS.md your-project/
+cp -r /tmp/lsk/.claude /tmp/lsk/AGENTS.md your-project/
+
+# the template docs/ folder ONLY if you don't have one —
+# cp would merge into an existing docs/ and overwrite files
+[ -d your-project/docs ] || cp -r /tmp/lsk/docs your-project/
+
 rm -rf /tmp/lsk
 ```
+
+Already have a `docs/`? Skip that line entirely and let `/init-docs` merge it — that's a
+[supported path](#fresh-start-or-merge), and copying the template over it is the one move that
+would cost you work.
 
 Then: *"Read `.claude/skills/init-docs/SKILL.md` and follow it exactly. Survey this project
 first, then interview me before writing anything."*
@@ -262,6 +277,7 @@ vocabulary.
 /ask-docs how does auth work?   # answer from the pages, with citations
 /lint-docs                      # gaps, contradictions, stale pages, schema errors
 /test-docs                      # check the base still answers its known questions
+/all-docs                       # scan, lint and test in one pass
 /help-docs                      # what state is this in, and what should I do next?
 ```
 
@@ -328,20 +344,28 @@ Rules for this upgrade:
   rules, and out of scope. Start from the new DOCS.md and port those three
   into it — do not merge the new sections into my old file. Show me the
   diff before you write it.
-- Rename docs/sources to docs/core-sources BEFORE rewriting any paths.
+- If I am on 1.x: rename docs/sources to docs/core-sources BEFORE rewriting
+  any paths. Skip this if the folder is already named core-sources.
 - Then run /lint-docs and show me what it changed.
+- Two things are new and you should ask me, not assume: whether you may
+  commit your own work (default: no), and what to call me.
 
 Tell me what version I was on before you start, and stop if anything is
 ambiguous rather than guessing.
 ```
 
+It also re-reads your `DOCS.md` against what your repo has become and tells you if the base has
+drifted from what it says it is for — page types naming things that no longer exist, a preset that
+stopped fitting. It reports that; it never rewrites it.
+
 **Installed as a plugin?** Run `/plugin update llm-starter-kit` first, then paste the same prompt
 with steps 1 and 3 removed — the plugin has already replaced the kit files for you.
 
-**Already on 2.0?** There's nothing to migrate. Replace the kit files and you're done — your
-`docs/` is already correct, since every declaration defaults to where your base already keeps
-things. What 2.1 adds (a fourth preset, `/all-docs`, `/help-docs`, a commit setting, subfolder
-grouping, the migration guide) is in the kit, waiting for the day you want it.
+**Already on 2.0?** Nothing in your `docs/` has to change — every declaration defaults to where
+your base already keeps things. Replace the kit files, then let it add the four new lines to your
+`DOCS.md` (root, source folder, index, commits) and ask you the two questions above. What 2.1 adds
+— a fourth preset, `/all-docs`, `/help-docs`, subfolder grouping, the migration guide — is then
+there when you want it.
 
 **Why the prompt is that specific about `docs/DOCS.md`:** it's the only file in this kit you
 authored — written from your `init-docs` interview. 2.0 adds about a dozen governance sections,
@@ -1086,7 +1110,8 @@ Non-negotiable:
 - The index lists every generated page exactly once. Keep it current.
 - Dates in file names are YYMMDD. Dates inside files are YYYY-MM-DD.
 
-Start with: init-docs, scan-docs, ask-docs QUESTION, lint-docs, or test-docs
+Start with: help-docs if you are not sure, or init-docs, scan-docs,
+ask-docs QUESTION, lint-docs, test-docs, all-docs.
 ```
 
 In a chat window with no file access, upload `docs/DOCS.md` and the one skill file you need,

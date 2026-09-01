@@ -251,8 +251,21 @@ project has no root README at all, write a minimal one: what the project is, in 
 that section. Change nothing else in it, ever. It is the most-read file in the repository and it is
 not yours.
 
-Also copy the kit's root `AGENTS.md` if the project has none. If it already has one, **append a
-short section** pointing to `docs/DOCS.md` rather than replacing the file.
+**`AGENTS.md`.** It is the entry point for every agent that is not the one running this skill —
+Codex, Cursor, opencode, Windsurf and anything else that reads it automatically. The project needs
+one.
+
+- **If the kit's own `AGENTS.md` is on disk** — the usual case, because the install copied it —
+  and the project has none, copy it. If the project already has one, **append a short section**
+  pointing at `docs/DOCS.md` rather than replacing the file.
+- **If it is not on disk**, which is what a plugin install looks like — the plugin ships skills
+  and commands only — then write a short one instead. Name what the knowledge base is, point at
+  `docs/DOCS.md` Part 1 as the contract that overrides everything, list the commands, and give the
+  two rules that matter most on their own: never write to the source folder, and never set
+  `claim_type: decision` or `status: superseded`. **Do not attempt to reproduce the full rule list
+  from memory** — a half-remembered contract that looks authoritative is worse than a short one
+  that points at the real thing. Say in the file itself that the full version lives in the kit
+  repository.
 
 If the project has a `CLAUDE.md`, add one line to it pointing at `docs/DOCS.md`. Do not move
 its contents.
