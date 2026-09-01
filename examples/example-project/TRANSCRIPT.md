@@ -64,7 +64,7 @@ Checked: 4 pages, 2 core sources, 3 scenarios.
   all field values valid
   4 citations resolve to files that exist
   2 wikilink targets resolve ([[redis]], [[session-management]])
-  every page appears in docs/README.md exactly once, and has an inbound link
+  every page appears in docs/INDEX.md exactly once, and has an inbound link
   no source is newer than the page that summarizes it
   no security-excluded paths in docs/core-sources/
 

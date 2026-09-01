@@ -11,7 +11,7 @@ this question confidently and wrongly. This kit records both and says a human ha
 ```
 docs/
   DOCS.md                        the schema, with three sections customized
-  README.md                      the index
+  INDEX.md                       the index
   CHANGELOG.md                   what each run did
   scenarios/questions.yaml           three questions this base must answer correctly
   core-sources/

@@ -16,8 +16,10 @@ conflicts, naming and dates — applies here unchanged. Read it in
 
 > **Root: `docs/`**
 > **Source folder: `docs/core-sources/`**
+> **Index: `docs/INDEX.md`**
 
-Both defaults, and what almost every project uses.
+The defaults. `INDEX.md` rather than `README.md` because this project has its own root
+`README.md`, which is the usual case.
 
 Below are the only three sections `/init-docs` rewrites per project.
 
