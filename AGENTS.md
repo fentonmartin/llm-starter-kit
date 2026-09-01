@@ -13,10 +13,12 @@ Part 1 for convenience, not a substitute for reading it.
 
 `docs/` is a knowledge base, not an application. There is no build and nothing to run here.
 
-**The root.** Every path below is written as `docs/…`. Part 1 of the contract opens by declaring
-the knowledge base root; if it names anything else — `docs/kb/`, say — read every `docs/…` path
-here as that folder instead. The layers and their rules never change with the root, and the layout
-is the same in every project regardless of what it documents.
+**The root and the source folder.** Every path below is written as `docs/…`, and the source layer
+as `docs/core-sources/`. Part 1 of the contract declares both. If it names another root — `docs/kb/`,
+say — read every `docs/…` path here as that folder; if it names another source folder, read every
+`docs/core-sources/` here as that one, including when it sits outside the root. The layers and
+their rules never change with either, and the layout is the same in every project regardless of
+what it documents.
 
 ## The one idea
 
@@ -30,9 +32,11 @@ That is why the rules below constrain what you may assert rather than what you m
 
 ## Hard rules
 
-1. **Never create, edit, rename, or delete anything under `docs/core-sources/`.** It is human-owned
-   and immutable to you. Everything else in `docs/` is yours to maintain. If a source is wrong,
-   say so in a page; do not touch the file.
+1. **Never create, edit, rename, or delete anything under the source folder** — `docs/core-sources/`
+   unless Part 1 of the contract declares another, in which case it is that one, wherever it sits.
+   The same goes for any read-in-place path Part 1 lists. Both are human-owned and immutable to
+   you. Everything else in `docs/` is yours to maintain. If a source is wrong, say so in a page;
+   do not touch the file.
 2. **Every claim in a page traces to a source or an explicit human instruction.** Do not fill
    gaps with background knowledge. `confidence: low` is a valid answer; inventing is not.
 3. **Never resolve a contradiction by overwriting.** Record both claims using the callout

@@ -23,27 +23,47 @@ page is *about*, not where it lives. That is deliberate: the checks in `lint-doc
 order in `ask-docs`, and every rule below are written against these paths, and one shape means
 one contract to learn, one set of habits, and a base you can move between projects.
 
-**This knowledge base is rooted at `docs/`.** Every path in this file and in the agent's skills
-is written with that prefix. If the sentence in bold above names a folder other than `docs/`,
-read every `docs/…` path in this file *and in every skill* as that folder instead: `docs/topics/`
-means `<root>/topics/`, and a check that skips `docs/core-sources/` skips `<root>/core-sources/`.
-Nothing else changes.
-The root is the only part of the layout that is yours to choose, and `docs/` is the default and
-the right answer for almost every project — see *Choosing a different root* in Part 2 for the two
-cases that need another.
+Two paths are declared rather than assumed. **These two sentences are the declarations** — edit
+them to move the base, and every rule in this file and every path in the agent's skills follows.
 
-Everything lives under the root, but the layers are strictly separate.
+> **Root: `docs/`**
+> **Source folder: `docs/core-sources/`**
+
+Every path written below, and in every skill, uses those two defaults. If the root says anything
+else, read each `docs/…` path as that folder — `docs/topics/` means `<root>/topics/`, and a check
+that skips the source folder skips it at its declared location. If the source folder says anything
+else, read each `docs/core-sources/` as that folder, including when it sits outside the root.
+Nothing else changes: the layers, their names, and their rules are the same at any path.
+
+`docs/` and `docs/core-sources/` are the right answer for almost every project. Part 2's *Choosing
+a different root* and *Choosing the source folder* cover the cases that want otherwise — the
+commonest being material the project already files somewhere, which is worth pointing at rather
+than moving.
+
+Everything else lives under the root, and the layers are strictly separate.
 
 | Layer | Path | Who writes it |
 |---|---|---|
-| Core sources | `docs/core-sources/` | **Humans only.** Immutable. The agent reads it, never edits, renames, or deletes. |
+| Core sources | `docs/core-sources/` — or wherever the declaration above points | **Humans only.** Immutable. The agent reads it, never edits, renames, or deletes. |
 | Pages | `docs/summaries/`, `docs/topics/`, `docs/entities/` | **Agent only.** Every file derives from a source or an explicit instruction. |
 | Scenarios | `docs/scenarios/` | **Humans.** Questions the knowledge base must answer correctly. |
 | Bookkeeping | `docs/README.md`, `docs/CHANGELOG.md` | **Agent only.** Index and log. |
 | Guidance | `docs/DOCS.md` | **Humans.** This file. |
 
-`docs/core-sources/` is exempt from every page rule below — front matter, slugs, wikilinks, page
+The source folder is exempt from every page rule below — front matter, slugs, wikilinks, page
 types. Only the `YYMMDD` file-name rule applies there. Checks that sweep `docs/` skip it.
+
+Three constraints on the declaration:
+
+- **Exactly one folder.** One summary page per source file is the backbone of provenance, and two
+  source folders make that mapping ambiguous the first time a file name repeats. Material that
+  lives in several places gets filed into one folder, or read in place — see below.
+- **It must not overlap a page layer.** A source folder that contains `summaries/`, `topics/`, or
+  `entities/` makes the agent's own output look like source material, and there is no recovering
+  from that automatically.
+- **It stays human-owned wherever it is.** Declaring a folder as the source layer does not make it
+  safer to write to; it makes it forbidden to write to. Point the declaration at a folder the
+  agent should never author in, never at one it maintains.
 
 **If a fact is not traceable to a source or to a human instruction, it does not belong in a page.**
 
@@ -52,20 +72,41 @@ own vocabulary belongs in *Page types* below, not in folder names. Changing the 
 decision, recorded in `docs/CHANGELOG.md` — Part 2's *Changing the shape later* says what each
 kind of change costs.
 
+### Read-in-place sources
+
+Optional, and empty by default. Some material should be cited but not filed: a source tree that
+changes every commit, or a published docs folder this base was scaffolded beside. List those paths
+here and the agent reads and cites them without copying them in:
+
+```
+(none)
+```
+
+They differ from the source folder in three ways. They produce no summary page, so *unread source*
+checks skip them. They are versioned, so a citation to one records the commit it was read at. And
+they are not curated — nobody chose to file them, which is why a claim from one carries less
+weight than the same claim from the source folder.
+
 ### Why "core"
 
 The prefix names a **role**, not a file type. `docs/core-sources/` is the root of the provenance
 chain: every page in the knowledge base is reproducible from it, and nothing else is. Deleting a
 page loses work; deleting from here loses the truth.
 
-It also removes a genuine ambiguity. In a knowledge base that documents a codebase there are two
-kinds of source — the curated, immutable material here, and `src/**`, which the codebase preset
-reads in place and which changes every commit. Calling both "sources" blurred the immutability
-rule precisely where it mattered most. And "source" is already overloaded across the `sources:`
-field, the citation format, and source code; the folder now has a name that means one thing.
+It also removes a genuine ambiguity. A knowledge base has two kinds of source — the curated,
+immutable material here, and read-in-place paths like `src/**`, which change every commit. Calling
+both "sources" blurred the immutability rule precisely where it mattered most. And "source" is
+already overloaded across the `sources:` field, the citation format, and source code; the folder
+has a name that means one thing.
 
 The practical payoff is that the hard rule reads as a boundary rather than a category:
-*never write to `core-sources/`*.
+*never write to the source folder*.
+
+**The name is a default, the role is not.** A project that calls it `sources/` or `notes/` or
+`research-papers/` loses nothing, as long as one folder holds the curated material and the agent
+never writes there. What cannot vary is that the role exists and that exactly one folder fills it.
+Keep `core-sources/` unless the project has a reason; a reader who has seen the kit before will
+know what it is on sight.
 
 ## Authority
 
@@ -459,10 +500,14 @@ types in Part 1 with these.
 | Topic | `docs/topics/<slug>.md` | decision, flow, or invariant | Why it is built this way. How a request moves through. What must stay true. |
 | Entity | `docs/entities/<slug>.md` | service, table, endpoint, job, env var, external API | Stable facts, plus every place it is referenced. |
 
-Then set the source layer. Code is read in place rather than copied:
+Then set the source layer. Code is cited but not filed, so it goes in *Read-in-place sources* in
+Part 1 rather than in the source folder:
 
 ```markdown
-- Treat `src/**` as sources, in addition to `docs/core-sources/`.
+src/**
+```
+
+```markdown
 - Out of scope: `node_modules/**`, `dist/**`, `**/*.generated.*`, `vendor/**`, test fixtures.
 ```
 
@@ -582,8 +627,31 @@ project's own contract.
 | The project's `docs/` is a published site (`mkdocs.yml`, `docusaurus.config.js`, `book.toml`) | `docs/kb/` | Rearranging a folder a generator builds from breaks the build. The published docs become sources. |
 | The project needs two bases that must not mix | `docs/` and a second root, e.g. `research/` | See below. |
 
-Whatever you choose, say it in the root-binding line at the top of Part 1. That line is the only
+Whatever you choose, say it in the `Root:` declaration at the top of Part 1. That line is the only
 place the root is declared, and every skill reads this file before it reads anything else.
+
+## Choosing the source folder
+
+`docs/core-sources/` is the default and needs no thought. Reasons to name something else:
+
+| Situation | Source folder | Why |
+|---|---|---|
+| Normal | `docs/core-sources/` | Filed inside the base, so the whole thing copies as one folder. |
+| The material already lives somewhere the project cares about — `research-papers/`, `contracts/`, `notes/` | that folder | Moving material people already file by hand, into a folder the kit invented, is a cost with no return. Point at it instead. |
+| The base was scaffolded beside a published docs site (`docs/kb/`) | `docs/` | The published pages *are* the material. They stay where the generator expects them and are cited at their real paths. |
+| The material is your own writing, and the repo is the writing | that folder | A document library's corpus is usually already organized. Declare it; do not refile it. |
+
+Two things this is not for. It is not a way to point the agent at a folder it also writes to —
+declaring a folder as the source layer makes it forbidden to write to, and pointing it at
+`docs/topics/` breaks the base in a way nothing detects. And it is not a way to have several
+source folders: exactly one folder holds filed material, and anything else that needs citing goes
+in *Read-in-place sources*.
+
+**Filed or read in place?** File it if a human chose to put it there and it will not change on its
+own — a PDF, a spec, an exported transcript. Read it in place if it changes without anyone
+deciding it should, like a source tree, or if it is already published somewhere with its own
+lifecycle. Filed material gets a summary page and is swept for staleness; read-in-place material
+gets neither, and its citations record the commit they were read at.
 
 ### Two knowledge bases in one project
 
@@ -593,7 +661,7 @@ Mixing them is what the split prevents: a vendor claim must never settle a quest
 system.
 
 - Each base is **completely self-contained**: its own root, its own `DOCS.md` with its own
-  root-binding line and its own preset, its own five folders, its own `README.md` index and
+  `Root:` and `Source folder:` declarations and its own preset, its own five folders, its own `README.md` index and
   `CHANGELOG.md`.
 - Run `/init-docs` once per base, telling it which root. The interview runs again — the second
   base gets its own page types and its own rules, which is the entire point.
@@ -630,6 +698,10 @@ the schema. Note the change in `docs/CHANGELOG.md` so the next reader knows when
   catch the inbound wikilinks that need repointing.
 - **Changing link style** (wikilinks ↔ relative Markdown). Change the *Links* section, then tell
   the agent to migrate; the skills read this file for link style rather than assuming one.
+- **Promoting read-in-place paths to filed sources, or the reverse.** Change the declaration, then
+  lint. Promoting produces *unread source* warnings for everything that now wants a summary, which
+  is a scan's worth of work, not a defect. Demoting leaves summary pages whose source is no longer
+  filed: keep them, and let their citations carry a commit hash from then on.
 
 **Real work — plan it, do it in one commit, lint immediately after.**
 
@@ -643,12 +715,17 @@ the schema. Note the change in `docs/CHANGELOG.md` so the next reader knows when
      ```
 
      Any other move is the one-liner you would expect: `git mv docs wiki`.
-  2. Change the root-binding line in Part 1 to the new root. This one line is the entire
+  2. Change the `Root:` declaration in Part 1. This one line is the entire
      re-pointing of the contract and the skills.
   3. Run `/lint-docs`. Check 15 rewrites every `sources:` value and every citation that still
      points at the old root, and reports the ones it cannot.
   4. Grep the rest of the repo for the old path — `CLAUDE.md`, `AGENTS.md`, CI config, and README
      links do not fix themselves.
+- **Moving or renaming the source folder.** `git mv` it, change the declaration, then run
+  `/lint-docs`: check 15 rewrites every `sources:` value and citation pointing at the old path.
+  If you are pointing at a folder that already existed rather than moving one, there is nothing to
+  move — change the declaration and expect check 13 to report every file in it as unread, because
+  it is. That is a scan queue, not breakage.
 - **Splitting one base into two.** Decide the boundary first, by authority — which facts come
   from where — never by volume or by folder size. Then `/init-docs` the second root, `git mv` the
   pages that belong to it, and lint both. Cross-base wikilinks broken by the split must be
@@ -657,6 +734,7 @@ the schema. Note the change in `docs/CHANGELOG.md` so the next reader knows when
   project-specific rules into the survivor's Part 1 (they were written for a reason), then lint.
   Expect duplicate findings — two bases that were worth merging were covering the same ground.
 
-**Never.** Renaming or adding a layer, adding a fourth page type, changing the front-matter
-schema, or moving `core-sources/` out from under the root. These are what the skills check
-against. Changing them locally means every future version of the kit fights your base.
+**Never.** Renaming or adding a layer, adding a fourth page type, changing the front-matter schema,
+declaring more than one source folder, or pointing the source declaration at a folder the agent
+writes to. These are what the skills check against. Changing them locally means every future
+version of the kit fights your base.
