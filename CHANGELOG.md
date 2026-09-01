@@ -35,6 +35,22 @@ included, and subfolders are optional everywhere.
   a visible folder beats a tidier tree they never fill, so the second option is offered without
   argument.
 
+- **A sixth command: `/help-docs`.** What this base is, what state it is in, and the one thing
+  worth doing next — then the command list, in that order, because the question behind *"what can
+  I do?"* is almost always *"what should I do now?"*
+
+  It works out the state from the declarations, the index, and directory listings only: it never
+  opens a page or a source, because help that costs a full context read is not help. Six states,
+  reported first-match — not installed, no material yet, nothing scanned, unread sources, no
+  scenarios, healthy — each with one next step and the command for it. It writes nothing, fixes
+  nothing it notices, and is explicitly allowed to answer *"nothing is owed"* rather than invent
+  work. Asked something narrower (*"how do I add a source?"*) it answers that in two lines instead
+  of printing a status report.
+
+  **There is no `/help` alias**, deliberately: every agent this kit runs in already has one, and
+  shadowing it would break something people rely on. The long-name rationale that keeps `/lint`
+  from colliding with code linters applies here more strongly.
+
 - **The interview branches by use case instead of asking everyone everything.** Two questions for
   everyone — what kind of project this is, and where sources go — then **two questions in that
   kind of project's own vocabulary**, and two at the end. A codebase is asked what units someone
@@ -107,6 +123,10 @@ included, and subfolders are optional everywhere.
 - **The README leads with what setup decides**, in a table separating what you choose from what is
   fixed and what is inferred — after which the folder-naming rationale and subfolder rules follow
   in the structure section.
+
+- **The slash-command descriptions no longer hardcode `docs/core-sources/`.** `/scan-docs` reads
+  the source folder, which has not necessarily been that path since the source declaration
+  landed earlier in this release.
 
 - **`lint-docs` check 16 covers the index too**: a declared index that does not exist, or both
   `README.md` and `INDEX.md` present and both serving as page lists. Two indexes drift, and an

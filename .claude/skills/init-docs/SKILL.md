@@ -241,7 +241,7 @@ Say which you chose and why in one line; it is the kind of thing a user notices 
 about.
 
 **The project's root `README.md` is the front door, and the base should be visible from it.** Add
-one short section — what the knowledge base covers, where it lives, and the five commands. If the
+one short section — what the knowledge base covers, where it lives, and the commands. If the
 project has no root README at all, write a minimal one: what the project is, in a line or two, and
 that section. Change nothing else in it, ever. It is the most-read file in the repository and it is
 not yours.

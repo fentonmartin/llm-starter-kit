@@ -8,13 +8,13 @@ Drop it into any repo. It builds a `docs/` folder that every agent reads, mainta
 answers from — where every claim traces to a source, disagreements stay visible, and obsolete
 knowledge is marked as obsolete.
 
-`init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `test-docs`
+`init-docs` · `scan-docs` · `ask-docs` · `lint-docs` · `test-docs` · `help-docs`
 
 [![version](https://img.shields.io/badge/version-2.3.0-blue?style=flat-square)](CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-**Latest: `2.3.0`** — a hands-on tutorial, fewer setup questions, subfolder grouping, and the
-reasoning behind every folder name.
+**Latest: `2.3.0`** — a hands-on tutorial, `/help-docs`, fewer setup questions, subfolder grouping,
+and the reasoning behind every folder name.
 [What changed](CHANGELOG.md#230--2026-09-01) · [Tutorial](#tutorial-your-first-hour) · [Upgrading](#already-using-an-older-version)
 
 [**Quick start**](#quick-start) · [**Tutorial**](#tutorial-your-first-hour) · [Knowledge model](#knowledge-model) · [Retrieval](#retrieval-and-context-limits) · [Governance](#contradictions-and-human-review) · [Any AI agent](#works-with-any-ai-agent) · [Limitations](#limitations)
@@ -176,7 +176,7 @@ The first answer picks a **preset** — the starting shape for your page types a
 | **a system you operate** — incidents, on-call | **operations** | incident or runbook · procedure or failure mode · service, alert, config key |
 
 **Same structure for all four.** Same folders, same three page types, same front matter, same
-claim types, same lifecycle, same five commands. A preset is not a layout — it supplies the
+claim types, same lifecycle, same commands. A preset is not a layout — it supplies the
 starting nouns and a handful of pre-written rules, and nothing else. `/init-docs` takes one, swaps
 in your actual nouns, and deletes the rest.
 
@@ -240,6 +240,7 @@ vocabulary.
 /ask-docs how does auth work?   # answer from the pages, with citations
 /lint-docs                      # gaps, contradictions, stale pages, schema errors
 /test-docs                      # check the base still answers its known questions
+/help-docs                      # what state is this in, and what should I do next?
 ```
 
 > [!TIP]
@@ -344,10 +345,27 @@ Prefer to drive it yourself? The manual steps are in [CHANGELOG.md](CHANGELOG.md
 | **`/ask-docs`** | Answers from the pages within a context budget, with citations and an explicit known / inferred / contradicted / unknown split | Instead of digging |
 | **`/lint-docs`** | 17 checks at three severities — schema, citations, staleness, orphans, gaps, contradictions. Fixes the mechanical, escalates the rest | Every few scans |
 | **`/test-docs`** | Runs `docs/scenarios/questions.yaml` and reports what the base no longer answers correctly | After big changes |
+| **`/help-docs`** | What this base is, what state it's in, and the one thing worth doing next | When you're not sure |
 
 `/init` `/scan` `/ask` `/lint` `/test` work as short aliases. The long names are canonical
 because this installs globally — a bare `/lint` would collide with code linters and misfire on
-*"lint my code."*
+*"lint my code."* There's deliberately **no `/help` alias**, for the same reason: your agent almost
+certainly has its own.
+
+**Not sure where to start?** `/help-docs` reads your declarations and counts your files — it never
+opens a page, so it's cheap — then tells you what state the base is in and the single next step:
+
+```
+Knowledge base: docs/          (codebase — one page per service, decision, endpoint)
+Sources:        docs/core-sources/       14 files · 3 unread
+Pages:          9 summaries · 6 topics · 4 entities
+Scenarios:      none yet
+
+Next: 3 sources are waiting. /scan-docs reads them.
+```
+
+It writes nothing, and it won't invent work — *"nothing is owed"* is an answer it's allowed to
+give.
 
 These are [Agent Skills](.claude/skills/), so plain description works too: *"document this
 repo"* runs `init-docs`.
@@ -478,6 +496,9 @@ A rhythm, not a project: sources in as they arrive, `/scan-docs` when a few have
 `/lint-docs` every few scans, `/test-docs` after anything structural. See
 [A rhythm that works](#a-rhythm-that-works).
 
+Come back in three weeks having forgotten all of it? **`/help-docs`** — it tells you what state
+the base is in and the one thing worth doing next.
+
 Two things to expect as it grows. Layers pass thirty pages and want
 [subfolders](#directory-structure). And your `DOCS.md` rules keep accumulating — that's the base
 learning, and it's the point.
@@ -501,8 +522,8 @@ docs/
 ├── entities/            🏷️  one page per service, table, person, product…
 └── scenarios/           ✅  questions.yaml — what this base must answer correctly
 examples/example-project/  a complete worked example, five minutes to read
-.claude/skills/          the five skills, as plain Markdown
-.claude/commands/        the five, plus short aliases
+.claude/skills/          the six skills, as plain Markdown
+.claude/commands/        the six, plus short aliases
 .claude-plugin/          install this repo as a Claude Code plugin
 ```
 
@@ -975,7 +996,9 @@ can read a file can follow it. **The repository is the interface.**
 <br>
 
 ```
-This project is a knowledge base with three layers:
+This project is a knowledge base. Its layout, and the paths below, are declared at
+the top of Part 1 of docs/DOCS.md — read them there rather than assuming these
+defaults, since the root, the source folder and the index can each be elsewhere.
 
 - docs/core-sources/ — raw material. Read it. NEVER create, edit, rename, or delete anything
                   in it. It is exempt from all page rules.
@@ -984,7 +1007,7 @@ This project is a knowledge base with three layers:
 - docs/DOCS.md  — the governance contract. Read it fully before writing anything. It
                   overrides these instructions.
 
-Five operations, fully specified in .claude/skills/<name>/SKILL.md — read the relevant file
+Six operations, fully specified in .claude/skills/<name>/SKILL.md — read the relevant file
 before you begin:
 
 - init-docs → .claude/skills/init-docs/SKILL.md   (set up, once per project)
@@ -992,6 +1015,7 @@ before you begin:
 - ask-docs  → .claude/skills/ask-docs/SKILL.md
 - lint-docs → .claude/skills/lint-docs/SKILL.md
 - test-docs → .claude/skills/test-docs/SKILL.md
+- help-docs → .claude/skills/help-docs/SKILL.md   (what state is this in, what next)
 
 Non-negotiable:
 - You propose; I decide. Never set claim_type: decision and never set status: superseded.
@@ -1066,7 +1090,7 @@ Obsidian's formats and tooling, these handle what goes in the pages and why.
 
 ## Continuous integration
 
-**There is no CI here, and nothing in this kit can run in CI.** All five operations are Markdown
+**There is no CI here, and nothing in this kit can run in CI.** All six operations are Markdown
 instructions an agent follows — no program, no exit code, no deterministic pass or fail. That is
 a design choice: a linter binary would mean a language runtime, a dependency tree, and a release
 process, in a project whose value is that it is Markdown in a folder.
@@ -1130,7 +1154,7 @@ searching, because the connection was made when the material came in.
 Stated plainly, because documentation that claims more than it does is the failure this kit
 exists to prevent.
 
-- **Nothing here executes.** All five operations are Markdown instructions. There is no CLI, no
+- **Nothing here executes.** All six operations are Markdown instructions. There is no CLI, no
   parser, no test suite, and nothing that can run in CI.
 - **`lint-docs` and `test-docs` are therefore not deterministic.** Two runs may word the same
   finding differently or disagree at the margin. Structural checks are far more stable than

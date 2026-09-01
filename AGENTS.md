@@ -89,9 +89,10 @@ relevant one before starting, whatever agent you are.
 | `ask-docs` | A question needs answering from the pages, with citations. |
 | `lint-docs` | Health-checking for orphans, gaps, contradictions, stale pages, schema violations. |
 | `test-docs` | Checking whether the knowledge base still answers its known questions correctly. |
+| `help-docs` | Someone asks what this is, what they can do, or what to do next. Reads declarations and counts files; never opens a page and never writes. |
 
-If a request does not clearly match one of the five, ask which is meant rather than improvising
-a sixth.
+If a request does not clearly match one of the six, ask which is meant rather than improvising
+a seventh.
 
 ## Repository layout
 
@@ -109,7 +110,7 @@ docs/
   entities/                one page per person, org, product, dataset
   scenarios/questions.yaml questions the knowledge base must answer correctly
 examples/example-project/  a small worked example of the whole loop
-.claude/skills/            the five skills, as plain Markdown
+.claude/skills/            the six skills, as plain Markdown
 .claude/commands/          slash-command aliases
 ```
 
