@@ -2,6 +2,13 @@
 
 A knowledge base small enough to read in five minutes, built from two documents that disagree.
 
+> **What this shows, and what it doesn't.** Deliberately the default configuration: sources in
+> `docs/core-sources/`, flat page layers, one index. That's what `/init-docs` produces for a fresh
+> start, and it's the shape most bases keep. The options it doesn't exercise — a top-level
+> `sources/`, pointing at material you already file elsewhere, subfolder grouping past ~30 pages
+> per layer — are all one-line declarations away and documented in
+> [`docs/DOCS.md`](../../docs/DOCS.md). Nothing here would change if you used them.
+
 The disagreement is the point. Two sources, one specification and one runbook, give different
 values for the same setting. A retrieval system that returns the more relevant chunk answers
 this question confidently and wrongly. This kit records both and says nobody has ruled.

@@ -28,10 +28,23 @@ and say it out loud before asking anything:
 
 | | **Fresh start** | **Merge** |
 |---|---|---|
-| When | The project has no documentation and no filed material worth keeping | There is already documentation, or a pile of material somewhere |
-| Sources | The user chooses where they will go — step 2, question 2 | Wherever the material already is. Nothing moves. |
-| Existing files | None to worry about | Classified and either pointed at or moved, never overwritten — step 4 |
-| Risk | None. Nothing exists to damage. | Someone's work is already here. This is where care is owed. |
+| When | Nothing documented, nothing filed | There is documentation, or a pile of material, already here |
+| Sources | They choose where these go — question 2 | Wherever the material already is. Nothing moves. |
+| Risk | None. Nothing exists to damage. | Their work is already here. This is where care is owed. |
+
+**Then, separately: is there an existing `docs/` folder to reorganize?** These are two questions,
+not one, and conflating them is the mistake to avoid:
+
+| What you found | What follows |
+|---|---|
+| No `docs/`, no material | Fresh start. Scaffold, and ask question 2. |
+| No `docs/`, but material in `notes/`, `research-papers/`, `contracts/` | Merge. Scaffold the layers, declare that folder as the source, and **skip step 4** — there is no folder of mixed files to classify. |
+| A `docs/` folder with a mix of things in it | Merge. **Step 4 applies**, file by file. |
+| A `docs/` built by a site generator | Merge. Root becomes `docs/kb/`, source folder becomes `docs/`, and step 4 does not touch the published pages. |
+
+Row two is the common case and the one that used to fall between the modes: material is pointed
+at rather than moved, so there is nothing for step 4 to do, and going looking for files to
+classify wastes the user's time on a folder that does not exist.
 
 Say what you found and which mode you are in, in one short paragraph, before your first question.
 It shows the user you looked, it lets them correct you early, and *"I found 40 PDFs in
@@ -270,9 +283,12 @@ one.
 If the project has a `CLAUDE.md`, add one line to it pointing at `docs/DOCS.md`. Do not move
 its contents.
 
-## 4. Merge mode — when documentation already exists
+## 4. When a `docs/` folder already has a mix of things in it
 
-Skip this whole section on a fresh start; there is nothing to merge.
+**Skip this section unless that is what you found.** A fresh start has nothing to reorganize, and
+a merge whose material sits in its own folder — `notes/`, `research-papers/` — has nothing either:
+that folder was declared as the source layer in step 2 and its files are read where they are.
+This section is only for a `docs/` folder holding a mixture that needs sorting one file at a time.
 
 The rule is **merge and reorganize, never overwrite**. Existing documentation is someone's
 work and often the best material in the repo.

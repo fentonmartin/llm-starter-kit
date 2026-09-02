@@ -43,8 +43,13 @@ author, or an email address. It never appears inside a page.
 **Every check below skips the source folder.** It is raw material, not pages — exempt from front
 matter, slugs, wikilinks, and page types. Only checks 13 and 14 look inside it, and only the
 `YYMMDD` file-name rule applies there. Read-in-place paths are skipped by every check including
-13 and 14; they are cited, not governed. Also skip the files at the top of `docs/`: `DOCS.md`,
-`AGENTS.md`, `README.md`, `CHANGELOG.md`.
+13 and 14; they are cited, not governed.
+
+**Also skip every file at the top of the root**, whatever it is called: `DOCS.md`, the declared
+index (`INDEX.md` or `README.md`), `CHANGELOG.md`, and an `AGENTS.md` if one sits there. None of
+them is a page. `DOCS.md` in particular contains **example** wikilinks — `[[vector-database]]`,
+`[[tokens]]` — and sweeping it reports those examples as gaps in every single run, which is how a
+gap list stops being read.
 
 ## Severity
 

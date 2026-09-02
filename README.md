@@ -94,7 +94,7 @@ Set up the llm-starter-kit documentation system in this project.
 2. Copy its .claude/ and AGENTS.md into this project, overwriting neither if
    they already exist — append instead, and tell me what you appended.
 3. Copy its docs/ ONLY if this project has no docs/ folder. If I already have
-   one, leave it completely alone: init-docs merges it in step 4, and copying
+   one, leave it completely alone: init-docs reorganizes it in step 4, and copying
    a template over it is the one thing that would lose my work.
 4. Read .claude/skills/init-docs/SKILL.md and follow it exactly: survey this
    project first, tell me whether this is a fresh start or a merge, then
@@ -290,9 +290,13 @@ vocabulary.
 
 ### What a merge actually does
 
-Never overwrites, never deletes. Material already filed in its own folder is pointed at rather than
-moved; what this handles is a `docs/` folder with a mix of things in it, classified one file at a
-time.
+Never overwrites, never deletes — and which of two things happens depends on where your material
+lives:
+
+- **Material in its own folder** — `notes/`, `research-papers/`, `contracts/`. Nothing moves at
+  all. The base points at that folder and reads it there. This is most projects.
+- **A `docs/` folder with a mix of things in it.** That's the case below: classified one file at a
+  time, every move shown as `old → new` first.
 
 <details>
 <summary>What the merge does</summary>
