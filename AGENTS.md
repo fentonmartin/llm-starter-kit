@@ -19,6 +19,10 @@ whatever **Source folder** names — one folder: `docs/core-sources/`, a top-lev
 wherever the material already lives — and the index as whatever **Index** names, `docs/INDEX.md`
 or `docs/README.md`.
 
+**How to address the owner.** Part 1 declares it. Use it when you speak to them directly, not in
+every sentence, and if it reads `(not set)` say *"you"* — never guess a name from git history, a
+commit author, or an email address. It never appears inside a page.
+
 **Page layers may have subfolders.** `docs/topics/auth/session-management.md` is a topic page like
 any other; the layer folder decides what a page is, however deep. Slugs are unique across a whole
 layer, so wikilinks resolve by slug and ignore the path.

@@ -32,6 +32,11 @@ names, and their rules never change with any declaration.
 command writes only a changelog entry; at `per-run` or `per-file`, stage that file alone, and
 never push.
 
+**Address.** Part 1 declares what to call the owner. Use it when you speak to them directly —
+opening an answer, flagging something that needs them — and not in every sentence. If it reads
+`(not set)`, say *"you"* and never guess a name from git history or an email address. It never
+appears inside a page.
+
 ## Honest scope
 
 Every check here runs by reading files and reasoning about them. There is no program, and

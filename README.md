@@ -180,6 +180,8 @@ And two at the end:
 > - **What would you be most embarrassed to get wrong?** *(these become your scenarios)*
 
 It doesn't ask who reads it — that's inferred from your repo, and it'll tell you what it assumed.
+Two more questions come *after* setup is written, where they can't crowd out one that shapes the
+base: [what to call you, and whether it may commit](#what-it-never-asks).
 
 The first answer picks a **preset** — the starting shape for your page types and rules:
 
@@ -624,7 +626,12 @@ than assuming:
 > Root: docs/
 > Source folder: docs/core-sources/
 > Index: docs/INDEX.md
+> Commits: none
+> Address: (not set)
 ```
+
+The last two aren't paths: **Commits** is whether the agent commits its own work, and **Address**
+is what it calls you. Both are asked once at setup and are a one-line change afterwards.
 
 The root is not a choice and the index name follows a rule — see
 [what it never asks](#what-it-never-asks). The source location is the one you pick, on a

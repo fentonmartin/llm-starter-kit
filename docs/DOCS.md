@@ -24,7 +24,9 @@ order in `ask-docs`, and every rule below are written against these paths, and o
 one contract to learn, one set of habits, and a base you can move between projects.
 
 Three paths are declared rather than assumed. **This block is the declaration** — every rule in
-this file and every path in the agent's skills resolves against it.
+this file and every path in the agent's skills resolves against it. Two more declarations live
+further down, because they are not paths: what to call you, under *Who you are working with*, and
+whether the agent commits its own work, under *Commits*.
 
 > **Root: `docs/`**
 > **Source folder: `docs/core-sources/`**

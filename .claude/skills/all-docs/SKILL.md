@@ -15,8 +15,10 @@ version of them.
 Read `docs/DOCS.md` **Part 1** once, at the start. The stages do not each re-read it.
 
 **The declarations.** Part 1 opens with three paths — root, source folder, index — plus a
-**Commits** setting. Every path in this skill is written using the defaults; read them as whatever
-Part 1 declares. Honour the commit setting at every stage.
+**Commits** setting and an **Address**. Every path in this skill is written using the defaults;
+read them as whatever Part 1 declares. Honour the commit setting at every stage, and use the
+address when you open and close the run — this command talks to the owner more than any other. If
+it reads `(not set)`, say *"you"*.
 
 ## Why the order
 

@@ -9,6 +9,11 @@ Orient someone in under a screen. **What this base is, what state it is in, what
 the commands.** In that order — a command list is the least useful part of help, because the
 question behind *"what can I do?"* is almost always *"what should I do now?"*
 
+**Use what Part 1 says about the owner.** The `Address:` declaration is what to call them — use it
+once, in the opening line, and not again. If it reads `(not set)`, say *"you"* and never guess a
+name from git history or a commit author. Report the commit setting too: someone asking what state
+the base is in wants to know whether files are being committed for them.
+
 **This must be cheap.** Read `docs/DOCS.md` Part 1 for the declarations, the commit setting and the
 page types; read the index; count files. **Never read a page body, never read a source, never glob
 the base.** Help that costs a full context read is not help. If the base is large, counting is

@@ -31,6 +31,11 @@ you write files and stop. At `per-run` or `per-file`, stage only the paths this 
 `git add -A`, and never push. Never commit when a security exclusion fired or a conflict is
 unresolved. Committing never replaces reporting.
 
+**Address.** Part 1 declares what to call the owner. Use it when you speak to them directly —
+opening a report, asking for a ruling, flagging something that needs them — and not in every
+sentence. If it reads `(not set)`, say *"you"* and never guess a name from git history, a commit
+author, or an email address. It never appears inside a page.
+
 ## Scope
 
 "Pages" means files in `docs/summaries/`, `docs/topics/`, and `docs/entities/`.
@@ -74,7 +79,7 @@ lint, gate on ERROR only.
 | 13 | **Unread sources** | WARNING | Files in the declared source folder with no summary page. Read-in-place paths are skipped — they produce no summaries by design. |
 | 14 | **Excluded material** | ERROR | Anything in the declared source folder matching the security exclusions in `docs/DOCS.md`, and any page that quotes from one. |
 | 15 | **Stale layout paths** | WARNING | A `docs/sources/` folder, or `sources:` values and citations pointing at `docs/sources/` — the base predates the 2.0 rename. Also any `sources:` value or citation that does not match the root and source folder declared in `docs/DOCS.md` Part 1, which means one of them moved and the paths have not caught up. See below. |
-| 16 | **Declarations** | ERROR | A declared source location that does not exist, more than one declared, or one overlapping a page layer. Also an index declaration naming a file that does not exist, or both `README.md` and `INDEX.md` present in the base and serving as indexes. See below. |
+| 16 | **Declarations** | ERROR | A declared source location that does not exist, more than one declared, or one overlapping a page layer. Also an index declaration naming a file that does not exist, or both `README.md` and `INDEX.md` present in the base and serving as indexes. A missing `## Commits` section, or one whose value is not `none`, `per-run` or `per-file`. A missing `## Who you are working with` section. See below. |
 | 17 | **Slug collisions** | ERROR | Two pages in the same layer with the same slug in different subfolders. `[[slug]]` resolves to whichever was seen first, so every inbound link to one of them is silently wrong. Report both paths; the fix is a rename or a merge, and it is the owner's decision. |
 
 ### Check 1 in detail — do not crash on bad YAML
@@ -181,8 +186,19 @@ else notices.
   readme — prose for people, not a page list — that is fine and not a finding; say which you
   judged to be which.
 
+**The commit setting and the address:**
+
+- **`## Commits` is missing, or its value is not one of the three.** Report it and treat the base
+  as `none` for this run — the safe reading, since `none` writes nothing to git. A base upgraded
+  from `2.0` will hit this until the section is added, so say that rather than implying damage.
+- **`## Who you are working with` is missing.** Report it; treat the address as `(not set)` and
+  say *"you"*. Never fill it in from git history — the owner is asked, never inferred.
+- **`Address:` holds something that is not a form of address** — a full email, a URL, a sentence.
+  Report it and use *"you"* until it is corrected. Do not guess at what part of it is the name.
+
 Never fix any of these silently. Each means the contract says something its author did not intend,
-and writing to the base before that is settled makes it worse.
+and writing to the base before that is settled makes it worse. The two above are the exception
+only in that a missing section has a safe default to fall back on while you report it.
 
 ### Check 17 in detail — slug collisions
 

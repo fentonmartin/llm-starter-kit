@@ -18,6 +18,7 @@ conflicts, naming and dates — applies here unchanged. Read it in
 > **Source folder: `docs/core-sources/`**
 > **Index: `docs/INDEX.md`**
 > **Commits: `none`**
+> **Address: `(not set)`**
 
 The defaults. `INDEX.md` rather than `README.md` because this project has its own root
 `README.md`, which is the usual case. `Commits: none` means the agent writes files and leaves

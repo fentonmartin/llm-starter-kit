@@ -29,6 +29,11 @@ you write files and stop. At `per-run` or `per-file`, stage only the paths this 
 `git add -A`, and never push. Never commit when a security exclusion fired or a conflict is
 unresolved. Committing never replaces reporting.
 
+**Address.** Part 1 declares what to call the owner. Use it when you speak to them directly —
+opening a report, asking for a ruling, flagging something that needs them — and not in every
+sentence. If it reads `(not set)`, say *"you"* and never guess a name from git history, a commit
+author, or an email address. It never appears inside a page.
+
 ## Before you start
 
 1. Read `docs/DOCS.md` **Part 1** in full — it is the complete rules, and it overrides anything
