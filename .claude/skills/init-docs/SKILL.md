@@ -258,11 +258,54 @@ leave it exactly as it is and put the index in `INDEX.md` alongside it.
 Say which you chose and why in one line; it is the kind of thing a user notices later and wonders
 about.
 
-**The project's root `README.md` is the front door, and the base should be visible from it.** Add
-one short section — what the knowledge base covers, where it lives, and the commands. If the
-project has no root README at all, write a minimal one: what the project is, in a line or two, and
-that section. Change nothing else in it, ever. It is the most-read file in the repository and it is
-not yours.
+**The project's root `README.md` is the front door, and the base should be visible from it.**
+
+**If it exists:** append one short section and change nothing else, ever. What the knowledge base
+covers, where it lives, the commands. It is the most-read file in the repository and the rest of it
+is not yours.
+
+**If it does not exist:** do not write one silently. A new file at the top of someone's repository
+is the most visible thing you could add, and a project without a README often has a reason — a
+private scratch repo, a package inside a monorepo whose README lives at the root. Offer it, with
+the draft in the message, and take no for an answer:
+
+> You have no `README.md`. Want one? I'd write this and nothing more:
+>
+> ```markdown
+> # ledger
+>
+> Payments ledger service. Go, Postgres, Redis.
+>
+> ## Documentation
+>
+> Knowledge base in `docs/` — one page per service, decision and endpoint, every
+> claim traced to a source in `notes/`. Start at [docs/INDEX.md](docs/INDEX.md).
+>
+> `/help-docs` · `/scan-docs` · `/ask-docs` · `/lint-docs` · `/test-docs` · `/all-docs`
+> ```
+>
+> The description line is my guess from `go.mod` and your answers — correct it or tell me to drop
+> it.
+
+**Two halves, and only one of them is yours to write.**
+
+- **The documentation section is yours.** It states facts you know: where the base lives, what its
+  page types are, which commands read it. Write it with confidence.
+- **The description of the project is not.** With no README you know a manifest name, a language,
+  a file tree, and whatever the interview told you. That is inference, and this kit's first rule is
+  that inference is not knowledge. Draft **one line** from what is actually verifiable, say where
+  you got it, and mark it as theirs to correct. Never invent a purpose, an audience, a roadmap or a
+  feature list, and never write a *"## Installation"* or *"## Usage"* section from a guess at how
+  the project runs — a confidently wrong README is worse than none, because the next reader
+  believes it.
+
+**If they decline, write nothing and say you did nothing.** A missing README costs the base
+nothing: `AGENTS.md` and `docs/DOCS.md` are what agents read, and both exist by now. Note the
+declining in `docs/CHANGELOG.md` so a later run does not ask again.
+
+Keep it minimal either way. Title, one line, the documentation section. No badges, no licence
+section, no table of contents, no *"Contributing"* — every one of those is a claim about a project
+you have known for ten minutes.
 
 **`AGENTS.md`.** It is the entry point for every agent that is not the one running this skill —
 Codex, Cursor, opencode, Windsurf and anything else that reads it automatically. The project needs
@@ -617,6 +660,8 @@ A base whose structure changed without a log entry is one a future reader cannot
 
 - Never delete a file. Move, or leave alone.
 - Never overwrite an existing `DOCS.md`, `AGENTS.md`, or `CLAUDE.md` — merge or append.
+- Never create a root `README.md` without being asked, and never describe a project beyond what a
+  manifest, the file tree and the interview actually told you. One line, marked as a guess.
 - Never rearrange a docs folder that a site generator builds from.
 - Never invent, rename, or omit a layer. Every base gets the same five folders and the same three
   page types; only the nouns and the rules are project-specific.

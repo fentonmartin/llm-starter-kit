@@ -237,7 +237,7 @@ someone has to pick.
 |:--|:--|
 | **The root folder** | Always `docs/`. One exception, decided for you: if your `docs/` is built by a site generator, the base goes to `docs/kb/` and your published docs become the sources. You're told, not asked. |
 | **The index filename** | `docs/INDEX.md` — it's an index, not a readme, and your project already has a root `README.md`. `docs/README.md` only when your project has none. |
-| **Your root `README.md`** | Gains one section saying the base exists and which commands read it. Nothing else in it is ever touched. If you have no root README, you get a minimal one. |
+| **Your root `README.md`** | Gains one section saying the base exists and which commands read it. Nothing else in it is ever touched. **No README at all?** It asks before creating one, shows you the draft, and the project description is a single line marked as its guess — it won't invent a purpose, a usage section, or a feature list for a project it met ten minutes ago. |
 | **The folder layout** | Fixed. Same five folders in every project — see [why](#why-these-names). |
 
 Two things *are* asked at the end, once setup is done and neither can crowd out a question that
